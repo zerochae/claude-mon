@@ -65,7 +65,7 @@ const phaseContent = cva({
         animation: "bubble-blink 1s ease-in-out infinite",
       },
       done: {
-        color: "red",
+        color: "green",
         fontSize: "15px",
         fontWeight: 700,
       },

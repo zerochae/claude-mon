@@ -51,14 +51,19 @@ const sleepingWrap = css({
   pb: "2px",
 });
 
+const zzzRow = css({
+  display: "flex",
+  alignItems: "flex-end",
+  gap: "1px",
+  marginBottom: "8px",
+});
+
 const zzz = css({
   color: "comment",
-  fontSize: "10px",
   fontWeight: 700,
   fontStyle: "italic",
   opacity: 0.6,
   animation: "zzz-float 2.5s ease-in-out infinite",
-  alignSelf: "flex-start",
   lineHeight: 1,
 });
 
@@ -101,7 +106,10 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
       {hasSessions ? (
         <div ref={containerRef} className={crabList}>
           {sessions.map((s) => {
-            const pos = positions[s.session_id];
+            const pos = positions[s.session_id] as
+              | (typeof positions)[string]
+              | undefined;
+            if (!pos) return null;
             const isRunning = s.session_id === runningId;
             const isFading = fadingIds.has(s.session_id);
             const isSpawning = spawningIds.has(s.session_id);
@@ -143,22 +151,17 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
         </div>
       ) : (
         <div className={sleepingWrap}>
-          <MascotCanvas
-            color="var(--colors-comment, #565c64)"
-            phase="idle"
-            size={BASE_MASCOT_SIZE}
-          />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            <span className={`${zzz} ${zLarge}`}>z</span>
-            <span className={`${zzz} ${zMedium}`}>z</span>
+          <div style={{ opacity: 0.5 }}>
+            <MascotCanvas
+              color="var(--colors-text, #abb2bf)"
+              phase="idle"
+              size={BASE_MASCOT_SIZE}
+            />
+          </div>
+          <div className={zzzRow}>
             <span className={`${zzz} ${zSmall}`}>z</span>
+            <span className={`${zzz} ${zMedium}`}>z</span>
+            <span className={`${zzz} ${zLarge}`}>z</span>
           </div>
         </div>
       )}
