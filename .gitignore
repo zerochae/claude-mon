@@ -1,0 +1,13 @@
+node_modules/
+dist/
+styled-system/
+src-tauri/target/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
+.DS_Store
+.env
+.env.*
+.sisyphus/
