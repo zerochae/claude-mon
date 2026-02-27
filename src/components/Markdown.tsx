@@ -9,7 +9,6 @@ interface MarkdownProps {
   content: string;
 }
 
-
 const CALLOUT_COLORS: Record<string, string> = {
   note: "blue",
   info: "blue",
@@ -194,12 +193,14 @@ function ShikiBlock({ code, lang }: { code: string; lang: string }) {
     let cancelled = false;
     codeRef.current = code;
     langRef.current = lang;
-    highlight(code, lang).then((result) => {
+    void highlight(code, lang).then((result) => {
       if (!cancelled && codeRef.current === code && langRef.current === lang) {
         setHtml(result);
       }
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [code, lang]);
 
   if (html) {
@@ -212,8 +213,18 @@ function ShikiBlock({ code, lang }: { code: string; lang: string }) {
   }
 
   return (
-    <pre style={{ margin: 0, padding: 0, background: "transparent", fontSize: "0.8rem", lineHeight: 1.5 }}>
-      <code style={{ fontFamily: MONO, color: "var(--colors-text, #abb2bf)" }}>{code}</code>
+    <pre
+      style={{
+        margin: 0,
+        padding: 0,
+        background: "transparent",
+        fontSize: "0.8rem",
+        lineHeight: 1.5,
+      }}
+    >
+      <code style={{ fontFamily: MONO, color: "var(--colors-text, #abb2bf)" }}>
+        {code}
+      </code>
     </pre>
   );
 }
@@ -337,7 +348,15 @@ const components: Components = {
   code: ({ node: _, className, children, ...rest }) => {
     const match = /language-(\w+)/.exec(className ?? "");
     if (match) {
-      return <ShikiBlock lang={match[1]} code={(Array.isArray(children) ? children.join("") : (children as string)).replace(/\n$/, "")} />;
+      return (
+        <ShikiBlock
+          lang={match[1]}
+          code={(Array.isArray(children)
+            ? children.join("")
+            : (children as string)
+          ).replace(/\n$/, "")}
+        />
+      );
     }
     return (
       <code
@@ -377,33 +396,39 @@ const components: Components = {
           overflow: "hidden",
         })}
       >
-        {lang && (() => {
-          const ext = extensions[lang as keyof typeof extensions];
-          return (
-            <div
-              className={css({
-                display: "flex",
-                alignItems: "center",
-                gap: "0.3rem",
-                px: "0.6rem",
-                py: "0.3rem",
-                fontSize: "0.65rem",
-                color: "comment",
-                fontFamily: MONO,
-              })}
-            >
-              {ext && (
-                <span
-                  style={{ color: ext.color }}
-                  className={css({ fontSize: "0.85rem", fontFamily: NERD })}
-                >
-                  {ext.icon}
-                </span>
-              )}
-              {ext?.name ?? lang}
-            </div>
-          );
-        })()}
+        {lang &&
+          (() => {
+            const ext = (
+              extensions as Record<
+                string,
+                { icon: string; color: string; name: string } | undefined
+              >
+            )[lang];
+            return (
+              <div
+                className={css({
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.3rem",
+                  px: "0.6rem",
+                  py: "0.3rem",
+                  fontSize: "0.65rem",
+                  color: "comment",
+                  fontFamily: MONO,
+                })}
+              >
+                {ext && (
+                  <span
+                    style={{ color: ext.color }}
+                    className={css({ fontSize: "0.85rem", fontFamily: NERD })}
+                  >
+                    {ext.icon}
+                  </span>
+                )}
+                {ext?.name ?? lang}
+              </div>
+            );
+          })()}
         <pre
           className={css({
             bg: "transparent",

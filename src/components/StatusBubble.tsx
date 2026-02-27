@@ -127,6 +127,7 @@ export function StatusBubble({
 }: StatusBubbleProps) {
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
   const [doneAt, setDoneAt] = useState<number | null>(null);
+  const prevPhaseRef = useRef(phase);
 
   useEffect(() => {
     const timer = setInterval(
@@ -136,15 +137,15 @@ export function StatusBubble({
     return () => clearInterval(timer);
   }, []);
 
-  const prevPhaseRef = useRef(phase);
   useEffect(() => {
     const wasActive = ACTIVE_PHASES.has(prevPhaseRef.current);
-    if (DONE_PHASES.has(phase) && wasActive) {
-      setDoneAt((prev) => prev ?? Math.floor(Date.now() / 1000));
-    } else if (!DONE_PHASES.has(phase)) {
-      setDoneAt(null);
-    }
     prevPhaseRef.current = phase;
+    if (DONE_PHASES.has(phase) && wasActive) {
+      const t = Math.floor(Date.now() / 1000);
+      queueMicrotask(() => setDoneAt((prev) => prev ?? t));
+    } else if (!DONE_PHASES.has(phase)) {
+      queueMicrotask(() => setDoneAt(null));
+    }
   }, [phase]);
 
   if (phase === "ended") return null;

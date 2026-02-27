@@ -22,7 +22,7 @@ export function useSessions() {
       .then((initial) => {
         setSessions(initial);
       })
-      .catch(() => {});
+      .catch(() => undefined);
 
     const unlistenPromise = listenSessionUpdate((updated) => {
       setSessions(updated);

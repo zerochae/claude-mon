@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { css, cva } from "@styled-system/css";
 import { SessionState } from "@/lib/tauri";
 import { getMascotColor } from "@/lib/colors";
@@ -275,7 +275,9 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [positions, setPositions] = useState<Record<string, MascotPos>>({});
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+  const [dismissedActivity, setDismissedActivity] = useState<
+    Map<string, number>
+  >(new Map());
   const lastSizeRef = useRef({ w: 0, h: 0 });
 
   useEffect(() => {
@@ -315,24 +317,16 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
     return () => ro.disconnect();
   }, []);
 
-  const prevActivityRef = useRef<Record<string, number>>({});
-  useEffect(() => {
-    const prev = prevActivityRef.current;
+  const dismissedIds = useMemo(() => {
+    const result = new Set<string>();
     for (const s of sessions) {
-      if (
-        prev[s.session_id] !== undefined &&
-        prev[s.session_id] !== s.last_activity
-      ) {
-        setDismissedIds((d) => {
-          if (!d.has(s.session_id)) return d;
-          const next = new Set(d);
-          next.delete(s.session_id);
-          return next;
-        });
+      const dismissedAt = dismissedActivity.get(s.session_id);
+      if (dismissedAt !== undefined && dismissedAt === s.last_activity) {
+        result.add(s.session_id);
       }
-      prev[s.session_id] = s.last_activity;
     }
-  }, [sessions]);
+    return result;
+  }, [sessions, dismissedActivity]);
 
   const activeSessions = sessions.filter((s) => s.phase !== "ended");
   const waitingSessions = sessions.filter(
@@ -394,7 +388,7 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
           setPositions((prev) => {
             const updated = { ...prev };
             for (const id of newIds) {
-              if (!updated[id]) continue;
+              if (!(id in updated)) continue;
               let candidate: MascotPos;
               let attempts = 0;
               do {
@@ -526,9 +520,11 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
               key={session.session_id}
               className={mascotSlot}
               onClick={() => {
-                setDismissedIds((prev) =>
-                  new Set(prev).add(session.session_id),
-                );
+                setDismissedActivity((prev) => {
+                  const next = new Map(prev);
+                  next.set(session.session_id, session.last_activity);
+                  return next;
+                });
                 onSelectSession(session);
               }}
               onMouseEnter={() => setHoveredId(session.session_id)}

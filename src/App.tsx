@@ -137,8 +137,8 @@ async function animateWindowSize(
         ny = clamped.y;
       }
     }
-    win.setPosition(new PhysicalPosition(nx, ny)).catch(() => {});
-    win.setSize(new LogicalSize(w, h)).catch(() => {});
+    win.setPosition(new PhysicalPosition(nx, ny)).catch(() => undefined);
+    win.setSize(new LogicalSize(w, h)).catch(() => undefined);
     if (t < 1) {
       requestAnimationFrame(step);
     } else {
@@ -151,7 +151,6 @@ async function animateWindowSize(
 type View = "house" | "detail" | "chat" | "settings";
 
 export default function App() {
-
   const { sessions, approve, deny } = useSessions();
   const { settings, updateSettings, resetColorOverrides } = useSettings();
   const [view, setView] = useState<View>("house");
@@ -180,7 +179,7 @@ export default function App() {
       anchor,
       dock,
       dockMargin,
-    ).catch(() => {});
+    ).catch(() => undefined);
   }, [activeWidth, barHeight, expanded, anchor, dock, dockMargin]);
 
   const expand = useCallback(() => {
@@ -188,7 +187,7 @@ export default function App() {
     const targetW = view === "settings" ? SETTINGS_WIDTH : winWidth;
     setExpanded(true);
     animatingRef.current = true;
-    animateWindowSize(
+    void animateWindowSize(
       winWidth,
       targetW,
       barHeight,
@@ -210,7 +209,7 @@ export default function App() {
     timerRef.current = setTimeout(() => {
       setExpanded(false);
       animatingRef.current = true;
-      animateWindowSize(
+      void animateWindowSize(
         activeWidth,
         winWidth,
         EXPANDED_HEIGHT,
@@ -246,7 +245,7 @@ export default function App() {
     setSelectedSessionId(null);
     if (expanded && prevW !== winWidth) {
       animatingRef.current = true;
-      animateWindowSize(
+      void animateWindowSize(
         prevW,
         winWidth,
         EXPANDED_HEIGHT,
@@ -271,7 +270,7 @@ export default function App() {
       clearTimeout(timerRef.current);
       setExpanded(true);
       animatingRef.current = true;
-      animateWindowSize(
+      void animateWindowSize(
         prevW,
         nextW,
         barHeight,
@@ -287,7 +286,7 @@ export default function App() {
       timerRef.current = setTimeout(() => setShowContent(true), 30);
     } else if (prevW !== nextW) {
       animatingRef.current = true;
-      animateWindowSize(
+      void animateWindowSize(
         prevW,
         nextW,
         EXPANDED_HEIGHT,

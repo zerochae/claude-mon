@@ -504,7 +504,7 @@ export function SettingsView({
                     className={resetBtn}
                     onClick={() => {
                       const next = { ...settings.colorOverrides };
-                      delete next[key];
+                      Reflect.deleteProperty(next, key);
                       onUpdate({ colorOverrides: next });
                     }}
                   >

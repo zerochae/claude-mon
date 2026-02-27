@@ -63,7 +63,7 @@ function applyColorOverrides(overrides: Record<string, string>) {
 }
 
 function applyAppearance(settings: AppSettings) {
-  const container = document.querySelector(".widget-container") as HTMLElement;
+  const container = document.querySelector<HTMLElement>(".widget-container");
   if (!container) return;
 
   container.style.opacity = String(settings.opacity);
@@ -88,7 +88,7 @@ function applyAppearance(settings: AppSettings) {
     `${settings.fontSize}px`,
   );
 
-  setVibrancy(settings.vibrancy).catch(() => {});
+  setVibrancy(settings.vibrancy).catch(() => undefined);
 }
 
 export function useSettings() {
@@ -100,7 +100,7 @@ export function useSettings() {
     invoke<string>("load_settings")
       .then((json) => {
         try {
-          const saved = JSON.parse(json);
+          const saved = JSON.parse(json) as Partial<AppSettings>;
           setSettings({ ...DEFAULT_SETTINGS, ...saved });
         } catch {
           setSettings(DEFAULT_SETTINGS);
@@ -113,7 +113,9 @@ export function useSettings() {
   const persistSettings = useCallback((s: AppSettings) => {
     clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      invoke("save_settings", { json: JSON.stringify(s) }).catch(() => {});
+      invoke("save_settings", { json: JSON.stringify(s) }).catch(
+        () => undefined,
+      );
     }, 500);
   }, []);
 

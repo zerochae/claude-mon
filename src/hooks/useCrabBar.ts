@@ -137,10 +137,12 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
   const [fadingIds, setFadingIds] = useState<Set<string>>(new Set());
   const [spawningIds, setSpawningIds] = useState<Set<string>>(new Set());
   const homeIdsRef = useRef<string[]>(homeIdsCache);
+  const [homeCount, setHomeCount] = useState<number>(homeIdsCache.length);
 
   function syncHomeIds(ids: string[]) {
     homeIdsRef.current = ids;
     homeIdsCache = ids;
+    setHomeCount(ids.length);
   }
 
   useEffect(() => {
@@ -200,7 +202,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
 
       return dirty ? next : prev;
     });
-  }, [sessions]);
+  }, [sessions, CRAB_W, HITBOX_W, HOME_SLOT_W, PAD_R]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -243,7 +245,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
     }, CRAB_BAR_WANDER_MS);
 
     return () => clearInterval(timer);
-  }, [sessions, runningId]);
+  }, [sessions, runningId, CRAB_W, HITBOX_W, HOME_SLOT_W, PAD_R]);
 
   useEffect(() => {
     const prev = prevPhasesRef.current;
@@ -275,15 +277,17 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
     }
 
     if (newTransitions.length > 0) {
-      setRunQueue((q) => [...q, ...newTransitions]);
+      queueMicrotask(() => setRunQueue((q) => [...q, ...newTransitions]));
     }
 
     if (newlyEnded.length > 0) {
-      setFadingIds((f) => {
-        const next = new Set(f);
-        for (const id of newlyEnded) next.add(id);
-        return next;
-      });
+      queueMicrotask(() =>
+        setFadingIds((f) => {
+          const next = new Set(f);
+          for (const id of newlyEnded) next.add(id);
+          return next;
+        }),
+      );
     }
 
     if (leavingHome.length > 0) {
@@ -293,24 +297,21 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
       setPositions((prev) => {
         const next = { ...prev };
         homeIdsRef.current.forEach((id, i) => {
-          if (next[id])
-            next[id] = { x: PAD_L + i * HOME_SLOT_W, facingRight: false };
+          next[id] = { x: PAD_L + i * HOME_SLOT_W, facingRight: false };
         });
         const el = containerRef.current;
         const w = el ? el.clientWidth : 300;
         const minX = freeMinX(homeIdsRef.current.length, HOME_SLOT_W);
         for (const id of leavingHome) {
-          if (next[id]) {
-            next[id] = {
-              x: minX + Math.random() * Math.max(0, w - minX - PAD_R - CRAB_W),
-              facingRight: Math.random() > 0.5,
-            };
-          }
+          next[id] = {
+            x: minX + Math.random() * Math.max(0, w - minX - PAD_R - CRAB_W),
+            facingRight: Math.random() > 0.5,
+          };
         }
         return next;
       });
     }
-  }, [sessions]);
+  }, [sessions, CRAB_W, HOME_SLOT_W, PAD_R]);
 
   useEffect(() => {
     if (fadingIds.size === 0) return;
@@ -336,20 +337,21 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
     const validQueue = runQueue.filter((id) => sessionIds.has(id));
 
     if (validQueue.length === 0) {
-      setRunQueue([]);
+      queueMicrotask(() => setRunQueue([]));
       return;
     }
 
     const nextId = validQueue[0];
     const targetX = PAD_L + homeIdsRef.current.length * HOME_SLOT_W;
-    setRunQueue(validQueue.slice(1));
-    setRunningId(nextId);
-
-    setPositions((prev) => ({
-      ...prev,
-      [nextId]: { x: targetX, facingRight: false },
-    }));
-  }, [runningId, runQueue, sessions]);
+    queueMicrotask(() => {
+      setRunQueue(validQueue.slice(1));
+      setRunningId(nextId);
+      setPositions((prev) => ({
+        ...prev,
+        [nextId]: { x: targetX, facingRight: false },
+      }));
+    });
+  }, [runningId, runQueue, sessions, HOME_SLOT_W]);
 
   useEffect(() => {
     if (runningId === null) return;
@@ -380,15 +382,10 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
     }, CRAB_BAR_RUN_MS);
 
     return () => clearTimeout(timer);
-  }, [runningId]);
+  }, [runningId, CRAB_W, HOME_SLOT_W, PAD_R]);
 
   useEffect(() => {
-    if (
-      homeIdsRef.current.length === 0 ||
-      runningId !== null ||
-      runQueue.length > 0
-    )
-      return;
+    if (homeCount === 0 || runningId !== null || runQueue.length > 0) return;
 
     const timer = setTimeout(() => {
       const releasing = [...homeIdsRef.current];
@@ -399,20 +396,17 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
       setPositions((prev) => {
         const next = { ...prev };
         for (const id of releasing) {
-          if (next[id]) {
-            next[id] = {
-              x:
-                PAD_L + Math.random() * Math.max(0, w - PAD_L - PAD_R - CRAB_W),
-              facingRight: Math.random() > 0.5,
-            };
-          }
+          next[id] = {
+            x: PAD_L + Math.random() * Math.max(0, w - PAD_L - PAD_R - CRAB_W),
+            facingRight: Math.random() > 0.5,
+          };
         }
         return next;
       });
     }, HOME_RELEASE_MS);
 
     return () => clearTimeout(timer);
-  }, [homeIdsRef.current.length, runningId, runQueue.length]);
+  }, [homeCount, runningId, runQueue.length, CRAB_W, PAD_R]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -437,7 +431,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
     }, RESOLVE_MS);
 
     return () => clearInterval(timer);
-  }, [runningId]);
+  }, [runningId, CRAB_W, HITBOX_W, HOME_SLOT_W, PAD_R]);
 
   useEffect(() => {
     if (spawningIds.size === 0) return;

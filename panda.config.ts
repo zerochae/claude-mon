@@ -162,7 +162,8 @@ export default defineConfig({
       height: "100%",
       background: "transparent",
       overflow: "hidden",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif",
+      fontFamily:
+        "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif",
       WebkitFontSmoothing: "antialiased",
       userSelect: "none",
     },

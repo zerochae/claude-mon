@@ -87,11 +87,19 @@ function CompactingDots() {
 }
 
 export function BarBubble({ phase, lastActivity }: BarBubbleProps) {
+  const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const timer = setInterval(
+      () => setNow(Math.floor(Date.now() / 1000)),
+      5000,
+    );
+    return () => clearInterval(timer);
+  }, []);
+
   if (phase === "ended" || phase === "idle") return null;
 
-  const isStale =
-    ACTIVE_PHASES.has(phase) &&
-    Math.floor(Date.now() / 1000) - lastActivity > 10;
+  const isStale = ACTIVE_PHASES.has(phase) && now - lastActivity > 10;
   if (isStale) return null;
 
   let content: React.ReactNode;

@@ -94,7 +94,7 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
         if ((e.target as HTMLElement).closest(".no-drag")) return;
         getCurrentWindow()
           .startDragging()
-          .catch(() => {});
+          .catch(() => undefined);
       }}
       onClick={onToggle}
     >
@@ -102,7 +102,6 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
         <div ref={containerRef} className={crabList}>
           {sessions.map((s) => {
             const pos = positions[s.session_id];
-            if (!pos) return null;
             const isRunning = s.session_id === runningId;
             const isFading = fadingIds.has(s.session_id);
             const isSpawning = spawningIds.has(s.session_id);
