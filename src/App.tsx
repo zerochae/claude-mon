@@ -16,7 +16,7 @@ import { WidgetHeader } from "@/components/WidgetHeader";
 import { HouseView } from "@/components/HouseView";
 import { SessionView } from "@/components/SessionView";
 import { ChatView } from "@/components/ChatView";
-import { SettingsView, SETTINGS_WIDTH } from "@/components/SettingsView";
+import { SettingsView } from "@/components/SettingsView";
 import { MOTION } from "@/lib/motion";
 
 const EXPANDED_HEIGHT = 460;
@@ -158,14 +158,15 @@ export default function App() {
   const [showContent, setShowContent] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const animatingRef = useRef(false);
-  const winWidth = settings.windowWidth;
+  const vw = settings.viewWidths;
+  const barWidth = vw.bar;
   const barHeight = settings.barHeight;
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
     null,
   );
 
-  const isSettings = view === "settings" && expanded;
-  const activeWidth = isSettings ? SETTINGS_WIDTH : winWidth;
+  const viewWidth = useCallback((v: View) => vw[v === "detail" ? "house" : v], [vw]);
+  const activeWidth = expanded ? viewWidth(view) : barWidth;
 
   const anchor = settings.anchor;
   const dock = settings.dock;
@@ -184,11 +185,11 @@ export default function App() {
 
   const expand = useCallback(() => {
     clearTimeout(timerRef.current);
-    const targetW = view === "settings" ? SETTINGS_WIDTH : winWidth;
+    const targetW = viewWidth(view);
     setExpanded(true);
     animatingRef.current = true;
     void animateWindowSize(
-      winWidth,
+      barWidth,
       targetW,
       barHeight,
       EXPANDED_HEIGHT,
@@ -201,7 +202,7 @@ export default function App() {
       },
     );
     timerRef.current = setTimeout(() => setShowContent(true), 30);
-  }, [view, winWidth, barHeight, anchor, dock, dockMargin]);
+  }, [view, viewWidth, barWidth, barHeight, anchor, dock, dockMargin]);
 
   const collapse = useCallback(() => {
     clearTimeout(timerRef.current);
@@ -211,7 +212,7 @@ export default function App() {
       animatingRef.current = true;
       void animateWindowSize(
         activeWidth,
-        winWidth,
+        barWidth,
         EXPANDED_HEIGHT,
         barHeight,
         anchor,
@@ -223,12 +224,20 @@ export default function App() {
         },
       );
     }, ANIM_MS);
-  }, [activeWidth, winWidth, barHeight, anchor, dock, dockMargin]);
+  }, [activeWidth, barWidth, barHeight, anchor, dock, dockMargin]);
 
   const toggleExpand = useCallback(() => {
     if (expanded) collapse();
     else expand();
   }, [expanded, expand, collapse]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && expanded) collapse();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expanded, collapse]);
 
   const selectedSession =
     sessions.find((s) => s.session_id === selectedSessionId) ?? null;
@@ -241,13 +250,14 @@ export default function App() {
 
   const handleBack = () => {
     const prevW = activeWidth;
+    const nextW = vw.house;
     setView("house");
     setSelectedSessionId(null);
-    if (expanded && prevW !== winWidth) {
+    if (expanded && prevW !== nextW) {
       animatingRef.current = true;
       void animateWindowSize(
         prevW,
-        winWidth,
+        nextW,
         EXPANDED_HEIGHT,
         EXPANDED_HEIGHT,
         anchor,
@@ -264,14 +274,14 @@ export default function App() {
   const handleGearClick = () => {
     const nextView = view === "settings" ? "house" : "settings";
     const prevW = activeWidth;
-    const nextW = nextView === "settings" ? SETTINGS_WIDTH : winWidth;
+    const nextW = viewWidth(nextView);
     setView(nextView);
     if (!expanded) {
       clearTimeout(timerRef.current);
       setExpanded(true);
       animatingRef.current = true;
       void animateWindowSize(
-        prevW,
+        barWidth,
         nextW,
         barHeight,
         EXPANDED_HEIGHT,
@@ -307,6 +317,7 @@ export default function App() {
       <WidgetHeader
         onGearClick={handleGearClick}
         onToggle={toggleExpand}
+        onCollapse={collapse}
         onBack={handleBack}
         expanded={expanded}
         settingsActive={view === "settings"}

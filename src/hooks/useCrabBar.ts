@@ -3,7 +3,7 @@ import { SessionState } from "@/lib/tauri";
 
 const BASE_BAR_H = 48;
 const BASE_CRAB_W = 80;
-const BASE_HITBOX_W = 90;
+const BASE_HITBOX_W = 110;
 const BASE_HOME_SLOT_W = 42;
 const BASE_PAD_R = 40;
 const PAD_L = 20;
@@ -18,6 +18,18 @@ const FADE_OUT_MS = 1500;
 const HOME_RELEASE_MS = 15000;
 
 const ACTIVE_PHASES = new Set(["processing", "running_tool", "compacting"]);
+const OVERFLOW_FADE_MS = 800;
+
+function sessionPriority(
+  s: SessionState,
+  homeIds: string[],
+  runningId: string | null,
+): number {
+  if (s.session_id === runningId) return 0;
+  if (homeIds.includes(s.session_id)) return 1;
+  if (ACTIVE_PHASES.has(s.phase)) return 2;
+  return 3;
+}
 
 interface CrabPos {
   x: number;
@@ -34,6 +46,7 @@ function getMoveParams(phase: string): { chance: number; range: number } {
       return { chance: 0.7, range: 30 };
     case "compacting":
       return { chance: 0.3, range: 15 };
+    case "waiting_for_input":
     case "idle":
       return { chance: 0.08, range: 10 };
     default:
@@ -136,6 +149,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
   const [runningId, setRunningId] = useState<string | null>(null);
   const [fadingIds, setFadingIds] = useState<Set<string>>(new Set());
   const [spawningIds, setSpawningIds] = useState<Set<string>>(new Set());
+  const [overflowIds, setOverflowIds] = useState<Set<string>>(new Set());
   const homeIdsRef = useRef<string[]>(homeIdsCache);
   const [homeCount, setHomeCount] = useState<number>(homeIdsCache.length);
 
@@ -158,6 +172,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
       const newSpawns: string[] = [];
 
       for (const s of sessions) {
+        if (s.phase === "ended") continue;
         if (!Object.prototype.hasOwnProperty.call(next, s.session_id)) {
           next[s.session_id] = {
             x: minX + Math.random() * Math.max(0, w - minX - PAD_R - CRAB_W),
@@ -281,6 +296,21 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
     }
 
     if (newlyEnded.length > 0) {
+      const endedSet = new Set(newlyEnded);
+      syncHomeIds(homeIdsRef.current.filter((id) => !endedSet.has(id)));
+
+      const el = containerRef.current;
+      const w = el ? el.clientWidth : 300;
+      setPositions((prev) => {
+        const next = { ...prev };
+        for (const id of newlyEnded) {
+          if (id in next) {
+            next[id] = { x: w - PAD_R, facingRight: true };
+          }
+        }
+        return next;
+      });
+
       queueMicrotask(() =>
         setFadingIds((f) => {
           const next = new Set(f);
@@ -439,5 +469,40 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
     return () => clearTimeout(timer);
   }, [spawningIds]);
 
-  return { positions, runningId, fadingIds, spawningIds, containerRef };
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const w = el.clientWidth;
+    const usable = w - PAD_L - PAD_R;
+    const maxVisible = Math.max(1, Math.floor(usable / HITBOX_W));
+
+    if (sessions.length <= maxVisible) {
+      if (overflowIds.size > 0) queueMicrotask(() => setOverflowIds(new Set()));
+      return;
+    }
+
+    const sorted = [...sessions].sort((a, b) => {
+      const pa = sessionPriority(a, homeIdsRef.current, runningId);
+      const pb = sessionPriority(b, homeIdsRef.current, runningId);
+      if (pa !== pb) return pa - pb;
+      return b.last_activity - a.last_activity;
+    });
+
+    const hidden = new Set(sorted.slice(maxVisible).map((s) => s.session_id));
+    queueMicrotask(() => setOverflowIds(hidden));
+  }, [sessions, runningId, HITBOX_W, PAD_R, overflowIds.size]);
+
+  useEffect(() => {
+    if (overflowIds.size === 0) return;
+    const timer = setTimeout(() => {
+      setPositions((prev) => {
+        const next = { ...prev };
+        for (const id of overflowIds) Reflect.deleteProperty(next, id);
+        return next;
+      });
+    }, OVERFLOW_FADE_MS);
+    return () => clearTimeout(timer);
+  }, [overflowIds]);
+
+  return { positions, runningId, fadingIds, spawningIds, overflowIds, containerRef };
 }

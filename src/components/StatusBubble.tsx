@@ -3,6 +3,7 @@ import { css, cva } from "@styled-system/css";
 
 const STALE_THRESHOLD_SEC = 10;
 const DONE_VISIBLE_SEC = 4;
+const FADE_OUT_MS = 300;
 
 interface StatusBubbleProps {
   phase: string;
@@ -127,6 +128,7 @@ export function StatusBubble({
 }: StatusBubbleProps) {
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
   const [doneAt, setDoneAt] = useState<number | null>(null);
+  const [hidden, setHidden] = useState(false);
   const prevPhaseRef = useRef(phase);
 
   useEffect(() => {
@@ -142,13 +144,17 @@ export function StatusBubble({
     prevPhaseRef.current = phase;
     if (DONE_PHASES.has(phase) && wasActive) {
       const t = Math.floor(Date.now() / 1000);
-      queueMicrotask(() => setDoneAt((prev) => prev ?? t));
+      queueMicrotask(() => {
+        setHidden(false);
+        setDoneAt((prev) => prev ?? t);
+      });
     } else if (!DONE_PHASES.has(phase)) {
-      queueMicrotask(() => setDoneAt(null));
+      queueMicrotask(() => {
+        setHidden(false);
+        setDoneAt(null);
+      });
     }
   }, [phase]);
-
-  if (phase === "ended") return null;
 
   const isActivePhase =
     phase === "processing" ||
@@ -162,7 +168,14 @@ export function StatusBubble({
     DONE_PHASES.has(effectivePhase) &&
     doneAt !== null &&
     now - doneAt > DONE_VISIBLE_SEC;
-  if (isDoneExpired) return null;
+
+  useEffect(() => {
+    if (!isDoneExpired || hidden) return;
+    const timer = setTimeout(() => setHidden(true), FADE_OUT_MS);
+    return () => clearTimeout(timer);
+  }, [isDoneExpired, hidden]);
+
+  if (phase === "ended" || hidden) return null;
 
   let content: React.ReactNode;
 
@@ -178,15 +191,25 @@ export function StatusBubble({
       content = <span className={phaseContent({ phase: "approval" })}></span>;
       break;
     case "waiting_for_input":
+    case "idle":
       content = <span className={phaseContent({ phase: "done" })}></span>;
       break;
     default:
       return null;
   }
 
+  const fading = isDoneExpired && !hidden;
+
   return (
     <div className={bubbleWrapper}>
-      <div className={bubbleStyle}>
+      <div
+        className={bubbleStyle}
+        style={
+          fading
+            ? { animation: `scale-out ${FADE_OUT_MS}ms ease forwards` }
+            : undefined
+        }
+      >
         {content}
         <div className={tailStyle} />
       </div>

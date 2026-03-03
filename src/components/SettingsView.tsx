@@ -27,7 +27,12 @@ interface SettingsViewProps {
   onResetColors: () => void;
 }
 
-export const SETTINGS_WIDTH = 720;
+const VIEW_WIDTH_ITEMS: { key: keyof AppSettings["viewWidths"]; label: string }[] = [
+  { key: "bar", label: "Bar Width" },
+  { key: "house", label: "House Width" },
+  { key: "chat", label: "Chat Width" },
+  { key: "settings", label: "Settings Width" },
+];
 
 const THEMES: {
   name: ThemeName;
@@ -595,17 +600,21 @@ export function SettingsView({
       <div className={column}>
         <div className={columnHeader}>Window</div>
         <div className={columnBody}>
-          <div className={rowStyle}>
-            <span className={rowLabel}>Width</span>
-            <ScrollInput
-              value={settings.windowWidth}
-              onChange={(v) => onUpdate({ windowWidth: v })}
-              min={320}
-              max={640}
-              step={10}
-              suffix="px"
-            />
-          </div>
+          {VIEW_WIDTH_ITEMS.map(({ key, label }) => (
+            <div key={key} className={rowStyle}>
+              <span className={rowLabel}>{label}</span>
+              <ScrollInput
+                value={settings.viewWidths[key]}
+                onChange={(v) =>
+                  onUpdate({ viewWidths: { ...settings.viewWidths, [key]: v } })
+                }
+                min={320}
+                max={800}
+                step={10}
+                suffix="px"
+              />
+            </div>
+          ))}
           <div className={rowStyle}>
             <span className={rowLabel}>Bar Height</span>
             <ScrollInput
@@ -658,6 +667,15 @@ export function SettingsView({
               />
             </div>
           )}
+          <div className={rowStyle}>
+            <span className={rowLabel}>Hide from Dock</span>
+            <button
+              className={anchorBtn({ active: settings.accessoryMode })}
+              onClick={() => onUpdate({ accessoryMode: !settings.accessoryMode })}
+            >
+              {settings.accessoryMode ? "On" : "Off"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -8,6 +8,13 @@ export type { ThemeName };
 export type WindowAnchor = "top" | "center" | "bottom";
 export type DockPosition = "none" | "top" | "bottom";
 
+export interface ViewWidths {
+  bar: number;
+  house: number;
+  chat: number;
+  settings: number;
+}
+
 export interface AppSettings {
   theme: ThemeName;
   colorOverrides: Record<string, string>;
@@ -16,12 +23,20 @@ export interface AppSettings {
   bgBlur: number;
   vibrancy: string;
   fontSize: number;
-  windowWidth: number;
+  viewWidths: ViewWidths;
   barHeight: number;
   anchor: WindowAnchor;
   dock: DockPosition;
   dockMargin: number;
+  accessoryMode: boolean;
 }
+
+export const DEFAULT_VIEW_WIDTHS: ViewWidths = {
+  bar: 480,
+  house: 480,
+  chat: 480,
+  settings: 720,
+};
 
 export const DEFAULT_SETTINGS: AppSettings = {
   theme: "onedark",
@@ -31,11 +46,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
   bgBlur: 0,
   vibrancy: "none",
   fontSize: 12,
-  windowWidth: 480,
+  viewWidths: { ...DEFAULT_VIEW_WIDTHS },
   barHeight: 48,
   anchor: "center",
   dock: "none",
   dockMargin: 0,
+  accessoryMode: true,
 };
 
 const COLOR_VAR_MAP: Record<string, string> = {
@@ -89,6 +105,7 @@ function applyAppearance(settings: AppSettings) {
   );
 
   setVibrancy(settings.vibrancy).catch(() => undefined);
+  invoke("set_accessory_mode", { enabled: settings.accessoryMode }).catch(() => undefined);
 }
 
 export function useSettings() {
@@ -100,8 +117,18 @@ export function useSettings() {
     invoke<string>("load_settings")
       .then((json) => {
         try {
-          const saved = JSON.parse(json) as Partial<AppSettings>;
-          setSettings({ ...DEFAULT_SETTINGS, ...saved });
+          const raw = JSON.parse(json) as Record<string, unknown>;
+          if ("windowWidth" in raw && !("viewWidths" in raw)) {
+            const w = raw.windowWidth as number;
+            raw.viewWidths = { ...DEFAULT_VIEW_WIDTHS, bar: w, house: w, chat: w };
+            delete raw.windowWidth;
+          }
+          const saved = raw as Partial<AppSettings>;
+          const merged = { ...DEFAULT_SETTINGS, ...saved };
+          if (saved.viewWidths) {
+            merged.viewWidths = { ...DEFAULT_VIEW_WIDTHS, ...saved.viewWidths };
+          }
+          setSettings(merged);
         } catch {
           setSettings(DEFAULT_SETTINGS);
         }

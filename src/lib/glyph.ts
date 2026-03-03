@@ -63,6 +63,7 @@ export const ui = {
   dark: "󰖔",
   light: "󰖙",
   box: "󱓻",
+  minimize: "󰖰",
 };
 
 export const extensions = {

@@ -19,26 +19,47 @@ pub struct SessionState {
     pub last_activity: u64,
 }
 
+const NUM_COLORS: usize = 20;
+
 pub struct SessionManager {
     sessions: HashMap<String, SessionState>,
-    next_color_index: usize,
 }
 
 impl SessionManager {
     pub fn new() -> Self {
         Self {
             sessions: HashMap::new(),
-            next_color_index: 0,
         }
+    }
+
+    fn pick_color(&self) -> usize {
+        let used: std::collections::HashSet<usize> = self
+            .sessions
+            .values()
+            .map(|s| s.color_index)
+            .collect();
+        (0..NUM_COLORS)
+            .find(|i| !used.contains(i))
+            .unwrap_or_else(|| {
+                let mut counts = [0usize; NUM_COLORS];
+                for s in self.sessions.values() {
+                    counts[s.color_index % NUM_COLORS] += 1;
+                }
+                counts
+                    .iter()
+                    .enumerate()
+                    .min_by_key(|(_, c)| *c)
+                    .map(|(i, _)| i)
+                    .unwrap_or(0)
+            })
     }
 
     pub fn process_event(&mut self, event: &HookEvent, tool_use_id_override: Option<String>) {
         let now = now_timestamp();
         let session_id = &event.session_id;
 
+        let color = self.pick_color();
         let session = self.sessions.entry(session_id.clone()).or_insert_with(|| {
-            let color = self.next_color_index % 8;
-            self.next_color_index += 1;
             SessionState {
                 session_id: session_id.clone(),
                 cwd: event.cwd.clone().unwrap_or_default(),

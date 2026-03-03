@@ -86,7 +86,7 @@ const BASE_BAR_HEIGHT = 48;
 const BASE_MASCOT_SIZE = 22;
 
 export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
-  const { positions, runningId, fadingIds, spawningIds, containerRef } =
+  const { positions, runningId, fadingIds, spawningIds, overflowIds, containerRef } =
     useCrabBar(sessions, barHeight);
   const hasSessions = sessions.length > 0;
   const unitScale = barHeight / BASE_BAR_HEIGHT;
@@ -112,6 +112,7 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
             if (!pos) return null;
             const isRunning = s.session_id === runningId;
             const isFading = fadingIds.has(s.session_id);
+            const isOverflow = overflowIds.has(s.session_id);
             const isSpawning = spawningIds.has(s.session_id);
 
             return (
@@ -120,7 +121,8 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
                 className={crabItem}
                 style={{
                   left: pos.x,
-                  opacity: isFading ? 0 : 1,
+                  zIndex: isFading || isOverflow ? 0 : 1,
+                  opacity: isFading || isOverflow ? 0 : 1,
                   transform: `scale(${unitScale})`,
                   transition: isRunning
                     ? `left ${CRAB_BAR_RUN_MS}ms ease-in-out, opacity 1.4s ease-out`

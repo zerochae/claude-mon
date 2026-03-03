@@ -102,6 +102,25 @@ fn set_vibrancy(window: tauri::Window, effect: String) -> Result<(), String> {
         .map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn set_accessory_mode(enabled: bool) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    {
+        use objc2::MainThreadMarker;
+        use objc2_app_kit::NSApplication;
+        use objc2_app_kit::NSApplicationActivationPolicy;
+        let mtm = MainThreadMarker::new().ok_or("not on main thread")?;
+        let app_ns = NSApplication::sharedApplication(mtm);
+        let policy = if enabled {
+            NSApplicationActivationPolicy::Accessory
+        } else {
+            NSApplicationActivationPolicy::Regular
+        };
+        app_ns.setActivationPolicy(policy);
+    }
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let session_manager = Arc::new(Mutex::new(SessionManager::new()));
@@ -146,6 +165,7 @@ pub fn run() {
             settings::load_settings,
             settings::save_settings,
             set_vibrancy,
+            set_accessory_mode,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,11 +1,13 @@
-import { css, cx } from "@styled-system/css";
+import { css } from "@styled-system/css";
 import { SessionState } from "@/lib/tauri";
 import { BarView } from "@/components/BarView";
 import { Button } from "@/components/Button";
+import { ui } from "@/lib/glyph";
 
 interface WidgetHeaderProps {
   onGearClick: () => void;
   onToggle: () => void;
+  onCollapse: () => void;
   onBack?: () => void;
   expanded: boolean;
   settingsActive?: boolean;
@@ -38,6 +40,7 @@ const DEFAULT_BAR_HEIGHT = 48;
 export function WidgetHeader({
   onGearClick,
   onToggle,
+  onCollapse,
   onBack,
   expanded,
   settingsActive,
@@ -47,10 +50,9 @@ export function WidgetHeader({
 }: WidgetHeaderProps) {
   if (expanded) {
     return (
-      <div className={cx("drag-handle", handleBar)} onClick={onToggle}>
+      <div className={handleBar}>
         {showBack ? (
           <Button
-            className="no-drag"
             onClick={(e) => {
               e.stopPropagation();
               onBack?.();
@@ -67,25 +69,31 @@ export function WidgetHeader({
             </svg>
           </Button>
         ) : (
-          <div className={cx("no-drag", css({ w: "24px" }))} />
+          <div className={css({ w: "24px" })} />
         )}
         <div
-          className={cx(
-            "no-drag",
-            css({
-              cursor: "pointer",
-              flex: 1,
-              display: "flex",
-              justifyContent: "center",
-            }),
-          )}
+          className={css({
+            cursor: "pointer",
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+          })}
+          onClick={onCollapse}
         >
           <div className={handlePill} />
         </div>
         <Button
-          className="no-drag"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCollapse();
+          }}
+          style={{ fontSize: "14px",fontFamily:"SpaceMonoNerd" }}
+        >
+          {ui.minimize}
+        </Button>
+        <Button
           active={!!settingsActive}
-          style={{ fontSize: "16px" }}
+          style={{ fontSize: "14px",fontFamily:"SpaceMonoNerd" }}
           onClick={(e) => {
             e.stopPropagation();
             onGearClick();

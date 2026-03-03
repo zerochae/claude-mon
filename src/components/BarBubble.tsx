@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { css, cva } from "@styled-system/css";
 import { ProcessingSpinner } from "@/components/StatusBubble";
 
@@ -8,6 +8,9 @@ interface BarBubbleProps {
 }
 
 const ACTIVE_PHASES = new Set(["processing", "running_tool", "compacting"]);
+const DONE_PHASES = new Set(["waiting_for_input", "idle"]);
+const DONE_VISIBLE_SEC = 4;
+const FADE_OUT_MS = 300;
 
 const wrapper = css({
   pointerEvents: "none",
@@ -88,16 +91,45 @@ function CompactingDots() {
 
 export function BarBubble({ phase, lastActivity }: BarBubbleProps) {
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
+  const [doneAt, setDoneAt] = useState<number | null>(null);
+  const [hidden, setHidden] = useState(false);
+  const prevPhaseRef = useRef(phase);
 
   useEffect(() => {
     const timer = setInterval(
       () => setNow(Math.floor(Date.now() / 1000)),
-      5000,
+      1000,
     );
     return () => clearInterval(timer);
   }, []);
 
-  if (phase === "ended" || phase === "idle") return null;
+  useEffect(() => {
+    const wasActive = ACTIVE_PHASES.has(prevPhaseRef.current);
+    prevPhaseRef.current = phase;
+    if (DONE_PHASES.has(phase) && wasActive) {
+      const t = Math.floor(Date.now() / 1000);
+      queueMicrotask(() => {
+        setHidden(false);
+        setDoneAt((prev) => prev ?? t);
+      });
+    } else if (!DONE_PHASES.has(phase)) {
+      queueMicrotask(() => {
+        setHidden(false);
+        setDoneAt(null);
+      });
+    }
+  }, [phase]);
+
+  const isDoneExpired =
+    DONE_PHASES.has(phase) && doneAt !== null && now - doneAt > DONE_VISIBLE_SEC;
+
+  useEffect(() => {
+    if (!isDoneExpired || hidden) return;
+    const timer = setTimeout(() => setHidden(true), FADE_OUT_MS);
+    return () => clearTimeout(timer);
+  }, [isDoneExpired, hidden]);
+
+  if (phase === "ended" || hidden) return null;
 
   const isStale = ACTIVE_PHASES.has(phase) && now - lastActivity > 10;
   if (isStale) return null;
@@ -115,15 +147,27 @@ export function BarBubble({ phase, lastActivity }: BarBubbleProps) {
       content = <span className={phaseContent({ phase: "approval" })}></span>;
       break;
     case "waiting_for_input":
+    case "idle":
       content = <span className={phaseContent({ phase: "done" })}></span>;
       break;
     default:
       return null;
   }
 
+  const fading = isDoneExpired && !hidden;
+
   return (
     <div className={wrapper}>
-      <div className={bubble}>{content}</div>
+      <div
+        className={bubble}
+        style={
+          fading
+            ? { animation: `scale-out ${FADE_OUT_MS}ms ease forwards` }
+            : undefined
+        }
+      >
+        {content}
+      </div>
     </div>
   );
 }
