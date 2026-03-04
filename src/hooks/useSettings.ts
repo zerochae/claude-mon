@@ -105,7 +105,9 @@ function applyAppearance(settings: AppSettings) {
   );
 
   setVibrancy(settings.vibrancy).catch(() => undefined);
-  invoke("set_accessory_mode", { enabled: settings.accessoryMode }).catch(() => undefined);
+  invoke("set_accessory_mode", { enabled: settings.accessoryMode }).catch(
+    () => undefined,
+  );
 }
 
 export function useSettings() {
@@ -120,7 +122,12 @@ export function useSettings() {
           const raw = JSON.parse(json) as Record<string, unknown>;
           if ("windowWidth" in raw && !("viewWidths" in raw)) {
             const w = raw.windowWidth as number;
-            raw.viewWidths = { ...DEFAULT_VIEW_WIDTHS, bar: w, house: w, chat: w };
+            raw.viewWidths = {
+              ...DEFAULT_VIEW_WIDTHS,
+              bar: w,
+              house: w,
+              chat: w,
+            };
             delete raw.windowWidth;
           }
           const saved = raw as Partial<AppSettings>;

@@ -24,7 +24,10 @@ export function scaled(base: number, barHeight: number) {
   return Math.round(base * (barHeight / BASE_BAR_H));
 }
 
-export function getMoveParams(phase: string): { chance: number; range: number } {
+export function getMoveParams(phase: string): {
+  chance: number;
+  range: number;
+} {
   switch (phase) {
     case "processing":
     case "running_tool":

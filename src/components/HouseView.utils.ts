@@ -15,7 +15,10 @@ export interface ClawdPos2D {
   facingRight: boolean;
 }
 
-export function getMoveParams(phase: string): { chance: number; range: number } {
+export function getMoveParams(phase: string): {
+  chance: number;
+  range: number;
+} {
   switch (phase) {
     case "processing":
       return { chance: 0.75, range: 55 };
@@ -75,10 +78,7 @@ export function resolveOverlaps2D(
           x: Math.max(PAD_X, Math.min(w - SLOT_W - PAD_X, a.x - pushX)),
           y: Math.max(
             PAD_Y_TOP,
-            Math.min(
-              h - CLAWD_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM,
-              a.y - pushY,
-            ),
+            Math.min(h - CLAWD_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM, a.y - pushY),
           ),
         };
         next[ids[j]] = {
@@ -86,10 +86,7 @@ export function resolveOverlaps2D(
           x: Math.max(PAD_X, Math.min(w - SLOT_W - PAD_X, b.x + pushX)),
           y: Math.max(
             PAD_Y_TOP,
-            Math.min(
-              h - CLAWD_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM,
-              b.y + pushY,
-            ),
+            Math.min(h - CLAWD_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM, b.y + pushY),
           ),
         };
       }

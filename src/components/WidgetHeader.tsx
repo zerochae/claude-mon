@@ -71,13 +71,13 @@ export function WidgetHeader({
             e.stopPropagation();
             onCollapse();
           }}
-          style={{ fontSize: "14px",fontFamily:"SpaceMonoNerd" }}
+          style={{ fontSize: "14px", fontFamily: "SpaceMonoNerd" }}
         >
           {ui.minimize}
         </Button>
         <Button
           active={!!settingsActive}
-          style={{ fontSize: "14px",fontFamily:"SpaceMonoNerd" }}
+          style={{ fontSize: "14px", fontFamily: "SpaceMonoNerd" }}
           onClick={(e) => {
             e.stopPropagation();
             onGearClick();

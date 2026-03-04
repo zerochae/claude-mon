@@ -13,10 +13,7 @@ import {
 import type { SessionState } from "@/lib/tauri";
 import type { SessionPhase } from "@/lib/phases";
 
-function makeSession(
-  id: string,
-  phase: SessionPhase = "idle",
-): SessionState {
+function makeSession(id: string, phase: SessionPhase = "idle"): SessionState {
   return {
     session_id: id,
     cwd: "/tmp",

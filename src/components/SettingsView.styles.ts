@@ -20,7 +20,10 @@ import {
   githubdarkColors,
 } from "@/theme/colorscheme";
 
-export const VIEW_WIDTH_ITEMS: { key: keyof AppSettings["viewWidths"]; label: string }[] = [
+export const VIEW_WIDTH_ITEMS: {
+  key: keyof AppSettings["viewWidths"];
+  label: string;
+}[] = [
   { key: "bar", label: "Bar Width" },
   { key: "house", label: "House Width" },
   { key: "chat", label: "Chat Width" },
@@ -45,7 +48,14 @@ export const THEMES: {
   { name: "githublight", label: "GitHub Light", colors: githublightColors },
 ];
 
-export const PREVIEW_KEYS = ["blue", "green", "red", "orange", "magenta", "cyan"];
+export const PREVIEW_KEYS = [
+  "blue",
+  "green",
+  "red",
+  "orange",
+  "magenta",
+  "cyan",
+];
 
 export const COLOR_OVERRIDE_KEYS = [
   { key: "bg", label: "BG" },

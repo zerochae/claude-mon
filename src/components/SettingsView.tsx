@@ -1,8 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-import type {
-  AppSettings,
-  ThemeName,
-} from "@/hooks/useSettings";
+import type { AppSettings, ThemeName } from "@/hooks/useSettings";
 import {
   VIEW_WIDTH_ITEMS,
   THEMES,
@@ -424,7 +421,9 @@ export function SettingsView({
             <span className={rowLabel}>Hide from Dock</span>
             <button
               className={anchorBtn({ active: settings.accessoryMode })}
-              onClick={() => onUpdate({ accessoryMode: !settings.accessoryMode })}
+              onClick={() =>
+                onUpdate({ accessoryMode: !settings.accessoryMode })
+              }
             >
               {settings.accessoryMode ? "On" : "Off"}
             </button>

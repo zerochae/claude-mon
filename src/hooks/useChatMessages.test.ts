@@ -3,9 +3,8 @@ import { renderHook, act } from "@testing-library/react";
 import { useChatMessages } from "./useChatMessages";
 import type { ChatMessage } from "@/lib/tauri";
 
-const mockGetChatMessages = vi.fn<
-  (sessionId: string, cwd: string) => Promise<ChatMessage[]>
->();
+const mockGetChatMessages =
+  vi.fn<(sessionId: string, cwd: string) => Promise<ChatMessage[]>>();
 
 vi.mock("@/lib/tauri", () => ({
   getChatMessages: (sessionId: string, cwd: string) =>
@@ -84,9 +83,7 @@ describe("useChatMessages", () => {
   it("isActive is false for non-active phase", async () => {
     mockGetChatMessages.mockResolvedValue([makeMsg("1")]);
 
-    const { result } = renderHook(() =>
-      useChatMessages("s1", "/tmp", "idle"),
-    );
+    const { result } = renderHook(() => useChatMessages("s1", "/tmp", "idle"));
 
     await flushPromises();
 

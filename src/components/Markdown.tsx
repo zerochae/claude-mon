@@ -174,7 +174,9 @@ const components: Components = {
   h5: ({ node: _, ...rest }) => <h5 className={h5Style} {...rest} />,
   h6: ({ node: _, ...rest }) => <h6 className={h6Style} {...rest} />,
   p: ({ node: _, ...rest }) => <p className={pStyle} {...rest} />,
-  strong: ({ node: _, ...rest }) => <strong className={strongStyle} {...rest} />,
+  strong: ({ node: _, ...rest }) => (
+    <strong className={strongStyle} {...rest} />
+  ),
   em: ({ node: _, ...rest }) => <em className={emStyle} {...rest} />,
   del: ({ node: _, ...rest }) => <del className={delStyle} {...rest} />,
   a: ({ node: _, children, ...rest }) => (

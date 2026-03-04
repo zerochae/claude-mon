@@ -1,11 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { type ChatMessage, getChatMessages } from "@/lib/tauri";
 
-export function useChatMessages(
-  sessionId: string,
-  cwd: string,
-  phase: string,
-) {
+export function useChatMessages(sessionId: string, cwd: string, phase: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [staleCount, setStaleCount] = useState(0);
   const prevCountRef = useRef(0);

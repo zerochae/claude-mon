@@ -235,7 +235,11 @@ export const olStyle = css({
   mt: "0.15rem",
 });
 
-export const liStyle = css({ my: "0.1rem", lineHeight: 1.6, fontSize: "0.85rem" });
+export const liStyle = css({
+  my: "0.1rem",
+  lineHeight: 1.6,
+  fontSize: "0.85rem",
+});
 
 export const hrStyle = css({ my: "0.5rem", h: "1.5px", opacity: 0.3 });
 

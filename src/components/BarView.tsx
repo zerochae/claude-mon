@@ -35,7 +35,8 @@ function filterActive(sessions: SessionState[]) {
   return sessions.filter(
     (s) =>
       s.phase !== "ended" &&
-      (BAR_VISIBLE_PHASES.has(s.phase) || now - s.last_activity < STALE_THRESHOLD_SEC),
+      (BAR_VISIBLE_PHASES.has(s.phase) ||
+        now - s.last_activity < STALE_THRESHOLD_SEC),
   );
 }
 
@@ -44,7 +45,9 @@ function activeKey(sessions: SessionState[]) {
 }
 
 export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
-  const [activeSessions, setActiveSessions] = useState(() => filterActive(sessions));
+  const [activeSessions, setActiveSessions] = useState(() =>
+    filterActive(sessions),
+  );
 
   useEffect(() => {
     const sync = () => {
@@ -58,8 +61,14 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
     return () => clearInterval(timer);
   }, [sessions]);
 
-  const { positions, runningId, fadingIds, spawningIds, overflowIds, containerRef } =
-    useClawdBar(activeSessions, barHeight);
+  const {
+    positions,
+    runningId,
+    fadingIds,
+    spawningIds,
+    overflowIds,
+    containerRef,
+  } = useClawdBar(activeSessions, barHeight);
   const hasSessions = activeSessions.length > 0;
   const unitScale = barHeight / BASE_BAR_HEIGHT;
 

@@ -20,10 +20,7 @@ import {
   resolveOverlaps,
 } from "./useClawdBar.utils";
 
-export {
-  CLAWD_BAR_WANDER_MS,
-  CLAWD_BAR_RUN_MS,
-} from "./useClawdBar.utils";
+export { CLAWD_BAR_WANDER_MS, CLAWD_BAR_RUN_MS } from "./useClawdBar.utils";
 
 let positionCache: Record<string, ClawdPos1D> = {};
 let homeIdsCache: string[] = [];
@@ -406,5 +403,12 @@ export function useClawdBar(sessions: SessionState[], barHeight: number) {
     return () => clearTimeout(timer);
   }, [overflowIds]);
 
-  return { positions, runningId, fadingIds, spawningIds, overflowIds, containerRef };
+  return {
+    positions,
+    runningId,
+    fadingIds,
+    spawningIds,
+    overflowIds,
+    containerRef,
+  };
 }

@@ -5,7 +5,10 @@ export const STALE_THRESHOLD_SEC = 10;
 export const DONE_VISIBLE_SEC = 4;
 export const FADE_OUT_MS = 300;
 
-export const SB_DONE_PHASES = new Set([...DONE_PHASES, "waiting_for_input" as const]);
+export const SB_DONE_PHASES = new Set([
+  ...DONE_PHASES,
+  "waiting_for_input" as const,
+]);
 
 export const phaseContent = cva({
   base: {

@@ -23,7 +23,10 @@ export default function App() {
     null,
   );
 
-  const viewWidth = useCallback((v: View) => vw[v === "detail" ? "house" : v], [vw]);
+  const viewWidth = useCallback(
+    (v: View) => vw[v === "detail" ? "house" : v],
+    [vw],
+  );
 
   const {
     expanded,
