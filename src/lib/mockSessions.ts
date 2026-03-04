@@ -1,8 +1,11 @@
+import type { SessionPhase } from "@/lib/phases";
 import { SessionState } from "@/lib/tauri";
 
 const now = Date.now();
 
-export const MOCK_SESSIONS: SessionState[] = [
+type MockSession = Omit<SessionState, "phase"> & { phase: SessionPhase };
+
+export const MOCK_SESSIONS: MockSession[] = [
   {
     session_id: "mock-idle-1",
     cwd: "/Users/dev/projects/api-server",
@@ -31,7 +34,7 @@ export const MOCK_SESSIONS: SessionState[] = [
     session_id: "mock-approval-1",
     cwd: "/Users/dev/projects/claude-house",
     project_name: "claude-house",
-    phase: "waitingForApproval",
+    phase: "waiting_for_approval",
     tool_name: "Bash",
     tool_input: '{"command": "npm run build"}',
     tool_use_id: "tool-approval-001",
@@ -43,7 +46,7 @@ export const MOCK_SESSIONS: SessionState[] = [
     session_id: "mock-input-1",
     cwd: "/Users/dev/projects/ml-pipeline",
     project_name: "ml-pipeline",
-    phase: "waitingForInput",
+    phase: "waiting_for_input",
     tool_name: null,
     tool_input: null,
     tool_use_id: null,
@@ -79,7 +82,7 @@ export const MOCK_SESSIONS: SessionState[] = [
     session_id: "mock-approval-2",
     cwd: "/Users/dev/projects/infra",
     project_name: "infra",
-    phase: "waitingForApproval",
+    phase: "waiting_for_approval",
     tool_name: "Write",
     tool_input: '{"file_path": "/tmp/config.yaml", "content": "key: value"}',
     tool_use_id: "tool-approval-002",

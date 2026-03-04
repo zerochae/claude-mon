@@ -1,0 +1,122 @@
+import { css, cva } from "@styled-system/css";
+import { MOTION } from "@/lib/motion";
+
+export const userBubbleWrap = css({
+  display: "flex",
+  justifyContent: "flex-end",
+  px: "16px",
+});
+
+export const userBubble = css({
+  bg: "bg4",
+  borderRadius: "12px 12px 4px 12px",
+  padding: "0.4rem 0.65rem",
+  maxW: "80%",
+});
+
+export const assistantWrap = css({ px: "16px" });
+
+export const toolWrap = css({ px: "16px" });
+
+export const toolButton = css({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "5px",
+  bg: "transparent",
+  border: "none",
+  cursor: "pointer",
+  padding: "2px 4px",
+  borderRadius: "4px",
+  fontSize: "0.78rem",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  color: "comment",
+  transition: MOTION.transition.color,
+  _hover: { color: "text", bg: "surfaceHover" },
+  _active: { transform: "scale(0.97)" },
+});
+
+export const svgFlexShrink = css({ flexShrink: 0 });
+
+export const chevron = cva({
+  base: {
+    transition: "transform 0.15s ease",
+    opacity: 0.5,
+  },
+  variants: {
+    expanded: {
+      true: { transform: "rotate(90deg)" },
+      false: { transform: "rotate(0deg)" },
+    },
+  },
+  defaultVariants: { expanded: false },
+});
+
+export const toolExpanded = css({
+  mt: "3px",
+  pl: "0.5rem",
+  borderLeft: "1px solid token(colors.hairline)",
+});
+
+export const messageGroup = cva({
+  base: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  variants: {
+    role: {
+      tool: { gap: "2px", pt: "4px", pb: "2px" },
+      user: { gap: "6px", pt: "8px", pb: "4px" },
+      assistant: { gap: "6px", pt: "4px", pb: "2px" },
+    },
+  },
+});
+
+export const thinkingWrap = css({
+  px: "16px",
+  pt: "6px",
+  pb: "4px",
+});
+
+export const outerContainer = css({
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  overflow: "hidden",
+});
+
+export const scrollArea = css({
+  flex: 1,
+  overflowY: "auto",
+  overflowX: "hidden",
+  pt: "4px",
+  pb: "4px",
+  animation: "fade-in 150ms cubic-bezier(0.2, 0, 0, 1)",
+});
+
+export const inputBar = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+  padding: "6px 8px",
+  borderTop: "0.5px solid token(colors.hairline)",
+  bg: "transparent",
+  flexShrink: 0,
+});
+
+export const chatInput = css({
+  flex: 1,
+  bg: "surfaceOverlay",
+  border: "0.5px solid token(colors.hairline)",
+  borderRadius: "6px",
+  padding: "6px 10px",
+  color: "text",
+  fontSize: "12px",
+  outline: "none",
+  fontFamily: "inherit",
+  transition:
+    "border-color 120ms cubic-bezier(0.2, 0, 0, 1), box-shadow 120ms cubic-bezier(0.2, 0, 0, 1)",
+  _focus: {
+    borderColor: "rgba(97, 175, 239, 0.5)",
+    shadow: "0 0 0 2px rgba(97, 175, 239, 0.15)",
+  },
+});

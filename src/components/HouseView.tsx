@@ -1,275 +1,45 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { css, cva } from "@styled-system/css";
 import { SessionState } from "@/lib/tauri";
 import { getMascotColor } from "@/lib/colors";
 import { MascotCanvas } from "@/components/MascotCanvas";
 import { StatusBubble } from "@/components/StatusBubble";
-import { MOTION } from "@/lib/motion";
 import { Button } from "@/components/Button";
+import { PHASE_LABELS } from "@/lib/phases";
+import {
+  MASCOT_SIZE,
+  LABEL_HEIGHT,
+  SLOT_W,
+  PAD_X,
+  PAD_Y_TOP,
+  PAD_Y_BOTTOM,
+  WANDER_INTERVAL,
+  emptyState,
+  outerContainer,
+  canvas,
+  mascotSlot,
+  spriteWrapper,
+  mascotLabel,
+  bottomPanel,
+  statusBar,
+  sessionListScroll,
+  sessionItem,
+  priorityDot,
+  sessionContent,
+  sessionName,
+  sessionPhase,
+  actionButtons,
+} from "./HouseView.styles";
+import {
+  type MascotPos,
+  getMoveParams,
+  hasCollision,
+  resolveOverlaps2D,
+} from "./HouseView.utils";
 
 interface HouseViewProps {
   sessions: SessionState[];
   onSelectSession: (session: SessionState) => void;
 }
-
-const MASCOT_SIZE = 20;
-const LABEL_HEIGHT = 16;
-const BUBBLE_HEIGHT = 30;
-const SLOT_W = 70;
-const PAD_X = 10;
-const PAD_Y_TOP = BUBBLE_HEIGHT + 6;
-const PAD_Y_BOTTOM = LABEL_HEIGHT + 4;
-const HITBOX_X = MASCOT_SIZE + 20;
-const HITBOX_Y = MASCOT_SIZE + BUBBLE_HEIGHT + LABEL_HEIGHT + 8;
-const WANDER_INTERVAL = 2200;
-
-const PHASE_SHORT: Record<string, string> = {
-  idle: "Idle",
-  processing: "Processing",
-  waiting_for_input: "Waiting input",
-  waiting_for_approval: "Needs approval",
-  compacting: "Compacting",
-  ended: "Ended",
-};
-
-interface MascotPos {
-  x: number;
-  y: number;
-  facingRight: boolean;
-}
-
-function getMoveParams(phase: string): { chance: number; range: number } {
-  switch (phase) {
-    case "processing":
-      return { chance: 0.75, range: 55 };
-    case "compacting":
-      return { chance: 0.3, range: 25 };
-    case "idle":
-      return { chance: 0.08, range: 15 };
-    default:
-      return { chance: 0, range: 0 };
-  }
-}
-
-function overlaps(a: MascotPos, b: MascotPos): boolean {
-  return Math.abs(a.x - b.x) < HITBOX_X && Math.abs(a.y - b.y) < HITBOX_Y;
-}
-
-function hasCollision(
-  id: string,
-  pos: MascotPos,
-  all: Record<string, MascotPos>,
-): boolean {
-  for (const [otherId, otherPos] of Object.entries(all)) {
-    if (otherId === id) continue;
-    if (overlaps(pos, otherPos)) return true;
-  }
-  return false;
-}
-
-function resolveOverlaps2D(
-  positions: Record<string, MascotPos>,
-  w: number,
-  h: number,
-): Record<string, MascotPos> | null {
-  const ids = Object.keys(positions);
-  if (ids.length < 2) return null;
-
-  const next = { ...positions };
-  let changed = false;
-  let iterations = 0;
-
-  while (iterations < 5) {
-    let anyOverlap = false;
-    for (let i = 0; i < ids.length; i++) {
-      for (let j = i + 1; j < ids.length; j++) {
-        const a = next[ids[i]];
-        const b = next[ids[j]];
-        if (!overlaps(a, b)) continue;
-        anyOverlap = true;
-        changed = true;
-        const dx = b.x - a.x || (Math.random() - 0.5) * 2;
-        const dy = b.y - a.y || (Math.random() - 0.5) * 2;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const pushX = (dx / dist) * HITBOX_X * 0.6;
-        const pushY = (dy / dist) * HITBOX_Y * 0.6;
-        next[ids[i]] = {
-          ...a,
-          x: Math.max(PAD_X, Math.min(w - SLOT_W - PAD_X, a.x - pushX)),
-          y: Math.max(
-            PAD_Y_TOP,
-            Math.min(
-              h - MASCOT_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM,
-              a.y - pushY,
-            ),
-          ),
-        };
-        next[ids[j]] = {
-          ...b,
-          x: Math.max(PAD_X, Math.min(w - SLOT_W - PAD_X, b.x + pushX)),
-          y: Math.max(
-            PAD_Y_TOP,
-            Math.min(
-              h - MASCOT_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM,
-              b.y + pushY,
-            ),
-          ),
-        };
-      }
-    }
-    if (!anyOverlap) break;
-    iterations++;
-  }
-
-  return changed ? next : null;
-}
-
-const emptyState = css({
-  flex: 1,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "comment",
-  fontSize: "13px",
-});
-
-const outerContainer = css({
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
-  overflow: "hidden",
-});
-
-const canvas = css({
-  flex: 1,
-  pos: "relative",
-  overflow: "hidden",
-  backgroundImage:
-    "radial-gradient(circle, token(colors.bg3) 0.6px, transparent 0.6px)",
-  backgroundSize: "14px 14px",
-});
-
-const mascotSlot = css({
-  pos: "absolute",
-  cursor: "pointer",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "2px",
-});
-
-const spriteWrapper = cva({
-  base: {},
-  variants: {
-    facing: {
-      right: { transform: "scaleX(1)" },
-      left: { transform: "scaleX(-1)" },
-    },
-    animation: {
-      approval: { animation: "mascot-bounce 0.6s ease-in-out infinite" },
-      input: { animation: "mascot-bounce 1.2s ease-in-out infinite" },
-      none: {},
-    },
-  },
-  defaultVariants: { facing: "right", animation: "none" },
-});
-
-const mascotLabel = cva({
-  base: {
-    fontSize: "9px",
-    textAlign: "center",
-    whiteSpace: "nowrap",
-    maxW: "70px",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-  variants: {
-    urgent: {
-      true: { color: "red", fontWeight: 600 },
-      false: { color: "comment", fontWeight: 400 },
-    },
-  },
-  defaultVariants: { urgent: false },
-});
-
-const bottomPanel = css({
-  flexShrink: 0,
-  borderTop: "0.5px solid token(colors.hairline)",
-  maxH: "45%",
-  display: "flex",
-  flexDirection: "column",
-});
-
-const statusBar = css({
-  padding: "5px 12px",
-  color: "comment",
-  fontSize: "10px",
-  display: "flex",
-  gap: "6px",
-  borderBottom: "0.5px solid token(colors.hairlineFaint)",
-  bg: "transparent",
-});
-
-const sessionListScroll = css({
-  overflowY: "auto",
-  flex: 1,
-});
-
-const sessionItem = css({
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  padding: "6px 12px",
-  cursor: "pointer",
-  borderBottom: "0.5px solid token(colors.hairlineFaint)",
-  transition: MOTION.transition.color,
-  _hover: { bg: "surfaceHover" },
-  _active: { bg: "surfaceActive" },
-});
-
-const priorityDot = cva({
-  base: {
-    w: "6px",
-    h: "6px",
-    borderRadius: "50%",
-    flexShrink: 0,
-  },
-  variants: {
-    urgent: {
-      true: {
-        bg: "red",
-        shadow: "0 0 3px token(colors.red), 0 0 8px rgba(224, 108, 117, 0.3)",
-      },
-      false: {},
-    },
-  },
-  defaultVariants: { urgent: false },
-});
-
-const sessionContent = css({ flex: 1, minW: 0 });
-
-const sessionName = css({
-  color: "text",
-  fontSize: "11px",
-  fontWeight: 500,
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-});
-
-const sessionPhase = css({
-  color: "comment",
-  fontSize: "9px",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-});
-
-const actionButtons = css({
-  display: "flex",
-  gap: "4px",
-  flexShrink: 0,
-});
 
 export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -591,7 +361,7 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
             .map((session) => {
               const color = getMascotColor(session.color_index);
               const isUrgent = session.phase === "waiting_for_approval";
-              const phaseLabel = PHASE_SHORT[session.phase] ?? session.phase;
+              const phaseLabel = PHASE_LABELS[session.phase];
 
               return (
                 <div

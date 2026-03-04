@@ -3,6 +3,11 @@ import { SessionState } from "@/lib/tauri";
 import { BarView } from "@/components/BarView";
 import { Button } from "@/components/Button";
 import { ui } from "@/lib/glyph";
+import {
+  DEFAULT_BAR_HEIGHT,
+  handleBar,
+  handlePill,
+} from "./WidgetHeader.styles";
 
 interface WidgetHeaderProps {
   onGearClick: () => void;
@@ -15,27 +20,6 @@ interface WidgetHeaderProps {
   sessions?: SessionState[];
   barHeight?: number;
 }
-
-const handleBar = css({
-  h: "36px",
-  display: "flex",
-  alignItems: "flex-start",
-  justifyContent: "center",
-  flexShrink: 0,
-  cursor: "pointer",
-  px: "6px",
-  pt: "6px",
-});
-
-const handlePill = css({
-  w: "40px",
-  h: "4px",
-  borderRadius: "2px",
-  bg: "comment",
-  opacity: 0.5,
-});
-
-const DEFAULT_BAR_HEIGHT = 48;
 
 export function WidgetHeader({
   onGearClick,

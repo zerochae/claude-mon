@@ -1,4 +1,4 @@
-import { css } from "@styled-system/css";
+import { useState, useEffect, useMemo } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { MascotCanvas } from "@/components/MascotCanvas";
 import { SessionState } from "@/lib/tauri";
@@ -9,6 +9,20 @@ import {
   CRAB_BAR_RUN_MS,
 } from "@/hooks/useCrabBar";
 import { BarBubble } from "@/components/BarBubble";
+import { BAR_VISIBLE_PHASES, STALE_THRESHOLD_SEC } from "@/lib/phases";
+import {
+  BASE_BAR_HEIGHT,
+  BASE_MASCOT_SIZE,
+  collapsedBar,
+  crabList,
+  crabItem,
+  sleepingWrap,
+  zzzRow,
+  zzz,
+  zSmall,
+  zMedium,
+  zLarge,
+} from "./BarView.styles";
 
 interface BarViewProps {
   sessions: SessionState[];
@@ -16,79 +30,27 @@ interface BarViewProps {
   onToggle: () => void;
 }
 
-const collapsedBar = css({
-  display: "flex",
-  alignItems: "flex-end",
-  gap: "8px",
-  px: "12px",
-  pb: "4px",
-  bg: "transparent",
-  flexShrink: 0,
-  cursor: "pointer",
-});
-
-const crabList = css({
-  pos: "relative",
-  flex: 1,
-  alignSelf: "stretch",
-});
-
-const crabItem = css({
-  pos: "absolute",
-  bottom: 0,
-  transformOrigin: "center bottom",
-  display: "flex",
-  alignItems: "center",
-  gap: "4px",
-});
-
-const sleepingWrap = css({
-  display: "flex",
-  alignItems: "flex-end",
-  gap: "4px",
-  flex: 1,
-  justifyContent: "center",
-  pb: "2px",
-});
-
-const zzzRow = css({
-  display: "flex",
-  alignItems: "flex-end",
-  gap: "1px",
-  marginBottom: "8px",
-});
-
-const zzz = css({
-  color: "comment",
-  fontWeight: 700,
-  fontStyle: "italic",
-  opacity: 0.6,
-  animation: "zzz-float 2.5s ease-in-out infinite",
-  lineHeight: 1,
-});
-
-const zSmall = css({
-  fontSize: "7px",
-  animationDelay: "0s",
-});
-
-const zMedium = css({
-  fontSize: "9px",
-  animationDelay: "0.4s",
-});
-
-const zLarge = css({
-  fontSize: "11px",
-  animationDelay: "0.8s",
-});
-
-const BASE_BAR_HEIGHT = 48;
-const BASE_MASCOT_SIZE = 22;
-
 export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
+  const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Math.floor(Date.now() / 1000)), 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const activeSessions = useMemo(
+    () =>
+      sessions.filter(
+        (s) =>
+          s.phase !== "ended" &&
+          (BAR_VISIBLE_PHASES.has(s.phase) || now - s.last_activity < STALE_THRESHOLD_SEC),
+      ),
+    [sessions, now],
+  );
+
   const { positions, runningId, fadingIds, spawningIds, overflowIds, containerRef } =
-    useCrabBar(sessions, barHeight);
-  const hasSessions = sessions.length > 0;
+    useCrabBar(activeSessions, barHeight);
+  const hasSessions = activeSessions.length > 0;
   const unitScale = barHeight / BASE_BAR_HEIGHT;
 
   return (
@@ -105,7 +67,7 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
     >
       {hasSessions ? (
         <div ref={containerRef} className={crabList}>
-          {sessions.map((s) => {
+          {activeSessions.map((s) => {
             const pos = positions[s.session_id] as
               | (typeof positions)[string]
               | undefined;

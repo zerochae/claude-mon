@@ -1,38 +1,49 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { css, cva } from "@styled-system/css";
 import { ui, extensions } from "@/lib/glyph";
 import { highlight } from "@/lib/shiki-highlighter";
+import {
+  CALLOUT_COLORS,
+  MONO,
+  type ColorToken,
+  blockquoteRecipe,
+  calloutHeading,
+  calloutIcon,
+  calloutContent,
+  shikiWrapClass,
+  markdownWrap,
+  h1Style,
+  h2Style,
+  h3Style,
+  h4Style,
+  h5Style,
+  h6Style,
+  pStyle,
+  strongStyle,
+  emStyle,
+  delStyle,
+  aStyle,
+  inlineCode,
+  preOuter,
+  langBar,
+  langIcon,
+  ulStyle,
+  olStyle,
+  liStyle,
+  hrStyle,
+  tableWrap,
+  tableStyle,
+  trStyle,
+  thStyle,
+  tdStyle,
+} from "./Markdown.styles";
 
 interface MarkdownProps {
   content: string;
 }
 
-const CALLOUT_COLORS: Record<string, string> = {
-  note: "blue",
-  info: "blue",
-  tip: "green",
-  success: "green",
-  check: "green",
-  done: "green",
-  warning: "yellow",
-  caution: "yellow",
-  attention: "yellow",
-  danger: "red",
-  error: "red",
-  bug: "red",
-  failure: "red",
-  important: "magenta",
-  question: "cyan",
-  help: "cyan",
-  quote: "comment",
-  example: "orange",
-  abstract: "cyan",
-  todo: "yellow",
-};
-
-const CALLOUT_ICONS: Record<string, string> = {
+const CALLOUT_ICONS_MAP: Record<string, string> = {
   abstract: ui.abstract,
   summary: ui.summary,
   tldr: ui.tldr,
@@ -100,90 +111,6 @@ function parseCallout(children: React.ReactNode): {
   return { tag, content: [newFirst, ...rest] };
 }
 
-const NERD = "'SpaceMonoNerd'";
-const MONO = `${NERD}, ui-monospace, SFMono-Regular, Menlo, monospace`;
-
-type ColorToken =
-  | "blue"
-  | "green"
-  | "yellow"
-  | "red"
-  | "magenta"
-  | "cyan"
-  | "comment"
-  | "orange";
-
-const blockquoteRecipe = cva({
-  base: {
-    borderLeft: "3px solid",
-    pl: "0.6rem",
-    pr: "0.6rem",
-    ml: 0,
-    fontStyle: "italic",
-    fontSize: "0.85rem",
-    mt: "0.3rem",
-    mb: "0.3rem",
-  },
-  variants: {
-    colorToken: {
-      blue: { borderLeftColor: "blue" },
-      green: { borderLeftColor: "green" },
-      yellow: { borderLeftColor: "yellow" },
-      red: { borderLeftColor: "red" },
-      magenta: { borderLeftColor: "magenta" },
-      cyan: { borderLeftColor: "cyan" },
-      comment: { borderLeftColor: "comment" },
-      orange: { borderLeftColor: "orange" },
-    },
-  },
-  defaultVariants: { colorToken: "blue" },
-});
-
-const calloutHeading = cva({
-  base: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.3rem",
-    mb: "0.25rem",
-    fontStyle: "normal",
-    fontWeight: 600,
-    fontSize: "0.8rem",
-    textTransform: "capitalize",
-  },
-  variants: {
-    colorToken: {
-      blue: { color: "blue" },
-      green: { color: "green" },
-      yellow: { color: "yellow" },
-      red: { color: "red" },
-      magenta: { color: "magenta" },
-      cyan: { color: "cyan" },
-      comment: { color: "comment" },
-      orange: { color: "orange" },
-    },
-  },
-  defaultVariants: { colorToken: "blue" },
-});
-
-const calloutIcon = css({ fontSize: "0.8rem", fontFamily: NERD });
-const calloutContent = css({ color: "gray" });
-
-const shikiWrapClass = css({
-  fontSize: "0.8rem",
-  lineHeight: 1.5,
-  fontFamily: MONO,
-  "& pre": {
-    bg: "transparent !important",
-    m: 0,
-    p: 0,
-    overflow: "visible",
-  },
-  "& code": {
-    fontFamily: `${MONO} !important`,
-    bg: "transparent !important",
-  },
-});
-
 function ShikiBlock({ code, lang }: { code: string; lang: string }) {
   const [html, setHtml] = useState<string | null>(null);
   const codeRef = useRef(code);
@@ -229,119 +156,29 @@ function ShikiBlock({ code, lang }: { code: string; lang: string }) {
   );
 }
 
+const preInner = (lang: string) => ({
+  background: "transparent",
+  color: "var(--colors-preText, #abb2bf)",
+  padding: "0.5rem 0.6rem",
+  paddingTop: lang ? "0" : "0.5rem",
+  overflowX: "auto" as const,
+  maxWidth: "100%",
+  fontSize: "0.8rem",
+});
+
 const components: Components = {
-  h1: ({ node: _, ...rest }) => (
-    <h1
-      className={css({
-        color: "heading1",
-        fontSize: "1.1rem",
-        fontWeight: 700,
-        letterSpacing: "-0.01em",
-        mt: "0.6rem",
-        mb: "0.3rem",
-      })}
-      {...rest}
-    />
-  ),
-  h2: ({ node: _, ...rest }) => (
-    <h2
-      className={css({
-        color: "heading2",
-        fontSize: "1.0rem",
-        fontWeight: 700,
-        letterSpacing: "-0.01em",
-        mt: "0.6rem",
-        mb: "0.25rem",
-      })}
-      {...rest}
-    />
-  ),
-  h3: ({ node: _, ...rest }) => (
-    <h3
-      className={css({
-        color: "heading3",
-        fontSize: "0.95rem",
-        fontWeight: 600,
-        mt: "0.5rem",
-        mb: "0.2rem",
-      })}
-      {...rest}
-    />
-  ),
-  h4: ({ node: _, ...rest }) => (
-    <h4
-      className={css({
-        color: "heading4",
-        fontSize: "0.9rem",
-        fontWeight: 600,
-        mt: "0.4rem",
-        mb: "0.15rem",
-      })}
-      {...rest}
-    />
-  ),
-  h5: ({ node: _, ...rest }) => (
-    <h5
-      className={css({
-        color: "heading5",
-        fontSize: "0.85rem",
-        fontWeight: 600,
-        mt: "0.35rem",
-        mb: "0.1rem",
-      })}
-      {...rest}
-    />
-  ),
-  h6: ({ node: _, ...rest }) => (
-    <h6
-      className={css({
-        color: "heading6",
-        fontSize: "0.82rem",
-        fontWeight: 600,
-        mt: "0.3rem",
-        mb: "0.1rem",
-      })}
-      {...rest}
-    />
-  ),
-  p: ({ node: _, ...rest }) => (
-    <p
-      className={css({
-        color: "text",
-        fontSize: "0.85rem",
-        lineHeight: 1.6,
-        mt: "0.15rem",
-        mb: "0.5rem",
-        overflowWrap: "break-word",
-        wordBreak: "break-word",
-      })}
-      {...rest}
-    />
-  ),
-  strong: ({ node: _, ...rest }) => (
-    <strong className={css({ color: "strong", fontWeight: 800 })} {...rest} />
-  ),
-  em: ({ node: _, ...rest }) => (
-    <em className={css({ color: "em", fontStyle: "italic" })} {...rest} />
-  ),
-  del: ({ node: _, ...rest }) => (
-    <del
-      className={css({ color: "del", textDecoration: "line-through" })}
-      {...rest}
-    />
-  ),
+  h1: ({ node: _, ...rest }) => <h1 className={h1Style} {...rest} />,
+  h2: ({ node: _, ...rest }) => <h2 className={h2Style} {...rest} />,
+  h3: ({ node: _, ...rest }) => <h3 className={h3Style} {...rest} />,
+  h4: ({ node: _, ...rest }) => <h4 className={h4Style} {...rest} />,
+  h5: ({ node: _, ...rest }) => <h5 className={h5Style} {...rest} />,
+  h6: ({ node: _, ...rest }) => <h6 className={h6Style} {...rest} />,
+  p: ({ node: _, ...rest }) => <p className={pStyle} {...rest} />,
+  strong: ({ node: _, ...rest }) => <strong className={strongStyle} {...rest} />,
+  em: ({ node: _, ...rest }) => <em className={emStyle} {...rest} />,
+  del: ({ node: _, ...rest }) => <del className={delStyle} {...rest} />,
   a: ({ node: _, children, ...rest }) => (
-    <a
-      className={css({
-        color: "link",
-        textDecoration: "none",
-        display: "inline-flex",
-        alignItems: "baseline",
-        gap: "0.15rem",
-        _hover: { textDecoration: "underline" },
-      })}
-      {...rest}
-    >
+    <a className={aStyle} {...rest}>
       {children}
     </a>
   ),
@@ -359,18 +196,7 @@ const components: Components = {
       );
     }
     return (
-      <code
-        className={css({
-          color: "code",
-          bg: "surfaceOverlay",
-          px: "0.3rem",
-          py: "0.05rem",
-          borderRadius: "3px",
-          fontSize: "0.8rem",
-          fontFamily: MONO,
-        })}
-        {...rest}
-      >
+      <code className={inlineCode} {...rest}>
         {children}
       </code>
     );
@@ -385,17 +211,7 @@ const components: Components = {
     }
 
     return (
-      <div
-        className={css({
-          pos: "relative",
-          mt: "0.25rem",
-          mb: "0.25rem",
-          bg: "surfaceOverlay",
-          borderRadius: "6px",
-          border: "0.5px solid token(colors.hairline)",
-          overflow: "hidden",
-        })}
-      >
+      <div className={preOuter}>
         {lang &&
           (() => {
             const ext = (
@@ -405,23 +221,9 @@ const components: Components = {
               >
             )[lang];
             return (
-              <div
-                className={css({
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.3rem",
-                  px: "0.6rem",
-                  py: "0.3rem",
-                  fontSize: "0.65rem",
-                  color: "comment",
-                  fontFamily: MONO,
-                })}
-              >
+              <div className={langBar}>
                 {ext && (
-                  <span
-                    style={{ color: ext.color }}
-                    className={css({ fontSize: "0.85rem", fontFamily: NERD })}
-                  >
+                  <span style={{ color: ext.color }} className={langIcon}>
                     {ext.icon}
                   </span>
                 )}
@@ -429,63 +231,23 @@ const components: Components = {
               </div>
             );
           })()}
-        <pre
-          className={css({
-            bg: "transparent",
-            color: "preText",
-            p: "0.5rem 0.6rem",
-            pt: lang ? "0" : "0.5rem",
-            overflowX: "auto",
-            maxW: "100%",
-            fontSize: "0.8rem",
-          })}
-          {...rest}
-        >
+        <pre style={preInner(lang)} {...rest}>
           {children}
         </pre>
       </div>
     );
   },
-  ul: ({ node: _, ...rest }) => (
-    <ul
-      className={css({
-        pl: "0.4rem",
-        ml: "0.6rem",
-        fontSize: "0.85rem",
-        color: "text",
-        listStyleType: "disc",
-        mt: "0.15rem",
-      })}
-      {...rest}
-    />
-  ),
-  ol: ({ node: _, ...rest }) => (
-    <ol
-      className={css({
-        pl: "0.4rem",
-        ml: "0.6rem",
-        fontSize: "0.85rem",
-        color: "text",
-        listStyleType: "decimal",
-        mt: "0.15rem",
-      })}
-      {...rest}
-    />
-  ),
-  li: ({ node: _, ...rest }) => (
-    <li
-      className={css({ my: "0.1rem", lineHeight: 1.6, fontSize: "0.85rem" })}
-      {...rest}
-    />
-  ),
+  ul: ({ node: _, ...rest }) => <ul className={ulStyle} {...rest} />,
+  ol: ({ node: _, ...rest }) => <ol className={olStyle} {...rest} />,
+  li: ({ node: _, ...rest }) => <li className={liStyle} {...rest} />,
   blockquote: ({ node: _, children }) => {
     const { tag, content } = parseCallout(children);
     const colorToken = (
       tag ? (CALLOUT_COLORS[tag] ?? "blue") : "blue"
     ) as ColorToken;
     const icon = tag
-      ? (CALLOUT_ICONS[tag] ??
-        CALLOUT_ICONS[
+      ? (CALLOUT_ICONS_MAP[tag] ??
+        CALLOUT_ICONS_MAP[
           Object.keys(CALLOUT_COLORS).find(
             (k) => CALLOUT_COLORS[k] === colorToken,
           ) ?? "note"
@@ -506,7 +268,7 @@ const components: Components = {
   },
   hr: () => (
     <div
-      className={css({ my: "0.5rem", h: "1.5px", opacity: 0.3 })}
+      className={hrStyle}
       style={{
         background:
           "linear-gradient(to right, transparent, var(--colors-text, #abb2bf), transparent)",
@@ -514,49 +276,15 @@ const components: Components = {
     />
   ),
   table: ({ node: _, ...rest }) => (
-    <div className={css({ overflowX: "auto", my: "0.3rem" })}>
-      <table
-        className={css({
-          width: "100%",
-          fontSize: "0.8rem",
-          borderCollapse: "collapse",
-        })}
-        {...rest}
-      />
+    <div className={tableWrap}>
+      <table className={tableStyle} {...rest} />
     </div>
   ),
   thead: ({ node: _, ...rest }) => <thead {...rest} />,
-  tr: ({ node: _, ...rest }) => (
-    <tr
-      className={css({
-        borderBottom: "0.5px solid",
-        borderColor: "hairline",
-        transition: "background-color 120ms cubic-bezier(0.2, 0, 0, 1)",
-        _hover: { bg: "surfaceHover" },
-        _even: { bg: "surfaceHover" },
-      })}
-      {...rest}
-    />
-  ),
-  th: ({ node: _, ...rest }) => (
-    <th
-      className={css({
-        color: "text",
-        fontWeight: 700,
-        p: "0.25rem 0.4rem",
-        borderBottom: "1px solid",
-        borderColor: "hairline",
-        textAlign: "left",
-      })}
-      {...rest}
-    />
-  ),
-  td: ({ node: _, ...rest }) => (
-    <td className={css({ color: "text", p: "0.25rem 0.4rem" })} {...rest} />
-  ),
+  tr: ({ node: _, ...rest }) => <tr className={trStyle} {...rest} />,
+  th: ({ node: _, ...rest }) => <th className={thStyle} {...rest} />,
+  td: ({ node: _, ...rest }) => <td className={tdStyle} {...rest} />,
 };
-
-const markdownWrap = css({ userSelect: "text", cursor: "text" });
 
 export function Markdown({ content }: MarkdownProps) {
   return (

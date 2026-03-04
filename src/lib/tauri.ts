@@ -1,11 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import type { SessionPhase } from "@/lib/phases";
 
 export interface SessionState {
   session_id: string;
   cwd: string;
   project_name: string;
-  phase: string;
+  phase: SessionPhase;
   tool_name: string | null;
   tool_input: string | null;
   tool_use_id: string | null;
