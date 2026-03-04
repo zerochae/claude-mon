@@ -176,9 +176,18 @@ fn setup_tray(app: &AppHandle) -> tauri::Result<()> {
     let show = MenuItemBuilder::with_id("show", "Show / Hide").build(app)?;
     let menu = MenuBuilder::new(app).item(&show).item(&quit).build()?;
 
+    let tray_icon_bytes = include_bytes!("../icons/tray.png");
+    let decoder = png::Decoder::new(tray_icon_bytes.as_slice());
+    let mut reader = decoder.read_info().map_err(|e| tauri::Error::Anyhow(e.into()))?;
+    let mut buf = vec![0; reader.output_buffer_size()];
+    let info = reader.next_frame(&mut buf).map_err(|e| tauri::Error::Anyhow(e.into()))?;
+    buf.truncate(info.buffer_size());
+    let tray_img = tauri::image::Image::new_owned(buf, info.width, info.height);
+
     TrayIconBuilder::new()
         .menu(&menu)
-        .icon(app.default_window_icon().unwrap().clone())
+        .icon(tray_img)
+        .icon_as_template(true)
         .on_tray_icon_event(|tray, event| {
             if let TrayIconEvent::Click { .. } = event {
                 let app = tray.app_handle();

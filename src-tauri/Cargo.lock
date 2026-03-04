@@ -307,6 +307,7 @@ dependencies = [
  "dirs",
  "objc2",
  "objc2-app-kit",
+ "png",
  "serde",
  "serde_json",
  "tauri",
