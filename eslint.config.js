@@ -14,7 +14,9 @@ export default [
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["panda.config.ts"],
+        },
         tsconfigRootDir: import.meta.dirname,
       },
     },

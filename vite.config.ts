@@ -4,7 +4,7 @@ import path from "path";
 
 const host = process.env.TAURI_DEV_HOST;
 
-export default defineConfig(async () => ({
+export default defineConfig(() => ({
   plugins: [react()],
   resolve: {
     alias: {
@@ -12,11 +12,12 @@ export default defineConfig(async () => ({
       "@styled-system": path.resolve(__dirname, "styled-system"),
     },
   },
+  build: { chunkSizeWarningLimit: 1000 },
   clearScreen: false,
   server: {
     port: 1420,
     strictPort: true,
-    host: host || false,
+    host: host ?? false,
     hmr: host
       ? {
           protocol: "ws",

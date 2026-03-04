@@ -33,12 +33,12 @@ export const themeNames = [
 ] as const;
 
 function toTokens(colors: Record<string, string>) {
-  return Object.entries(colors).reduce(
+  return Object.entries(colors).reduce<Record<string, { value: string }>>(
     (acc, [key, value]) => {
       acc[key] = { value };
       return acc;
     },
-    {} as Record<string, { value: string }>,
+    {},
   );
 }
 
