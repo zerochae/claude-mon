@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { css } from "@styled-system/css";
 
-interface MascotCanvasProps {
+interface ClawdCanvasProps {
   color: string;
   phase: string;
   size?: number;
@@ -20,12 +20,12 @@ const LEG_OFFSETS = [
 
 const canvasStyle = css({ imageRendering: "pixelated" });
 
-export function MascotCanvas({
+export function ClawdCanvas({
   color,
   phase,
   size = 64,
   onClick,
-}: MascotCanvasProps) {
+}: ClawdCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef<number>(0);
   const legPhaseRef = useRef(0);

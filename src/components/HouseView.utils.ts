@@ -1,5 +1,5 @@
 import {
-  MASCOT_SIZE,
+  CLAWD_SIZE,
   LABEL_HEIGHT,
   SLOT_W,
   PAD_X,
@@ -9,7 +9,7 @@ import {
   HITBOX_Y,
 } from "./HouseView.styles";
 
-export interface MascotPos {
+export interface ClawdPos2D {
   x: number;
   y: number;
   facingRight: boolean;
@@ -28,14 +28,14 @@ export function getMoveParams(phase: string): { chance: number; range: number } 
   }
 }
 
-export function overlaps(a: MascotPos, b: MascotPos): boolean {
+export function overlaps(a: ClawdPos2D, b: ClawdPos2D): boolean {
   return Math.abs(a.x - b.x) < HITBOX_X && Math.abs(a.y - b.y) < HITBOX_Y;
 }
 
 export function hasCollision(
   id: string,
-  pos: MascotPos,
-  all: Record<string, MascotPos>,
+  pos: ClawdPos2D,
+  all: Record<string, ClawdPos2D>,
 ): boolean {
   for (const [otherId, otherPos] of Object.entries(all)) {
     if (otherId === id) continue;
@@ -45,10 +45,10 @@ export function hasCollision(
 }
 
 export function resolveOverlaps2D(
-  positions: Record<string, MascotPos>,
+  positions: Record<string, ClawdPos2D>,
   w: number,
   h: number,
-): Record<string, MascotPos> | null {
+): Record<string, ClawdPos2D> | null {
   const ids = Object.keys(positions);
   if (ids.length < 2) return null;
 
@@ -76,7 +76,7 @@ export function resolveOverlaps2D(
           y: Math.max(
             PAD_Y_TOP,
             Math.min(
-              h - MASCOT_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM,
+              h - CLAWD_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM,
               a.y - pushY,
             ),
           ),
@@ -87,7 +87,7 @@ export function resolveOverlaps2D(
           y: Math.max(
             PAD_Y_TOP,
             Math.min(
-              h - MASCOT_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM,
+              h - CLAWD_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM,
               b.y + pushY,
             ),
           ),

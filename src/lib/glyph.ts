@@ -64,6 +64,8 @@ export const ui = {
   light: "󰖙",
   box: "󱓻",
   minimize: "󰖰",
+  bubble_waiting_for_approval: "󱈸",
+  bubble_waiting_for_input: "",
 };
 
 export const extensions = {

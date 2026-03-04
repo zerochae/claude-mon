@@ -1,5 +1,8 @@
 import { useBubbleLifecycle } from "@/hooks/useBubbleLifecycle";
-import { ProcessingSpinner, CompactingDots } from "@/components/PhaseIndicators";
+import {
+  ProcessingSpinner,
+  CompactingDots,
+} from "@/components/PhaseIndicators";
 import { ACTIVE_PHASES } from "@/lib/phases";
 import {
   STALE_THRESHOLD_SEC,
@@ -11,6 +14,7 @@ import {
   bubbleStyle,
   tailStyle,
 } from "./StatusBubble.styles";
+import { ui } from "@/lib/glyph";
 
 export { ProcessingSpinner } from "@/components/PhaseIndicators";
 
@@ -38,8 +42,11 @@ export function StatusBubble({
     disableStale: (disableStale ?? false) || (dismissed ?? false),
   });
 
-  const isActivePhase = ACTIVE_PHASES.has(phase as "processing" | "running_tool" | "compacting");
-  const isStale = !disableStale && isActivePhase && now - lastActivity > STALE_THRESHOLD_SEC;
+  const isActivePhase = ACTIVE_PHASES.has(
+    phase as "processing" | "running_tool" | "compacting",
+  );
+  const isStale =
+    !disableStale && isActivePhase && now - lastActivity > STALE_THRESHOLD_SEC;
   const effectivePhase = dismissed && isStale ? "idle" : phase;
 
   if (phase === "ended" || !visible) return null;
@@ -59,11 +66,21 @@ export function StatusBubble({
       );
       break;
     case "waiting_for_approval":
-      content = <span className={phaseContent({ phase: "approval" })}></span>;
+      content = (
+        <span className={phaseContent({ phase: "approval" })}>
+          {ui.bubble_waiting_for_approval}
+        </span>
+      );
       break;
     case "waiting_for_input":
+      content = (
+        <span className={phaseContent({ phase: "done" })}>
+          {ui.bubble_waiting_for_input}
+        </span>
+      );
+      break;
     case "idle":
-      content = <span className={phaseContent({ phase: "done" })}></span>;
+      content = <span className={phaseContent({ phase: "idle" })}></span>;
       break;
     default:
       return null;

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type RefObject } from "react";
 import { type SessionState } from "@/lib/tauri";
 import {
-  MASCOT_SIZE,
+  CLAWD_SIZE,
   LABEL_HEIGHT,
   SLOT_W,
   PAD_X,
@@ -10,17 +10,17 @@ import {
   WANDER_INTERVAL,
 } from "@/components/HouseView.styles";
 import {
-  type MascotPos,
+  type ClawdPos2D,
   getMoveParams,
   hasCollision,
   resolveOverlaps2D,
 } from "@/components/HouseView.utils";
 
-export function useMascotPositions(
+export function useClawdPositions(
   sessions: SessionState[],
   containerRef: RefObject<HTMLDivElement | null>,
-): Record<string, MascotPos> {
-  const [positions, setPositions] = useState<Record<string, MascotPos>>({});
+): Record<string, ClawdPos2D> {
+  const [positions, setPositions] = useState<Record<string, ClawdPos2D>>({});
   const lastSizeRef = useRef({ w: 0, h: 0 });
 
   useEffect(() => {
@@ -31,9 +31,9 @@ export function useMascotPositions(
       const prev = lastSizeRef.current;
       if (prev.h > 0 && h > prev.h * 1.5) {
         setPositions((old) => {
-          const next: Record<string, MascotPos> = {};
+          const next: Record<string, ClawdPos2D> = {};
           for (const [id, pos] of Object.entries(old)) {
-            let candidate: MascotPos;
+            let candidate: ClawdPos2D;
             let attempts = 0;
             do {
               candidate = {
@@ -43,7 +43,7 @@ export function useMascotPositions(
                   Math.random() *
                     Math.max(
                       0,
-                      h - MASCOT_SIZE - LABEL_HEIGHT - PAD_Y_TOP - PAD_Y_BOTTOM,
+                      h - CLAWD_SIZE - LABEL_HEIGHT - PAD_Y_TOP - PAD_Y_BOTTOM,
                     ),
                 facingRight: pos.facingRight,
               };
@@ -79,23 +79,23 @@ export function useMascotPositions(
           let ex: number, ey: number, facing: boolean;
           switch (edge) {
             case 0:
-              ex = -MASCOT_SIZE;
+              ex = -CLAWD_SIZE;
               ey = midY;
               facing = true;
               break;
             case 1:
-              ex = w + MASCOT_SIZE;
+              ex = w + CLAWD_SIZE;
               ey = midY;
               facing = false;
               break;
             case 2:
               ex = midX;
-              ey = -MASCOT_SIZE;
+              ey = -CLAWD_SIZE;
               facing = Math.random() > 0.5;
               break;
             default:
               ex = midX;
-              ey = h + MASCOT_SIZE;
+              ey = h + CLAWD_SIZE;
               facing = Math.random() > 0.5;
               break;
           }
@@ -115,7 +115,7 @@ export function useMascotPositions(
             const updated = { ...prev };
             for (const id of newIds) {
               if (!(id in updated)) continue;
-              let candidate: MascotPos;
+              let candidate: ClawdPos2D;
               let attempts = 0;
               do {
                 candidate = {
@@ -128,7 +128,7 @@ export function useMascotPositions(
                       Math.max(
                         0,
                         fh -
-                          MASCOT_SIZE -
+                          CLAWD_SIZE -
                           LABEL_HEIGHT -
                           PAD_Y_TOP -
                           PAD_Y_BOTTOM,
@@ -180,7 +180,7 @@ export function useMascotPositions(
           const nx = Math.max(PAD_X, Math.min(w - SLOT_W - PAD_X, pos.x + dx));
           const ny = Math.max(
             PAD_Y_TOP,
-            Math.min(h - MASCOT_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM, pos.y + dy),
+            Math.min(h - CLAWD_SIZE - LABEL_HEIGHT - PAD_Y_BOTTOM, pos.y + dy),
           );
           const candidate = {
             x: nx,

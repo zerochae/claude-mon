@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { SessionState } from "@/lib/tauri";
 import { ACTIVE_PHASES, type SessionPhase } from "@/lib/phases";
 import {
-  BASE_CRAB_W,
+  BASE_CLAWD_W,
   BASE_HITBOX_W,
   BASE_HOME_SLOT_W,
   BASE_PAD_R,
@@ -11,32 +11,32 @@ import {
   HOME_RELEASE_MS,
   OVERFLOW_FADE_MS,
   RESOLVE_MS,
-  type CrabPos,
+  type ClawdPos1D,
   scaled,
   getMoveParams,
   hasCollision,
   freeMinX,
   sessionPriority,
   resolveOverlaps,
-} from "./useCrabBar.utils";
+} from "./useClawdBar.utils";
 
 export {
-  CRAB_BAR_WANDER_MS,
-  CRAB_BAR_RUN_MS,
-} from "./useCrabBar.utils";
+  CLAWD_BAR_WANDER_MS,
+  CLAWD_BAR_RUN_MS,
+} from "./useClawdBar.utils";
 
-let positionCache: Record<string, CrabPos> = {};
+let positionCache: Record<string, ClawdPos1D> = {};
 let homeIdsCache: string[] = [];
 
-export function useCrabBar(sessions: SessionState[], barHeight: number) {
-  const CRAB_W = scaled(BASE_CRAB_W, barHeight);
+export function useClawdBar(sessions: SessionState[], barHeight: number) {
+  const CRAB_W = scaled(BASE_CLAWD_W, barHeight);
   const HITBOX_W = scaled(BASE_HITBOX_W, barHeight);
   const HOME_SLOT_W = scaled(BASE_HOME_SLOT_W, barHeight);
   const PAD_R = scaled(BASE_PAD_R, barHeight);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [positions, _setPositions] =
-    useState<Record<string, CrabPos>>(positionCache);
+    useState<Record<string, ClawdPos1D>>(positionCache);
   const setPositions: typeof _setPositions = (action) => {
     _setPositions((prev) => {
       const next = typeof action === "function" ? action(prev) : action;
@@ -122,7 +122,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const CRAB_BAR_WANDER_MS = 2200;
+    const CLAWD_BAR_WANDER_MS = 2200;
 
     const timer = setInterval(() => {
       const w = el.clientWidth;
@@ -145,7 +145,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
           const pos = next[s.session_id];
           const dx = (Math.random() - 0.5) * range * 2;
           const nx = Math.max(minX, Math.min(w - CRAB_W - PAD_R, pos.x + dx));
-          const candidate: CrabPos = {
+          const candidate: ClawdPos1D = {
             x: nx,
             facingRight: dx !== 0 ? dx > 0 : pos.facingRight,
           };
@@ -158,7 +158,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
 
         return dirty ? next : prev;
       });
-    }, CRAB_BAR_WANDER_MS);
+    }, CLAWD_BAR_WANDER_MS);
 
     return () => clearInterval(timer);
   }, [sessions, runningId, CRAB_W, HITBOX_W, HOME_SLOT_W, PAD_R]);
@@ -286,7 +286,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
 
   useEffect(() => {
     if (runningId === null) return;
-    const CRAB_BAR_RUN_MS = 600;
+    const CLAWD_BAR_RUN_MS = 600;
 
     const arrivingId = runningId;
     const timer = setTimeout(() => {
@@ -311,7 +311,7 @@ export function useCrabBar(sessions: SessionState[], barHeight: number) {
       });
 
       setRunningId(null);
-    }, CRAB_BAR_RUN_MS);
+    }, CLAWD_BAR_RUN_MS);
 
     return () => clearTimeout(timer);
   }, [runningId, CRAB_W, HOME_SLOT_W, PAD_R]);

@@ -1,21 +1,21 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { MascotCanvas } from "@/components/MascotCanvas";
+import { ClawdCanvas } from "@/components/ClawdCanvas";
 import { SessionState } from "@/lib/tauri";
-import { getMascotColor } from "@/lib/colors";
+import { getClawdColor } from "@/lib/colors";
 import {
-  useCrabBar,
-  CRAB_BAR_WANDER_MS,
-  CRAB_BAR_RUN_MS,
-} from "@/hooks/useCrabBar";
+  useClawdBar,
+  CLAWD_BAR_WANDER_MS,
+  CLAWD_BAR_RUN_MS,
+} from "@/hooks/useClawdBar";
 import { BarBubble } from "@/components/BarBubble";
 import { BAR_VISIBLE_PHASES, STALE_THRESHOLD_SEC } from "@/lib/phases";
 import {
   BASE_BAR_HEIGHT,
-  BASE_MASCOT_SIZE,
+  BASE_CLAWD_SIZE,
   collapsedBar,
-  crabList,
-  crabItem,
+  clawdList,
+  clawdItem,
   sleepingWrap,
   zzzRow,
   zzz,
@@ -30,26 +30,36 @@ interface BarViewProps {
   onToggle: () => void;
 }
 
+function filterActive(sessions: SessionState[]) {
+  const now = Math.floor(Date.now() / 1000);
+  return sessions.filter(
+    (s) =>
+      s.phase !== "ended" &&
+      (BAR_VISIBLE_PHASES.has(s.phase) || now - s.last_activity < STALE_THRESHOLD_SEC),
+  );
+}
+
+function activeKey(sessions: SessionState[]) {
+  return sessions.map((s) => `${s.session_id}:${s.phase}`).join();
+}
+
 export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
-  const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
+  const [activeSessions, setActiveSessions] = useState(() => filterActive(sessions));
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(Math.floor(Date.now() / 1000)), 5000);
+    const sync = () => {
+      const next = filterActive(sessions);
+      setActiveSessions((prev) =>
+        activeKey(prev) === activeKey(next) ? prev : next,
+      );
+    };
+    sync();
+    const timer = setInterval(sync, 5000);
     return () => clearInterval(timer);
-  }, []);
-
-  const activeSessions = useMemo(
-    () =>
-      sessions.filter(
-        (s) =>
-          s.phase !== "ended" &&
-          (BAR_VISIBLE_PHASES.has(s.phase) || now - s.last_activity < STALE_THRESHOLD_SEC),
-      ),
-    [sessions, now],
-  );
+  }, [sessions]);
 
   const { positions, runningId, fadingIds, spawningIds, overflowIds, containerRef } =
-    useCrabBar(activeSessions, barHeight);
+    useClawdBar(activeSessions, barHeight);
   const hasSessions = activeSessions.length > 0;
   const unitScale = barHeight / BASE_BAR_HEIGHT;
 
@@ -66,7 +76,7 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
       onClick={onToggle}
     >
       {hasSessions ? (
-        <div ref={containerRef} className={crabList}>
+        <div ref={containerRef} className={clawdList}>
           {activeSessions.map((s) => {
             const pos = positions[s.session_id] as
               | (typeof positions)[string]
@@ -80,19 +90,19 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
             return (
               <div
                 key={s.session_id}
-                className={crabItem}
+                className={clawdItem}
                 style={{
                   left: pos.x,
                   zIndex: isFading || isOverflow ? 0 : 1,
                   opacity: isFading || isOverflow ? 0 : 1,
                   transform: `scale(${unitScale})`,
                   transition: isRunning
-                    ? `left ${CRAB_BAR_RUN_MS}ms ease-in-out, opacity 1.4s ease-out`
-                    : `left ${CRAB_BAR_WANDER_MS}ms ease-in-out, opacity 1.4s ease-out`,
+                    ? `left ${CLAWD_BAR_RUN_MS}ms ease-in-out, opacity 1.4s ease-out`
+                    : `left ${CLAWD_BAR_WANDER_MS}ms ease-in-out, opacity 1.4s ease-out`,
                   ...(isSpawning
                     ? {
                         animation:
-                          "crab-drop 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                          "clawd-drop 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
                       }
                     : {}),
                 }}
@@ -102,10 +112,10 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
                     pos.facingRight ? undefined : { transform: "scaleX(-1)" }
                   }
                 >
-                  <MascotCanvas
-                    color={getMascotColor(s.color_index)}
+                  <ClawdCanvas
+                    color={getClawdColor(s.color_index)}
                     phase={isRunning ? "processing" : s.phase}
-                    size={BASE_MASCOT_SIZE}
+                    size={BASE_CLAWD_SIZE}
                   />
                 </div>
                 <BarBubble phase={s.phase} lastActivity={s.last_activity} />
@@ -116,10 +126,10 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
       ) : (
         <div className={sleepingWrap}>
           <div style={{ opacity: 0.5 }}>
-            <MascotCanvas
+            <ClawdCanvas
               color="var(--colors-text, #abb2bf)"
               phase="idle"
-              size={BASE_MASCOT_SIZE}
+              size={BASE_CLAWD_SIZE}
             />
           </div>
           <div className={zzzRow}>

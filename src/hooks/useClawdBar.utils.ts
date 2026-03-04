@@ -2,20 +2,20 @@ import { SessionState } from "@/lib/tauri";
 import { ACTIVE_PHASES } from "@/lib/phases";
 
 export const BASE_BAR_H = 48;
-export const BASE_CRAB_W = 80;
+export const BASE_CLAWD_W = 80;
 export const BASE_HITBOX_W = 110;
 export const BASE_HOME_SLOT_W = 42;
 export const BASE_PAD_R = 40;
 export const PAD_L = 20;
 
-export const CRAB_BAR_WANDER_MS = 2200;
-export const CRAB_BAR_RUN_MS = 600;
+export const CLAWD_BAR_WANDER_MS = 2200;
+export const CLAWD_BAR_RUN_MS = 600;
 export const FADE_OUT_MS = 1500;
 export const HOME_RELEASE_MS = 15000;
 export const OVERFLOW_FADE_MS = 800;
 export const RESOLVE_MS = 800;
 
-export interface CrabPos {
+export interface ClawdPos1D {
   x: number;
   facingRight: boolean;
 }
@@ -41,8 +41,8 @@ export function getMoveParams(phase: string): { chance: number; range: number } 
 
 export function hasCollision(
   id: string,
-  pos: CrabPos,
-  all: Record<string, CrabPos>,
+  pos: ClawdPos1D,
+  all: Record<string, ClawdPos1D>,
   hitboxW: number,
 ): boolean {
   for (const [otherId, otherPos] of Object.entries(all)) {
@@ -68,13 +68,13 @@ export function sessionPriority(
 }
 
 export function resolveOverlaps(
-  positions: Record<string, CrabPos>,
+  positions: Record<string, ClawdPos1D>,
   homeIds: string[],
   runningId: string | null,
   minX: number,
   maxX: number,
   hitboxW: number,
-): Record<string, CrabPos> | null {
+): Record<string, ClawdPos1D> | null {
   const homeSet = new Set(homeIds);
   const freeIds = Object.keys(positions).filter(
     (id) => !homeSet.has(id) && id !== runningId,

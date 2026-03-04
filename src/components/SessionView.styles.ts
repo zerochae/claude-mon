@@ -10,7 +10,7 @@ export const container = css({
   animation: "view-enter 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
 });
 
-export const mascotCenter = css({
+export const clawdCenter = css({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",

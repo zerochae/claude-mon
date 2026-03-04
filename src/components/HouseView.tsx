@@ -1,21 +1,21 @@
 import { useState, useRef } from "react";
 import { SessionState } from "@/lib/tauri";
-import { getMascotColor } from "@/lib/colors";
-import { MascotCanvas } from "@/components/MascotCanvas";
+import { getClawdColor } from "@/lib/colors";
+import { ClawdCanvas } from "@/components/ClawdCanvas";
 import { StatusBubble } from "@/components/StatusBubble";
 import { Button } from "@/components/Button";
 import { PHASE_LABELS } from "@/lib/phases";
-import { useMascotPositions } from "@/hooks/useMascotPositions";
+import { useClawdPositions } from "@/hooks/useClawdPositions";
 import { useActivityDismissal } from "@/hooks/useActivityDismissal";
 import {
-  MASCOT_SIZE,
+  CLAWD_SIZE,
   WANDER_INTERVAL,
   emptyState,
   outerContainer,
   canvas,
-  mascotSlot,
+  clawdSlot,
   spriteWrapper,
-  mascotLabel,
+  clawdLabel,
   bottomPanel,
   statusBar,
   sessionListScroll,
@@ -35,7 +35,7 @@ interface HouseViewProps {
 export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const positions = useMascotPositions(sessions, containerRef);
+  const positions = useClawdPositions(sessions, containerRef);
   const { dismissedIds, dismiss } = useActivityDismissal(sessions);
 
   const activeSessions = sessions.filter((s) => s.phase !== "ended");
@@ -52,7 +52,7 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
     <div className={outerContainer}>
       <div ref={containerRef} className={canvas}>
         {sessions.map((session) => {
-          const color = getMascotColor(session.color_index);
+          const color = getClawdColor(session.color_index);
           const pos = positions[session.session_id];
           if (
             !Object.prototype.hasOwnProperty.call(positions, session.session_id)
@@ -71,7 +71,7 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
           return (
             <div
               key={session.session_id}
-              className={mascotSlot}
+              className={clawdSlot}
               onClick={() => {
                 dismiss(session.session_id, session.last_activity);
                 onSelectSession(session);
@@ -102,13 +102,13 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
                   animation: animVariant,
                 })}
               >
-                <MascotCanvas
+                <ClawdCanvas
                   color={color}
                   phase={session.phase}
-                  size={MASCOT_SIZE}
+                  size={CLAWD_SIZE}
                 />
               </div>
-              <span className={mascotLabel({ urgent: isUrgent })}>
+              <span className={clawdLabel({ urgent: isUrgent })}>
                 {session.project_name}
               </span>
             </div>
@@ -138,7 +138,7 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
               return priority(a.phase) - priority(b.phase);
             })
             .map((session) => {
-              const color = getMascotColor(session.color_index);
+              const color = getClawdColor(session.color_index);
               const isUrgent = session.phase === "waiting_for_approval";
               const phaseLabel = PHASE_LABELS[session.phase];
 

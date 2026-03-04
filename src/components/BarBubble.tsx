@@ -1,12 +1,11 @@
 import { useBubbleLifecycle } from "@/hooks/useBubbleLifecycle";
-import { ProcessingSpinner, CompactingDots } from "@/components/PhaseIndicators";
-import { ACTIVE_PHASES, DONE_PHASES } from "@/lib/phases";
 import {
-  FADE_OUT_MS,
-  wrapper,
-  bubble,
-  phaseContent,
-} from "./BarBubble.styles";
+  ProcessingSpinner,
+  CompactingDots,
+} from "@/components/PhaseIndicators";
+import { ACTIVE_PHASES, DONE_PHASES } from "@/lib/phases";
+import { FADE_OUT_MS, wrapper, bubble, phaseContent } from "./BarBubble.styles";
+import { ui } from "@/lib/glyph";
 
 interface BarBubbleProps {
   phase: string;
@@ -38,13 +37,21 @@ export function BarBubble({ phase, lastActivity }: BarBubbleProps) {
       );
       break;
     case "waiting_for_approval":
-      content = <span className={phaseContent({ phase: "approval" })}>󱈸</span>;
+      content = (
+        <span className={phaseContent({ phase: "approval" })}>
+          {ui.bubble_waiting_for_approval}
+        </span>
+      );
       break;
     case "waiting_for_input":
-      content = <span className={phaseContent({ phase: "input" })}></span>;
+      content = (
+        <span className={phaseContent({ phase: "input" })}>
+          {ui.bubble_waiting_for_input}
+        </span>
+      );
       break;
     case "idle":
-      content = <span className={phaseContent({ phase: "idle" })}>zZZ</span>;
+      content = <span className={phaseContent({ phase: "idle" })}></span>;
       break;
     default:
       return null;

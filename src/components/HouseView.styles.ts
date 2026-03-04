@@ -1,15 +1,15 @@
 import { css, cva } from "@styled-system/css";
 import { MOTION } from "@/lib/motion";
 
-export const MASCOT_SIZE = 20;
+export const CLAWD_SIZE = 20;
 export const LABEL_HEIGHT = 16;
 export const BUBBLE_HEIGHT = 30;
 export const SLOT_W = 70;
 export const PAD_X = 10;
 export const PAD_Y_TOP = BUBBLE_HEIGHT + 6;
 export const PAD_Y_BOTTOM = LABEL_HEIGHT + 4;
-export const HITBOX_X = MASCOT_SIZE + 20;
-export const HITBOX_Y = MASCOT_SIZE + BUBBLE_HEIGHT + LABEL_HEIGHT + 8;
+export const HITBOX_X = CLAWD_SIZE + 20;
+export const HITBOX_Y = CLAWD_SIZE + BUBBLE_HEIGHT + LABEL_HEIGHT + 8;
 export const WANDER_INTERVAL = 2200;
 
 export const emptyState = css({
@@ -37,7 +37,7 @@ export const canvas = css({
   backgroundSize: "14px 14px",
 });
 
-export const mascotSlot = css({
+export const clawdSlot = css({
   pos: "absolute",
   cursor: "pointer",
   display: "flex",
@@ -54,15 +54,15 @@ export const spriteWrapper = cva({
       left: { transform: "scaleX(-1)" },
     },
     animation: {
-      approval: { animation: "mascot-bounce 0.6s ease-in-out infinite" },
-      input: { animation: "mascot-bounce 1.2s ease-in-out infinite" },
+      approval: { animation: "clawd-bounce 0.6s ease-in-out infinite" },
+      input: { animation: "clawd-bounce 1.2s ease-in-out infinite" },
       none: {},
     },
   },
   defaultVariants: { facing: "right", animation: "none" },
 });
 
-export const mascotLabel = cva({
+export const clawdLabel = cva({
   base: {
     fontSize: "9px",
     textAlign: "center",

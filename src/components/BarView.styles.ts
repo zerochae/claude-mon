@@ -1,7 +1,7 @@
 import { css } from "@styled-system/css";
 
 export const BASE_BAR_HEIGHT = 48;
-export const BASE_MASCOT_SIZE = 22;
+export const BASE_CLAWD_SIZE = 22;
 
 export const collapsedBar = css({
   display: "flex",
@@ -14,13 +14,13 @@ export const collapsedBar = css({
   cursor: "pointer",
 });
 
-export const crabList = css({
+export const clawdList = css({
   pos: "relative",
   flex: 1,
   alignSelf: "stretch",
 });
 
-export const crabItem = css({
+export const clawdItem = css({
   pos: "absolute",
   bottom: 0,
   transformOrigin: "center bottom",

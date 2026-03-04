@@ -1,13 +1,13 @@
 import { SessionState } from "@/lib/tauri";
-import { getMascotColor } from "@/lib/colors";
-import { MascotCanvas } from "@/components/MascotCanvas";
+import { getClawdColor } from "@/lib/colors";
+import { ClawdCanvas } from "@/components/ClawdCanvas";
 import { StatusBubble } from "@/components/StatusBubble";
 import { PermissionActions } from "@/components/PermissionActions";
 import { Button } from "@/components/Button";
 import { PHASE_LABELS } from "@/lib/phases";
 import {
   container,
-  mascotCenter,
+  clawdCenter,
   projectInfo,
   projectName,
   projectCwd,
@@ -34,7 +34,7 @@ export function SessionView({
   onApprove,
   onDeny,
 }: SessionViewProps) {
-  const color = getMascotColor(session.color_index);
+  const color = getClawdColor(session.color_index);
   const phaseLabel = PHASE_LABELS[session.phase];
 
   return (
@@ -43,12 +43,12 @@ export function SessionView({
         &#8592; Back
       </Button>
 
-      <div className={mascotCenter}>
+      <div className={clawdCenter}>
         <StatusBubble
           phase={session.phase}
           lastActivity={session.last_activity}
         />
-        <MascotCanvas color={color} phase={session.phase} size={64} />
+        <ClawdCanvas color={color} phase={session.phase} size={64} />
       </div>
 
       <div className={projectInfo}>
