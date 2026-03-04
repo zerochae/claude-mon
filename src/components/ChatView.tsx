@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Markdown } from "@/components/Markdown";
-import { ChatMessage, getChatMessages } from "@/lib/tauri";
+import { ChatMessage } from "@/lib/tauri";
+import { useChatMessages } from "@/hooks/useChatMessages";
 import { ProcessingSpinner } from "@/components/StatusBubble";
 import { Button } from "@/components/Button";
 import {
@@ -167,43 +168,9 @@ function ThinkingIndicator() {
 
 export function ChatView({ sessionId, cwd, phase }: ChatViewProps) {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [staleCount, setStaleCount] = useState(0);
-  const prevCountRef = useRef(0);
-  const prevSessionIdRef = useRef(sessionId);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { messages, isActive } = useChatMessages(sessionId, cwd, phase);
   const groups = groupMessages(messages);
-
-  const loadMessages = useCallback(() => {
-    getChatMessages(sessionId, cwd)
-      .then((msgs) => {
-        if (prevSessionIdRef.current !== sessionId) {
-          prevSessionIdRef.current = sessionId;
-          prevCountRef.current = 0;
-          setStaleCount(0);
-          setMessages(msgs);
-          return;
-        }
-        setMessages(msgs);
-        setStaleCount((prev) =>
-          msgs.length === prevCountRef.current ? prev + 1 : 0,
-        );
-        prevCountRef.current = msgs.length;
-      })
-      .catch(() => undefined);
-  }, [sessionId, cwd]);
-
-  useEffect(() => {
-    loadMessages();
-    const interval = setInterval(loadMessages, 3000);
-    return () => clearInterval(interval);
-  }, [loadMessages]);
-
-  const isActive =
-    (phase === "processing" ||
-      phase === "running_tool" ||
-      phase === "compacting") &&
-    staleCount < 3;
 
   useEffect(() => {
     if (scrollRef.current) {

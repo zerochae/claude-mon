@@ -1,0 +1,130 @@
+import { useState, useCallback, useRef, useEffect } from "react";
+import { resizeAnchored, animateWindowSize } from "@/lib/windowManager";
+import { type WindowAnchor, type DockPosition } from "@/hooks/useSettings";
+
+const EXPANDED_HEIGHT = 460;
+const ANIM_MS = 250;
+
+export interface WindowExpansionConfig {
+  barWidth: number;
+  barHeight: number;
+  anchor: WindowAnchor;
+  dock: DockPosition;
+  dockMargin: number;
+}
+
+export function useWindowExpansion(
+  expandedWidth: number,
+  config: WindowExpansionConfig,
+) {
+  const { barWidth, barHeight, anchor, dock, dockMargin } = config;
+  const [expanded, setExpanded] = useState(false);
+  const [showContent, setShowContent] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const animatingRef = useRef(false);
+
+  const activeWidth = expanded ? expandedWidth : barWidth;
+
+  useEffect(() => {
+    if (animatingRef.current) return;
+    resizeAnchored(
+      activeWidth,
+      expanded ? EXPANDED_HEIGHT : barHeight,
+      anchor,
+      dock,
+      dockMargin,
+    ).catch(() => undefined);
+  }, [activeWidth, barHeight, expanded, anchor, dock, dockMargin]);
+
+  const expand = useCallback(
+    (targetW: number) => {
+      clearTimeout(timerRef.current);
+      setExpanded(true);
+      animatingRef.current = true;
+      void animateWindowSize(
+        barWidth,
+        targetW,
+        barHeight,
+        EXPANDED_HEIGHT,
+        anchor,
+        dock,
+        dockMargin,
+        ANIM_MS,
+        () => {
+          animatingRef.current = false;
+        },
+      );
+      timerRef.current = setTimeout(() => setShowContent(true), 30);
+    },
+    [barWidth, barHeight, anchor, dock, dockMargin],
+  );
+
+  const collapse = useCallback(() => {
+    clearTimeout(timerRef.current);
+    setShowContent(false);
+    timerRef.current = setTimeout(() => {
+      setExpanded(false);
+      animatingRef.current = true;
+      void animateWindowSize(
+        activeWidth,
+        barWidth,
+        EXPANDED_HEIGHT,
+        barHeight,
+        anchor,
+        dock,
+        dockMargin,
+        ANIM_MS,
+        () => {
+          animatingRef.current = false;
+        },
+      );
+    }, ANIM_MS);
+  }, [activeWidth, barWidth, barHeight, anchor, dock, dockMargin]);
+
+  const toggleExpand = useCallback(
+    (targetW: number) => {
+      if (expanded) collapse();
+      else expand(targetW);
+    },
+    [expanded, expand, collapse],
+  );
+
+  const animateToView = useCallback(
+    (fromW: number, toW: number) => {
+      if (fromW === toW) return;
+      animatingRef.current = true;
+      void animateWindowSize(
+        fromW,
+        toW,
+        EXPANDED_HEIGHT,
+        EXPANDED_HEIGHT,
+        anchor,
+        dock,
+        dockMargin,
+        ANIM_MS,
+        () => {
+          animatingRef.current = false;
+        },
+      );
+    },
+    [anchor, dock, dockMargin],
+  );
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && expanded) collapse();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [expanded, collapse]);
+
+  return {
+    expanded,
+    showContent,
+    activeWidth,
+    expand,
+    collapse,
+    toggleExpand,
+    animateToView,
+  };
+}
