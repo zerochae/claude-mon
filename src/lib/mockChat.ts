@@ -14,14 +14,14 @@ export const MOCK_CHAT: Record<string, ChatMessage[]> = {
     {
       id: "msg-1",
       role: "user",
-      content: "claude-house 프로젝트를 빌드해줘",
+      content: "claude-mon 프로젝트를 빌드해줘",
       timestamp: now - 60000,
     },
     {
       id: "msg-2",
       role: "assistant",
       content:
-        "네, `claude-house` 프로젝트를 빌드하겠습니다. 먼저 현재 상태를 확인합니다.",
+        "네, `claude-mon` 프로젝트를 빌드하겠습니다. 먼저 현재 상태를 확인합니다.",
       timestamp: now - 55000,
     },
     {
@@ -30,7 +30,7 @@ export const MOCK_CHAT: Record<string, ChatMessage[]> = {
       toolName: "Read",
       toolStatus: "done",
       content:
-        '```json\n{\n  "name": "claude-house",\n  "version": "0.1.0",\n  "scripts": {\n    "dev": "vite",\n    "build": "tsc && vite build"\n  }\n}\n```',
+        '```json\n{\n  "name": "claude-mon",\n  "version": "0.1.0",\n  "scripts": {\n    "dev": "vite",\n    "build": "tsc && vite build"\n  }\n}\n```',
       timestamp: now - 50000,
     },
     {

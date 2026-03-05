@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Markdown } from "@/components/Markdown";
-import { ChatMessage } from "@/lib/tauri";
+import { ChatMessage, sendMessage } from "@/lib/tauri";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { ProcessingSpinner } from "@/components/StatusBubble";
 import { Button } from "@/components/Button";
@@ -168,6 +168,8 @@ function ThinkingIndicator() {
 
 export function ChatView({ sessionId, cwd, phase }: ChatViewProps) {
   const [input, setInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { messages, isActive } = useChatMessages(sessionId, cwd, phase);
   const groups = groupMessages(messages);
@@ -178,9 +180,17 @@ export function ChatView({ sessionId, cwd, phase }: ChatViewProps) {
     }
   }, [messages.length, isActive]);
 
+  const canSend = phase === "waiting_for_input" && !sending;
+
   const handleSend = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !canSend) return;
+    const msg = input.trim();
     setInput("");
+    setError(null);
+    setSending(true);
+    sendMessage(sessionId, msg)
+      .catch((err) => setError(String(err)))
+      .finally(() => setSending(false));
   };
 
   const hasInput = !!input.trim();
@@ -188,19 +198,25 @@ export function ChatView({ sessionId, cwd, phase }: ChatViewProps) {
   return (
     <div className={outerContainer}>
       <div ref={scrollRef} className={scrollArea}>
-        {groups.map((group, i) => (
-          <MessageGroup key={i} messages={group} />
+        {groups.map((group) => (
+          <MessageGroup key={group[0].id} messages={group} />
         ))}
         {isActive && <ThinkingIndicator />}
       </div>
 
+      {error && (
+        <div style={{ padding: "2px 8px", color: "var(--colors-red, #E06C75)", fontSize: "11px" }}>
+          {error}
+        </div>
+      )}
       <div className={inputBar}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Message..."
+          disabled={!canSend}
+          placeholder={canSend ? "Message..." : "Waiting..."}
           className={chatInput}
         />
         <Button
@@ -208,7 +224,7 @@ export function ChatView({ sessionId, cwd, phase }: ChatViewProps) {
           size="icon"
           color="primary"
           shape="default"
-          disabled={!hasInput}
+          disabled={!hasInput || !canSend}
           onClick={handleSend}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
