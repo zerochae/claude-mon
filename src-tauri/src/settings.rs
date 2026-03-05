@@ -2,8 +2,8 @@ use std::fs;
 use std::path::PathBuf;
 
 fn settings_path() -> PathBuf {
-    let config = dirs::config_dir().unwrap_or_else(|| PathBuf::from("."));
-    config.join("claude-house").join("settings.json")
+    let home = dirs::home_dir().unwrap_or_else(|| PathBuf::from("."));
+    home.join(".config").join("claude-mon").join("config.json")
 }
 
 #[tauri::command]

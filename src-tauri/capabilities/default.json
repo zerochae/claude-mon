@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Default capabilities for Claude House",
+  "description": "Default capabilities for ClaudeMon",
   "windows": ["main"],
   "permissions": [
     "core:default",

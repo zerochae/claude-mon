@@ -1,4 +1,4 @@
-# Claude House
+# ClaudeMon
 
 A desktop widget that monitors active [Claude Code](https://docs.anthropic.com/en/docs/claude-code) sessions and displays them as animated crab mascots in an always-on-top bar.
 
@@ -16,7 +16,7 @@ Built with [Tauri v2](https://v2.tauri.app/) + React + Rust.
 ## How It Works
 
 ```
-Claude Code ──hook──▶ claude-house-state.py ──socket──▶ /tmp/claude-house.sock
+Claude Code ──hook──▶ claude-mon-state.py ──socket──▶ /tmp/claude-mon.sock
                                                               │
                                                         Tauri Backend
                                                      (SessionManager)
@@ -27,7 +27,7 @@ Claude Code ──hook──▶ claude-house-state.py ──socket──▶ /tmp
                                                     (BarView / HouseView)
 ```
 
-On launch, claude-house installs a hook script into `~/.claude/hooks/` and registers it in `~/.claude/settings.json`. The hook fires on Claude Code lifecycle events and sends JSON payloads to a Unix socket. The Rust backend processes events and broadcasts updates to the React frontend. Permission requests keep the socket open until the user responds from the widget.
+On launch, ClaudeMon installs a hook script into `~/.claude/hooks/` and registers it in `~/.claude/settings.json`. The hook fires on Claude Code lifecycle events and sends JSON payloads to a Unix socket. The Rust backend processes events and broadcasts updates to the React frontend. Permission requests keep the socket open until the user responds from the widget.
 
 ## Getting Started
 
@@ -41,22 +41,22 @@ Requires macOS, Node.js v18+, Rust stable, Tauri CLI v2, pnpm.
 
 ## Window Manager Integration
 
-claude-house is an always-on-top overlay visible on all workspaces. Tiling window managers should ignore it.
+ClaudeMon is an always-on-top overlay visible on all workspaces. Tiling window managers should ignore it.
 
 ### yabai
 
 ```bash
 # ~/.config/yabai/yabairc
-yabai -m rule --add app="^claude-house$" manage=off
+yabai -m rule --add app="^ClaudeMon$" manage=off
 ```
 
 ### SketchyBar
 
-Filter claude-house from space widget window queries:
+Filter ClaudeMon from space widget window queries:
 
 ```bash
 yabai -m query --windows --space "$sid" 2>/dev/null \
-  | jq -r '[.[] | select(.app | test("claude-house") | not)] | .[].app' \
+  | jq -r '[.[] | select(.app | test("ClaudeMon") | not)] | .[].app' \
   | sort -u | grep -v '^$'
 ```
 

@@ -300,7 +300,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "claude-house"
+name = "claude-mon"
 version = "0.1.0"
 dependencies = [
  "chrono",

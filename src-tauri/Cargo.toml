@@ -1,12 +1,12 @@
 [package]
-name = "claude-house"
+name = "claude-mon"
 version = "0.1.0"
-description = "Claude Session Manager - A house where Claude mascots live"
+description = "Claude Session Monitor - Watch your Claude mascots"
 authors = []
 edition = "2021"
 
 [lib]
-name = "claude_house_lib"
+name = "claude_mon_lib"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [build-dependencies]

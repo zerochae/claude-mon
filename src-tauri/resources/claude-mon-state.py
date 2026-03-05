@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Claude Island Hook
-- Sends session state to ClaudeIsland.app via Unix socket
+ClaudeMon Hook
+- Sends session state to ClaudeMon.app via Unix socket
 - For PermissionRequest: waits for user decision from the app
 """
 import json
@@ -9,7 +9,7 @@ import os
 import socket
 import sys
 
-SOCKET_PATH = "/tmp/claude-house.sock"
+SOCKET_PATH = "/tmp/claude-mon.sock"
 TIMEOUT_SECONDS = 300  # 5 minutes for permission decisions
 
 
@@ -53,8 +53,9 @@ def send_event(state):
     """Send event to app, return response if any"""
     try:
         sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.settimeout(TIMEOUT_SECONDS)
+        sock.settimeout(2)
         sock.connect(SOCKET_PATH)
+        sock.settimeout(TIMEOUT_SECONDS)
         sock.sendall(json.dumps(state).encode())
 
         # For permission requests, wait for response
@@ -150,7 +151,7 @@ def main():
                         "hookEventName": "PermissionRequest",
                         "decision": {
                             "behavior": "deny",
-                            "message": reason or "Denied by user via ClaudeIsland",
+                            "message": reason or "Denied by user via ClaudeMon",
                         },
                     }
                 }

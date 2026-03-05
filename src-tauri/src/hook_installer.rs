@@ -4,13 +4,23 @@ use serde_json::Value;
 use tauri::Manager;
 
 
-const HOOK_SCRIPT_NAME: &str = "claude-house-state.py";
-const HOOK_IDENTIFIER: &str = "claude-house-state.py";
+const HOOK_SCRIPT_NAME: &str = "claude-mon-state.py";
+const HOOK_IDENTIFIER: &str = "claude-mon-state.py";
 
 pub fn install_hooks(app: &tauri::AppHandle) {
     let resource_path = match get_resource_path(app) {
-        Some(p) if p.exists() => p,
-        _ => return,
+        Some(p) if p.exists() => {
+            eprintln!("[hooks] resource found: {:?}", p);
+            p
+        }
+        Some(p) => {
+            eprintln!("[hooks] resource path does not exist: {:?}", p);
+            return;
+        }
+        None => {
+            eprintln!("[hooks] failed to resolve resource dir");
+            return;
+        }
     };
 
     let claude_dir = home_dir().join(".claude");
@@ -21,15 +31,23 @@ pub fn install_hooks(app: &tauri::AppHandle) {
     let _ = fs::create_dir_all(&hooks_dir);
 
     let _ = fs::remove_file(&script_dest);
-    if fs::copy(&resource_path, &script_dest).is_ok() {
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            let _ = fs::set_permissions(&script_dest, fs::Permissions::from_mode(0o755));
+    match fs::copy(&resource_path, &script_dest) {
+        Ok(_) => {
+            eprintln!("[hooks] copied to {:?}", script_dest);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                let _ = fs::set_permissions(&script_dest, fs::Permissions::from_mode(0o755));
+            }
+        }
+        Err(e) => {
+            eprintln!("[hooks] copy failed: {}", e);
+            return;
         }
     }
 
     update_settings(&settings_path);
+    eprintln!("[hooks] settings updated: {:?}", settings_path);
 }
 
 fn update_settings(settings_path: &PathBuf) {
@@ -64,13 +82,16 @@ fn update_settings(settings_path: &PathBuf) {
         ("PreCompact", pre_compact),
     ];
 
-    let hooks = json
-        .as_object_mut()
-        .unwrap()
+    let Some(root) = json.as_object_mut() else {
+        return;
+    };
+    let hooks = root
         .entry("hooks")
         .or_insert_with(|| Value::Object(Default::default()));
 
-    let hooks_obj = hooks.as_object_mut().unwrap();
+    let Some(hooks_obj) = hooks.as_object_mut() else {
+        return;
+    };
 
     for (event, config) in hook_events {
         if let Some(existing) = hooks_obj.get_mut(event) {
@@ -112,8 +133,22 @@ fn home_dir() -> PathBuf {
 }
 
 fn get_resource_path(app: &tauri::AppHandle) -> Option<PathBuf> {
-    app.path()
+    let bundled = app.path()
         .resource_dir()
         .ok()
-        .map(|dir| dir.join(HOOK_SCRIPT_NAME))
+        .map(|dir| dir.join(HOOK_SCRIPT_NAME));
+
+    if let Some(ref p) = bundled {
+        if p.exists() {
+            return bundled;
+        }
+    }
+
+    let dev_path = app.path()
+        .resource_dir()
+        .ok()
+        .and_then(|dir| dir.parent().and_then(|p| p.parent()).map(|p| p.to_path_buf()))
+        .map(|dir| dir.join("resources").join(HOOK_SCRIPT_NAME));
+
+    dev_path
 }
