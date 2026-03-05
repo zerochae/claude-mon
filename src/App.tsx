@@ -1,8 +1,7 @@
-import { useState, useCallback } from "react";
-import { SessionState } from "@/services/tauri";
 import { useSessions } from "@/hooks/useSessions";
 import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
+import { useNavigation } from "@/hooks/useNavigation";
 import { Header } from "@/components/Header";
 import { Stage } from "@/components/Stage";
 import { Detail } from "@/components/Detail";
@@ -10,23 +9,10 @@ import { Chat } from "@/components/Chat";
 import { Settings } from "@/components/Settings";
 import { MOTION } from "@/constants/motion";
 
-type View = "stage" | "detail" | "chat" | "settings";
-
 export default function App() {
   const { sessions, approve, deny } = useSessions();
   const { settings, updateSettings, resetColorOverrides } = useSettings();
-  const [view, setView] = useState<View>("stage");
   const vw = settings.viewWidths;
-  const barWidth = vw.bar;
-  const barHeight = settings.barHeight;
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
-    null,
-  );
-
-  const viewWidth = useCallback(
-    (v: View) => vw[v === "detail" ? "stage" : v],
-    [vw],
-  );
 
   const {
     expanded,
@@ -36,48 +22,23 @@ export default function App() {
     collapse,
     toggleExpand,
     animateToView,
-  } = useWindowExpansion(viewWidth(view), {
-    barWidth,
-    barHeight,
+  } = useWindowExpansion(vw.stage, {
+    barWidth: vw.bar,
+    barHeight: settings.barHeight,
     anchor: settings.anchor,
     dock: settings.dock,
     dockMargin: settings.dockMargin,
   });
 
-  const selectedSession =
-    sessions.find((s) => s.session_id === selectedSessionId) ?? null;
-
-  const handleSelectSession = (session: SessionState) => {
-    setSelectedSessionId(session.session_id);
-    setView("chat");
-    if (!expanded) expand(viewWidth("chat"));
-  };
-
-  const handleBack = () => {
-    const prevW = activeWidth;
-    const nextW = vw.stage;
-    setView("stage");
-    setSelectedSessionId(null);
-    if (expanded) animateToView(prevW, nextW);
-  };
-
-  const handleOpenDetail = () => {
-    if (!selectedSession) return;
-    const prevW = activeWidth;
-    setView("detail");
-    if (expanded) animateToView(prevW, viewWidth("detail"));
-  };
-
-  const handleGearClick = () => {
-    const nextView = view === "settings" ? "stage" : "settings";
-    const nextW = viewWidth(nextView);
-    setView(nextView);
-    if (!expanded) {
-      expand(nextW);
-    } else {
-      animateToView(activeWidth, nextW);
-    }
-  };
+  const {
+    view,
+    viewWidth,
+    selectedSession,
+    handleSelectSession,
+    handleBack,
+    handleOpenDetail,
+    handleGearClick,
+  } = useNavigation(sessions, vw, { expanded, activeWidth, expand, animateToView });
 
   return (
     <div className="widget-container">
@@ -91,7 +52,7 @@ export default function App() {
         settingsActive={view === "settings"}
         showBack={view !== "stage"}
         sessions={sessions}
-        barHeight={barHeight}
+        barHeight={settings.barHeight}
       />
       {expanded && (
         <div
