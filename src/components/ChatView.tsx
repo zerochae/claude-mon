@@ -4,6 +4,9 @@ import { ChatMessage, sendMessage } from "@/lib/tauri";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { ProcessingSpinner } from "@/components/StatusBubble";
 import { Button } from "@/components/Button";
+import { ClawdCanvas } from "@/components/ClawdCanvas";
+import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
+import { ChatBubble } from "@/components/ChatBubble";
 import {
   userBubbleWrap,
   userBubble,
@@ -13,9 +16,20 @@ import {
   svgFlexShrink,
   chevron,
   toolExpanded,
+  subagentWrap,
+  subagentClickable,
+  subagentBubble,
+  subagentName,
+  subagentDesc,
+  subagentPromptWrap,
   messageGroup,
   thinkingWrap,
   outerContainer,
+  chatHeader,
+  chatHeaderLeft,
+  chatHeaderLabel,
+  chatMiniRow,
+  chatMiniWrap,
   scrollArea,
   inputBar,
   chatInput,
@@ -25,6 +39,10 @@ interface ChatViewProps {
   sessionId: string;
   cwd: string;
   phase: string;
+  colorIndex: number;
+  projectName: string;
+  lastActivity: number;
+  subagentCount: number;
 }
 
 function UserMessage({ message }: { message: ChatMessage }) {
@@ -41,6 +59,41 @@ function AssistantMessage({ message }: { message: ChatMessage }) {
   return (
     <div className={assistantWrap}>
       <Markdown content={message.content} />
+    </div>
+  );
+}
+
+function SubagentMessage({ message, index, sessionColorIndex }: { message: ChatMessage; index: number; sessionColorIndex: number }) {
+  const [showPrompt, setShowPrompt] = useState(false);
+  const agentType = message.subagent_type || "";
+  const shortName = agentType.includes(":") ? agentType.split(":").pop()! : agentType;
+  const isDone = message.tool_status === "done";
+  const miniPhases = ["processing", "compacting", "idle"] as const;
+  const phase = isDone ? miniPhases[index % miniPhases.length] : "processing";
+
+  return (
+    <div className={subagentWrap}>
+      <button
+        onClick={() => message.subagent_prompt && setShowPrompt(!showPrompt)}
+        className={subagentClickable}
+      >
+        <ClawdCanvas
+          color={getClawdColor((sessionColorIndex + index + 3) % COLOR_COUNT)}
+          phase={phase}
+          size={16}
+        />
+        <div className={subagentBubble}>
+          <span className={subagentName}>{shortName || "agent"}</span>
+          {message.content && (
+            <span className={subagentDesc}>{message.content}</span>
+          )}
+        </div>
+      </button>
+      {showPrompt && message.subagent_prompt && (
+        <div className={subagentPromptWrap}>
+          <Markdown content={`\`\`\`\n${message.subagent_prompt}\n\`\`\``} />
+        </div>
+      )}
     </div>
   );
 }
@@ -124,17 +177,20 @@ function ToolMessage({ message }: { message: ChatMessage }) {
   );
 }
 
-function MessageGroup({ messages }: { messages: ChatMessage[] }) {
+function MessageGroup({ messages, sessionColorIndex }: { messages: ChatMessage[]; sessionColorIndex: number }) {
   const role = messages[0].role;
   return (
     <div className={messageGroup({ role })}>
-      {messages.map((msg) => {
+      {messages.map((msg, i) => {
         switch (msg.role) {
           case "user":
             return <UserMessage key={msg.id} message={msg} />;
           case "assistant":
             return <AssistantMessage key={msg.id} message={msg} />;
           case "tool":
+            if (msg.subagent_type) {
+              return <SubagentMessage key={msg.id} message={msg} index={i} sessionColorIndex={sessionColorIndex} />;
+            }
             return <ToolMessage key={msg.id} message={msg} />;
         }
       })}
@@ -166,7 +222,7 @@ function ThinkingIndicator() {
   );
 }
 
-export function ChatView({ sessionId, cwd, phase }: ChatViewProps) {
+export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastActivity, subagentCount }: ChatViewProps) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -197,9 +253,39 @@ export function ChatView({ sessionId, cwd, phase }: ChatViewProps) {
 
   return (
     <div className={outerContainer}>
+      <div className={chatHeader}>
+        <div className={chatHeaderLeft}>
+          <ClawdCanvas color={getClawdColor(colorIndex)} phase={phase} size={24} />
+          <ChatBubble phase={phase} lastActivity={lastActivity} />
+          {subagentCount > 0 && (
+            <div className={chatMiniRow}>
+              {Array.from({ length: Math.min(subagentCount, 3) }).map((_, i) => {
+                const miniPhases = ["processing", "compacting", "idle"] as const;
+                return (
+                  <div
+                    key={i}
+                    className={chatMiniWrap}
+                    style={{
+                      animationDelay: `${i * 0.2}s`,
+                      transform: i % 2 === 0 ? "scaleX(1)" : "scaleX(-1)",
+                    }}
+                  >
+                    <ClawdCanvas
+                      color={getClawdColor((colorIndex + i + 3) % COLOR_COUNT)}
+                      phase={miniPhases[i % miniPhases.length]}
+                      size={12}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <span className={chatHeaderLabel}>{projectName}</span>
+      </div>
       <div ref={scrollRef} className={scrollArea}>
         {groups.map((group) => (
-          <MessageGroup key={group[0].id} messages={group} />
+          <MessageGroup key={group[0].id} messages={group} sessionColorIndex={colorIndex} />
         ))}
         {isActive && <ThinkingIndicator />}
       </div>

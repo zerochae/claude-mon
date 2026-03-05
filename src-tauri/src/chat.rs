@@ -9,6 +9,8 @@ pub struct ChatMessage {
     pub content: String,
     pub tool_name: Option<String>,
     pub tool_status: Option<String>,
+    pub subagent_type: Option<String>,
+    pub subagent_prompt: Option<String>,
     pub timestamp: u64,
 }
 
@@ -102,13 +104,28 @@ fn format_tool_content(name: &str, input: &Option<serde_json::Value>) -> String 
         "Edit" => {
             let path = get_str(v, "file_path");
             let old = get_str(v, "old_string");
-            let new = get_str(v, "new_string");
+            let new_s = get_str(v, "new_string");
+            let old_lines: Vec<&str> = old.lines().collect();
+            let new_lines: Vec<&str> = new_s.lines().collect();
+
+            let prefix = old_lines.iter().zip(new_lines.iter())
+                .take_while(|(a, b)| a == b).count();
+            let suffix = old_lines[prefix..].iter().rev()
+                .zip(new_lines[prefix..].iter().rev())
+                .take_while(|(a, b)| a == b).count();
+
             let mut out = format!("`{path}`\n```diff\n");
-            for line in old.lines() {
+            for &line in &old_lines[..prefix] {
+                out.push_str(&format!("  {line}\n"));
+            }
+            for &line in &old_lines[prefix..old_lines.len() - suffix] {
                 out.push_str(&format!("- {line}\n"));
             }
-            for line in new.lines() {
+            for &line in &new_lines[prefix..new_lines.len() - suffix] {
                 out.push_str(&format!("+ {line}\n"));
+            }
+            for &line in &old_lines[old_lines.len() - suffix..] {
+                out.push_str(&format!("  {line}\n"));
             }
             out.push_str("```");
             out
@@ -153,14 +170,8 @@ fn format_tool_content(name: &str, input: &Option<serde_json::Value>) -> String 
                 format!("`{pattern}` in `{path}`")
             }
         }
-        "Task" => {
-            let desc = get_str(v, "description");
-            let agent = get_str(v, "subagent_type");
-            if agent.is_empty() {
-                desc.to_string()
-            } else {
-                format!("{desc} (`{agent}`)")
-            }
+        "Task" | "Agent" => {
+            get_str(v, "description").to_string()
         }
         _ => {
             format!("```json\n{}\n```", serde_json::to_string_pretty(v).unwrap_or_default())
@@ -227,6 +238,8 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                             content: text,
                             tool_name: None,
                             tool_status: None,
+                            subagent_type: None,
+                            subagent_prompt: None,
                             timestamp,
                         });
                     }
@@ -236,7 +249,7 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                 if let Some(msg) = entry.message {
                     if let serde_json::Value::Array(arr) = &msg.content {
                         let mut text_parts = Vec::new();
-                        let mut tool_uses = Vec::new();
+                        let mut tool_uses: Vec<(String, String, Option<String>, Option<String>)> = Vec::new();
 
                         for block in arr {
                             if let Ok(b) =
@@ -254,7 +267,20 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                                         let name =
                                             b.name.unwrap_or_else(|| "unknown".to_string());
                                         let content = format_tool_content(&name, &b.input);
-                                        tool_uses.push((name, content));
+                                        let (agent_type, agent_prompt) = if name == "Agent" || name == "Task" {
+                                            let at = b.input.as_ref()
+                                                .and_then(|v| v.get("subagent_type"))
+                                                .and_then(|v| v.as_str())
+                                                .map(|s| s.to_string());
+                                            let ap = b.input.as_ref()
+                                                .and_then(|v| v.get("prompt"))
+                                                .and_then(|v| v.as_str())
+                                                .map(|s| s.to_string());
+                                            (at, ap)
+                                        } else {
+                                            (None, None)
+                                        };
+                                        tool_uses.push((name, content, agent_type, agent_prompt));
                                     }
                                     _ => {}
                                 }
@@ -269,17 +295,21 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                                 content: combined,
                                 tool_name: None,
                                 tool_status: None,
+                                subagent_type: None,
+                                subagent_prompt: None,
                                 timestamp,
                             });
                         }
 
-                        for (i, (name, input_str)) in tool_uses.into_iter().enumerate() {
+                        for (i, (name, input_str, agent_type, agent_prompt)) in tool_uses.into_iter().enumerate() {
                             messages.push(ChatMessage {
                                 id: format!("{}-tool-{}", uuid, i),
                                 role: "tool".to_string(),
                                 content: input_str,
                                 tool_name: Some(name),
                                 tool_status: Some("done".to_string()),
+                                subagent_type: agent_type,
+                                subagent_prompt: agent_prompt,
                                 timestamp,
                             });
                         }

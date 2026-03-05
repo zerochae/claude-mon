@@ -161,11 +161,16 @@ export const actionButtons = css({
   flexShrink: 0,
 });
 
+export const clawdRow = css({
+  display: "flex",
+  alignItems: "flex-end",
+  justifyContent: "center",
+});
+
 export const miniClawdRow = css({
   display: "flex",
-  gap: "2px",
-  justifyContent: "center",
-  marginTop: "-2px",
+  alignItems: "flex-end",
+  gap: "1px",
 });
 
 export const miniClawdWrap = css({

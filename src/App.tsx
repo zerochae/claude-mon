@@ -79,6 +79,7 @@ export default function App() {
         onToggle={() => toggleExpand(viewWidth(view))}
         onCollapse={collapse}
         onBack={handleBack}
+        onSelectSession={handleSelectSession}
         expanded={expanded}
         settingsActive={view === "settings"}
         showBack={view !== "house"}
@@ -113,6 +114,10 @@ export default function App() {
               sessionId={selectedSession.session_id}
               cwd={selectedSession.cwd}
               phase={selectedSession.phase}
+              colorIndex={selectedSession.color_index}
+              projectName={selectedSession.project_name}
+              lastActivity={selectedSession.last_activity}
+              subagentCount={selectedSession.subagent_count}
             />
           ) : (
             <SessionView

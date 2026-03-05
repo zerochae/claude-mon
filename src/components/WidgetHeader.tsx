@@ -14,6 +14,7 @@ interface WidgetHeaderProps {
   onToggle: () => void;
   onCollapse: () => void;
   onBack?: () => void;
+  onSelectSession?: (session: SessionState) => void;
   expanded: boolean;
   settingsActive?: boolean;
   showBack?: boolean;
@@ -26,6 +27,7 @@ export function WidgetHeader({
   onToggle,
   onCollapse,
   onBack,
+  onSelectSession,
   expanded,
   settingsActive,
   showBack,
@@ -90,6 +92,6 @@ export function WidgetHeader({
   }
 
   return (
-    <BarView sessions={sessions} barHeight={barHeight} onToggle={onToggle} />
+    <BarView sessions={sessions} barHeight={barHeight} onToggle={onToggle} onSelectSession={onSelectSession} />
   );
 }

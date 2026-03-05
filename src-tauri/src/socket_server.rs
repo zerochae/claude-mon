@@ -204,7 +204,7 @@ async fn handle_connection(
                 s.subagent_count = s.subagent_count.saturating_add(1);
             }
         }
-        if event.event == "SubagentStop" {
+        if event.event == "PostToolUse" && matches!(event.tool.as_deref(), Some("Agent" | "Task")) {
             if let Some(s) = sm.get_session_mut(&session_id) {
                 s.subagent_count = s.subagent_count.saturating_sub(1);
             }

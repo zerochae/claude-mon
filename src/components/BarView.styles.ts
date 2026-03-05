@@ -25,11 +25,11 @@ export const clawdItem = css({
   bottom: 0,
   transformOrigin: "center bottom",
   display: "flex",
-  alignItems: "center",
-  gap: "4px",
+  alignItems: "flex-end",
+  gap: "2px",
 });
 
-export const MINI_BAR_CLAWD_SIZE = 8;
+export const MINI_BAR_CLAWD_SIZE = 12;
 
 export const miniBarRow = css({
   display: "flex",

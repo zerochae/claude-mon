@@ -71,10 +71,105 @@ export const messageGroup = cva({
   },
 });
 
+export const subagentWrap = css({
+  display: "flex",
+  flexDirection: "column",
+  px: "16px",
+  py: "4px",
+});
+
+export const subagentClickable = css({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "6px",
+  bg: "transparent",
+  border: "none",
+  cursor: "pointer",
+  padding: 0,
+  borderRadius: "8px",
+  transition: "background 120ms ease",
+  _hover: { bg: "surfaceHover" },
+});
+
+export const subagentPromptWrap = css({
+  mt: "4px",
+  ml: "22px",
+  pl: "8px",
+  borderLeft: "1px solid token(colors.hairline)",
+  fontSize: "0.75rem",
+  color: "comment",
+  maxH: "200px",
+  overflowY: "auto",
+});
+
+export const subagentBubble = css({
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "4px",
+  bg: "surfaceOverlay",
+  borderRadius: "10px",
+  padding: "3px 10px 3px 4px",
+  fontSize: "0.75rem",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  color: "comment",
+});
+
+export const subagentName = css({
+  color: "text",
+  fontWeight: 500,
+});
+
+export const subagentDesc = css({
+  color: "comment",
+  fontSize: "0.7rem",
+  maxW: "200px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+});
+
 export const thinkingWrap = css({
   px: "16px",
   pt: "6px",
   pb: "4px",
+});
+
+export const chatHeader = css({
+  display: "flex",
+  alignItems: "flex-end",
+  justifyContent: "space-between",
+  px: "12px",
+  pt: "4px",
+  pb: "6px",
+  flexShrink: 0,
+  borderBottom: "0.5px solid token(colors.hairline)",
+});
+
+export const chatHeaderLeft = css({
+  display: "flex",
+  alignItems: "flex-end",
+  gap: "2px",
+});
+
+export const chatMiniRow = css({
+  display: "flex",
+  alignItems: "flex-end",
+  gap: "1px",
+  ml: "2px",
+});
+
+export const chatMiniWrap = css({
+  animation: "clawd-bounce 2s ease-in-out infinite",
+});
+
+
+export const chatHeaderLabel = css({
+  fontSize: "0.72rem",
+  color: "comment",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 });
 
 export const outerContainer = css({
@@ -88,8 +183,9 @@ export const scrollArea = css({
   flex: 1,
   overflowY: "auto",
   overflowX: "hidden",
-  pt: "4px",
-  pb: "4px",
+  pt: "8px",
+  pb: "8px",
+  px: "4px",
   animation: "fade-in 150ms cubic-bezier(0.2, 0, 0, 1)",
 });
 

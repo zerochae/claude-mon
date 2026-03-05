@@ -31,6 +31,7 @@ interface BarViewProps {
   sessions: SessionState[];
   barHeight: number;
   onToggle: () => void;
+  onSelectSession?: (session: SessionState) => void;
 }
 
 function filterActive(sessions: SessionState[]) {
@@ -47,7 +48,7 @@ function activeKey(sessions: SessionState[]) {
   return sessions.map((s) => `${s.session_id}:${s.phase}`).join();
 }
 
-export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
+export function BarView({ sessions, barHeight, onToggle, onSelectSession }: BarViewProps) {
   const [activeSessions, setActiveSessions] = useState(() =>
     filterActive(sessions),
   );
@@ -72,6 +73,7 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
     overflowIds,
     containerRef,
   } = useClawdBar(activeSessions, barHeight);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const hasSessions = activeSessions.length > 0;
   const unitScale = barHeight / BASE_BAR_HEIGHT;
 
@@ -102,15 +104,27 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
             return (
               <div
                 key={s.session_id}
-                className={clawdItem}
+                className={`${clawdItem} no-drag`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectSession?.(s);
+                }}
+                onMouseEnter={() => setHoveredId(s.session_id)}
+                onMouseLeave={() => setHoveredId(null)}
                 style={{
                   left: pos.x,
-                  zIndex: isFading || isOverflow ? 0 : 1,
+                  cursor: "pointer",
+                  zIndex: isFading || isOverflow ? 0 : hoveredId === s.session_id ? 10 : 1,
                   opacity: isFading || isOverflow ? 0 : 1,
-                  transform: `scale(${unitScale})`,
+                  transform: hoveredId === s.session_id
+                    ? `scale(${unitScale * 1.25})`
+                    : `scale(${unitScale})`,
+                  filter: hoveredId === s.session_id
+                    ? `drop-shadow(0 0 6px ${getClawdColor(s.color_index)}66)`
+                    : undefined,
                   transition: isRunning
-                    ? `left ${CLAWD_BAR_RUN_MS}ms ease-in-out, opacity 1.4s ease-out`
-                    : `left ${CLAWD_BAR_WANDER_MS}ms ease-in-out, opacity 1.4s ease-out`,
+                    ? `left ${CLAWD_BAR_RUN_MS}ms ease-in-out, opacity 1.4s ease-out, transform 0.15s ease, filter 0.15s ease`
+                    : `left ${CLAWD_BAR_WANDER_MS}ms ease-in-out, opacity 1.4s ease-out, transform 0.15s ease, filter 0.15s ease`,
                   ...(isSpawning
                     ? {
                         animation:
@@ -130,6 +144,7 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
                     size={BASE_CLAWD_SIZE}
                   />
                 </div>
+                <BarBubble phase={s.phase} lastActivity={s.last_activity} />
                 {s.subagent_count > 0 && (
                   <div className={miniBarRow}>
                     {Array.from({ length: Math.min(s.subagent_count, 3) }).map((_, i) => {
@@ -153,7 +168,6 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
                     })}
                   </div>
                 )}
-                <BarBubble phase={s.phase} lastActivity={s.last_activity} />
               </div>
             );
           })}

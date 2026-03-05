@@ -42,6 +42,8 @@ export interface ChatMessage {
   content: string;
   tool_name?: string;
   tool_status?: string;
+  subagent_type?: string;
+  subagent_prompt?: string;
   timestamp: number;
 }
 
