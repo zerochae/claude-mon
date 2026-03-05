@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useActivityDismissal } from "./useActivityDismissal";
+import { useActivityDismissal } from "@/hooks/useActivityDismissal";
 import type { SessionState } from "@/services/tauri";
 import type { SessionPhase } from "@/constants/phases";
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useChatMessages } from "./useChatMessages";
+import { useChatMessages } from "@/hooks/useChatMessages";
 import type { ChatMessage } from "@/services/tauri";
 
 const mockGetChatMessages =

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useBubbleLifecycle } from "./useBubbleLifecycle";
+import { useBubbleLifecycle } from "@/hooks/useBubbleLifecycle";
 
 const ACTIVE = new Set(["processing", "running_tool", "compacting"]);
 const DONE = new Set(["idle"]);

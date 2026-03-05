@@ -9,7 +9,7 @@ import {
   BASE_BAR_H,
   PAD_L,
   type ClawdPos1D,
-} from "./useClawdBar.utils";
+} from "@/hooks/useClawdBar.utils";
 import type { SessionState } from "@/services/tauri";
 import type { SessionPhase } from "@/constants/phases";
 

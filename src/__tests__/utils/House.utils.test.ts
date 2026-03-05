@@ -5,7 +5,7 @@ import {
   hasCollision,
   resolveOverlaps2D,
   type ClawdPos2D,
-} from "./House.utils";
+} from "@/utils/House.utils";
 
 describe("getMoveParams", () => {
   it("returns high chance and range for processing", () => {

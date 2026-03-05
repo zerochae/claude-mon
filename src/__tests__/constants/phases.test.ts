@@ -5,7 +5,7 @@ import {
   DONE_PHASES,
   BAR_VISIBLE_PHASES,
   type SessionPhase,
-} from "./phases";
+} from "@/constants/phases";
 
 const ALL_PHASES: SessionPhase[] = [
   "idle",

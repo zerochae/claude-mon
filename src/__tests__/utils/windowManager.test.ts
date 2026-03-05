@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { easeOutCubic, clampToScreen } from "./windowManager";
+import { easeOutCubic, clampToScreen } from "@/utils/windowManager";
 
 describe("easeOutCubic", () => {
   it("returns 0 at t=0", () => {
