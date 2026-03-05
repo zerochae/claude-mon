@@ -40,26 +40,26 @@ export function Bubble({
   dismissed,
   disableStale,
 }: BubbleProps) {
-  const isHouse = variant === "stage";
-  const donePhasesSet = isHouse ? SB_DONE_PHASES : DONE_PHASES;
+  const isStage = variant === "stage";
+  const donePhasesSet = isStage ? SB_DONE_PHASES : DONE_PHASES;
 
   const { visible, fading, fadeOutMs, now } = useBubbleLifecycle({
     phase,
     lastActivity,
     donePhasesSet,
     activePhasesSet: ACTIVE_PHASES,
-    doneVisibleSec: isHouse ? DONE_VISIBLE_SEC : undefined,
+    doneVisibleSec: isStage ? DONE_VISIBLE_SEC : undefined,
     fadeOutMs: FADE_OUT_MS,
-    staleThresholdSec: isHouse ? STALE_THRESHOLD_SEC : undefined,
-    disableStale: isHouse ? (disableStale ?? false) || (dismissed ?? false) : true,
+    staleThresholdSec: isStage ? STALE_THRESHOLD_SEC : undefined,
+    disableStale: isStage ? (disableStale ?? false) || (dismissed ?? false) : true,
   });
 
   const isActivePhase = ACTIVE_PHASES.has(
     phase as "processing" | "running_tool" | "compacting",
   );
   const isStale =
-    isHouse && !disableStale && isActivePhase && now - lastActivity > STALE_THRESHOLD_SEC;
-  const effectivePhase = isHouse && dismissed && isStale ? "idle" : phase;
+    isStage && !disableStale && isActivePhase && now - lastActivity > STALE_THRESHOLD_SEC;
+  const effectivePhase = isStage && dismissed && isStale ? "idle" : phase;
 
   if (phase === "ended" || !visible) return null;
 
@@ -110,7 +110,7 @@ export function Bubble({
         }
       >
         {content}
-        {isHouse && <div className={tailStyle} />}
+        {isStage && <div className={tailStyle} />}
       </div>
     </div>
   );
