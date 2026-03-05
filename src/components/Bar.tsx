@@ -1,17 +1,11 @@
-import { useState, useEffect } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Clawd } from "@/components/Clawd";
 import { SessionState } from "@/services/tauri";
 import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
-import {
-  useClawdBar,
-  CLAWD_BAR_WANDER_MS,
-  CLAWD_BAR_RUN_MS,
-} from "@/hooks/useClawdBar";
+import { CLAWD_BAR_WANDER_MS, CLAWD_BAR_RUN_MS } from "@/hooks/useClawdBar";
 import { Bubble } from "@/components/Bubble";
-import { filterActive, activeKey } from "@/utils/session.utils";
+import { useBar } from "@/hooks/useBar";
 import {
-  BASE_BAR_HEIGHT,
   BASE_CLAWD_SIZE,
   MINI_BAR_CLAWD_SIZE,
   collapsedBar,
@@ -35,33 +29,19 @@ interface BarProps {
 }
 
 export function Bar({ sessions, barHeight, onToggle, onSelectSession }: BarProps) {
-  const [activeSessions, setActiveSessions] = useState(() =>
-    filterActive(sessions),
-  );
-
-  useEffect(() => {
-    const sync = () => {
-      const next = filterActive(sessions);
-      setActiveSessions((prev) =>
-        activeKey(prev) === activeKey(next) ? prev : next,
-      );
-    };
-    sync();
-    const timer = setInterval(sync, 5000);
-    return () => clearInterval(timer);
-  }, [sessions]);
-
   const {
+    activeSessions,
     positions,
     runningId,
     fadingIds,
     spawningIds,
     overflowIds,
     containerRef,
-  } = useClawdBar(activeSessions, barHeight);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const hasSessions = activeSessions.length > 0;
-  const unitScale = barHeight / BASE_BAR_HEIGHT;
+    hoveredId,
+    setHoveredId,
+    hasSessions,
+    unitScale,
+  } = useBar(sessions, barHeight);
 
   return (
     <div
