@@ -4,18 +4,18 @@ import { useSessions } from "@/hooks/useSessions";
 import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
 import { Header } from "@/components/Header";
-import { House } from "@/components/House";
+import { Stage } from "@/components/Stage";
 import { Detail } from "@/components/Detail";
 import { Chat } from "@/components/Chat";
 import { Settings } from "@/components/Settings";
 import { MOTION } from "@/constants/motion";
 
-type View = "house" | "detail" | "chat" | "settings";
+type View = "stage" | "detail" | "chat" | "settings";
 
 export default function App() {
   const { sessions, approve, deny } = useSessions();
   const { settings, updateSettings, resetColorOverrides } = useSettings();
-  const [view, setView] = useState<View>("house");
+  const [view, setView] = useState<View>("stage");
   const vw = settings.viewWidths;
   const barWidth = vw.bar;
   const barHeight = settings.barHeight;
@@ -24,7 +24,7 @@ export default function App() {
   );
 
   const viewWidth = useCallback(
-    (v: View) => vw[v === "detail" ? "house" : v],
+    (v: View) => vw[v === "detail" ? "stage" : v],
     [vw],
   );
 
@@ -55,8 +55,8 @@ export default function App() {
 
   const handleBack = () => {
     const prevW = activeWidth;
-    const nextW = vw.house;
-    setView("house");
+    const nextW = vw.stage;
+    setView("stage");
     setSelectedSessionId(null);
     if (expanded) animateToView(prevW, nextW);
   };
@@ -69,7 +69,7 @@ export default function App() {
   };
 
   const handleGearClick = () => {
-    const nextView = view === "settings" ? "house" : "settings";
+    const nextView = view === "settings" ? "stage" : "settings";
     const nextW = viewWidth(nextView);
     setView(nextView);
     if (!expanded) {
@@ -89,7 +89,7 @@ export default function App() {
         onSelectSession={handleSelectSession}
         expanded={expanded}
         settingsActive={view === "settings"}
-        showBack={view !== "house"}
+        showBack={view !== "stage"}
         sessions={sessions}
         barHeight={barHeight}
       />
@@ -111,8 +111,8 @@ export default function App() {
               onUpdate={updateSettings}
               onResetColors={resetColorOverrides}
             />
-          ) : view === "house" || !selectedSession ? (
-            <House
+          ) : view === "stage" || !selectedSession ? (
+            <Stage
               sessions={sessions}
               onSelectSession={handleSelectSession}
             />

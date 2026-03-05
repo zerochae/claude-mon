@@ -45,7 +45,7 @@ export function Detail({
 
       <div className={clawdCenter}>
         <Bubble
-          variant="house"
+          variant="stage"
           phase={session.phase}
           lastActivity={session.last_activity}
         />

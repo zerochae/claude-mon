@@ -25,7 +25,7 @@ export const VIEW_WIDTH_ITEMS: {
   label: string;
 }[] = [
   { key: "bar", label: "Bar Width" },
-  { key: "house", label: "House Width" },
+  { key: "stage", label: "Stage Width" },
   { key: "chat", label: "Chat Width" },
   { key: "settings", label: "Settings Width" },
 ];

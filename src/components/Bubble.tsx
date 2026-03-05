@@ -16,13 +16,13 @@ import {
 } from "@/styles/Bubble.styles";
 import { ui } from "@/constants/glyph";
 
-type BubbleVariant = "bar" | "chat" | "house";
+type BubbleVariant = "bar" | "chat" | "stage";
 type BubbleSize = "lg" | "md" | "sm";
 
 const VARIANT_SIZE: Record<BubbleVariant, BubbleSize> = {
   bar: "lg",
   chat: "sm",
-  house: "md",
+  stage: "md",
 };
 
 interface BubbleProps {
@@ -40,7 +40,7 @@ export function Bubble({
   dismissed,
   disableStale,
 }: BubbleProps) {
-  const isHouse = variant === "house";
+  const isHouse = variant === "stage";
   const donePhasesSet = isHouse ? SB_DONE_PHASES : DONE_PHASES;
 
   const { visible, fading, fadeOutMs, now } = useBubbleLifecycle({

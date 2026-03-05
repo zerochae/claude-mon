@@ -19,14 +19,14 @@ import {
   clawdLabel,
   miniClawdRow,
   miniClawdWrap,
-} from "@/styles/House.styles";
+} from "@/styles/Stage.styles";
 
-interface HouseProps {
+interface StageProps {
   sessions: SessionState[];
   onSelectSession: (session: SessionState) => void;
 }
 
-export function House({ sessions, onSelectSession }: HouseProps) {
+export function Stage({ sessions, onSelectSession }: StageProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const positions = useClawdPositions(sessions, containerRef);
@@ -82,7 +82,7 @@ export function House({ sessions, onSelectSession }: HouseProps) {
               <div className={clawdRow}>
                 <div>
                   <Bubble
-                    variant="house"
+                    variant="stage"
                     phase={session.phase}
                     lastActivity={session.last_activity}
                     dismissed={dismissedIds.has(session.session_id)}

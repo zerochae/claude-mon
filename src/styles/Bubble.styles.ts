@@ -77,7 +77,7 @@ export const wrapper = cva({
     variant: {
       bar: { marginTop: "-20px", marginLeft: "4px" },
       chat: { marginLeft: "6px", alignSelf: "flex-start" },
-      house: { pos: "relative" },
+      stage: { pos: "relative" },
     },
   },
 });
@@ -122,7 +122,7 @@ export const bubble = cva({
           borderRadius: "1px",
         },
       },
-      house: {
+      stage: {
         pos: "absolute",
         bottom: "100%",
         left: "50%",

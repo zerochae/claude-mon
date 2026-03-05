@@ -7,7 +7,7 @@ import {
   PAD_Y_BOTTOM,
   HITBOX_X,
   HITBOX_Y,
-} from "@/styles/House.styles";
+} from "@/styles/Stage.styles";
 
 export interface ClawdPos2D {
   x: number;

@@ -10,7 +10,7 @@ export type DockPosition = "none" | "top" | "bottom";
 
 export interface ViewWidths {
   bar: number;
-  house: number;
+  stage: number;
   chat: number;
   settings: number;
 }
@@ -33,7 +33,7 @@ export interface AppSettings {
 
 export const DEFAULT_VIEW_WIDTHS: ViewWidths = {
   bar: 480,
-  house: 480,
+  stage: 480,
   chat: 480,
   settings: 720,
 };
@@ -125,7 +125,7 @@ export function useSettings() {
             raw.viewWidths = {
               ...DEFAULT_VIEW_WIDTHS,
               bar: w,
-              house: w,
+              stage: w,
               chat: w,
             };
             delete raw.windowWidth;

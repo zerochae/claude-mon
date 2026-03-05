@@ -8,13 +8,13 @@ import {
   PAD_Y_TOP,
   PAD_Y_BOTTOM,
   WANDER_INTERVAL,
-} from "@/styles/House.styles";
+} from "@/styles/Stage.styles";
 import {
   type ClawdPos2D,
   getMoveParams,
   hasCollision,
   resolveOverlaps2D,
-} from "@/utils/House.utils";
+} from "@/utils/Stage.utils";
 
 export function useClawdPositions(
   sessions: SessionState[],
