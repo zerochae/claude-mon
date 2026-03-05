@@ -35,12 +35,12 @@ export function useSessions() {
 
   const approve = (sessionId: string, toolUseId: string) => {
     if (!isTauri) return Promise.resolve();
-    return approvePermission(sessionId, toolUseId);
+    return approvePermission(sessionId, toolUseId).catch(() => undefined);
   };
 
   const deny = (sessionId: string, toolUseId: string, reason?: string) => {
     if (!isTauri) return Promise.resolve();
-    return denyPermission(sessionId, toolUseId, reason);
+    return denyPermission(sessionId, toolUseId, reason).catch(() => undefined);
   };
 
   return { sessions, approve, deny };

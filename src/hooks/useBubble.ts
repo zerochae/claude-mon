@@ -35,14 +35,19 @@ export function useBubble({
     doneVisibleSec: isStage ? DONE_VISIBLE_SEC : undefined,
     fadeOutMs: FADE_OUT_MS,
     staleThresholdSec: isStage ? STALE_THRESHOLD_SEC : undefined,
-    disableStale: isStage ? (disableStale ?? false) || (dismissed ?? false) : true,
+    disableStale: isStage
+      ? (disableStale ?? false) || (dismissed ?? false)
+      : true,
   });
 
   const isActivePhase = ACTIVE_PHASES.has(
     phase as "processing" | "running_tool" | "compacting",
   );
   const isStale =
-    isStage && !disableStale && isActivePhase && now - lastActivity > STALE_THRESHOLD_SEC;
+    isStage &&
+    !disableStale &&
+    isActivePhase &&
+    now - lastActivity > STALE_THRESHOLD_SEC;
   const effectivePhase = isStage && dismissed && isStale ? "idle" : phase;
 
   return {

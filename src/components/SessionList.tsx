@@ -13,15 +13,24 @@ import {
   sessionName,
   sessionPhase,
   actionButtons,
+  approvalRow,
 } from "@/styles/SessionList.styles";
 
 interface SessionListProps {
   sessions: SessionState[];
   onSelectSession: (session: SessionState) => void;
+  onApprove?: (sessionId: string, toolUseId: string) => void;
+  onDeny?: (sessionId: string, toolUseId: string) => void;
   onHover?: (sessionId: string | null) => void;
 }
 
-export function SessionList({ sessions, onSelectSession, onHover }: SessionListProps) {
+export function SessionList({
+  sessions,
+  onSelectSession,
+  onApprove,
+  onDeny,
+  onHover,
+}: SessionListProps) {
   const activeSessions = sessions.filter((s) => s.phase !== "ended");
   const waitingSessions = sessions.filter(
     (s) =>
@@ -61,6 +70,36 @@ export function SessionList({ sessions, onSelectSession, onHover }: SessionListP
                 </div>
               </div>
               <div className={actionButtons}>
+                {isUrgent &&
+                  session.tool_use_id &&
+                  (() => {
+                    const tid = session.tool_use_id;
+                    return (
+                      <div className={approvalRow}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeny?.(session.session_id, tid);
+                          }}
+                        >
+                          Deny
+                        </Button>
+                        <Button
+                          variant="solid"
+                          size="sm"
+                          color="success"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onApprove?.(session.session_id, tid);
+                          }}
+                        >
+                          Allow
+                        </Button>
+                      </div>
+                    );
+                  })()}
                 <Button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -68,12 +107,7 @@ export function SessionList({ sessions, onSelectSession, onHover }: SessionListP
                   }}
                   title="Detail"
                 >
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                  >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <circle
                       cx="7"
                       cy="7"

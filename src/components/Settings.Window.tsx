@@ -95,9 +95,7 @@ export function SettingsWindow({ settings, onUpdate }: SettingsWindowProps) {
           <span className={rowLabel}>Hide from Dock</span>
           <Button
             className={anchorBtn({ active: settings.accessoryMode })}
-            onClick={() =>
-              onUpdate({ accessoryMode: !settings.accessoryMode })
-            }
+            onClick={() => onUpdate({ accessoryMode: !settings.accessoryMode })}
           >
             {settings.accessoryMode ? "On" : "Off"}
           </Button>

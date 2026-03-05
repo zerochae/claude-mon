@@ -10,7 +10,8 @@ export const PAD_Y_TOP = BUBBLE_HEIGHT + 6;
 export const PAD_Y_BOTTOM = LABEL_HEIGHT + 4;
 export const HITBOX_X = CLAWD_SIZE + 20;
 export const MINI_ROW_HEIGHT = MINI_CLAWD_SIZE + 4;
-export const HITBOX_Y = CLAWD_SIZE + BUBBLE_HEIGHT + LABEL_HEIGHT + MINI_ROW_HEIGHT + 8;
+export const HITBOX_Y =
+  CLAWD_SIZE + BUBBLE_HEIGHT + LABEL_HEIGHT + MINI_ROW_HEIGHT + 8;
 export const WANDER_INTERVAL = 2200;
 
 export const emptyState = css({

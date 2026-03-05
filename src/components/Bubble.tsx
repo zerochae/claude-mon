@@ -1,7 +1,4 @@
-import {
-  ProcessingSpinner,
-  CompactingDots,
-} from "@/components/Spinners";
+import { ProcessingSpinner, CompactingDots } from "@/components/Spinners";
 import {
   phaseContent,
   wrapper,
@@ -52,12 +49,16 @@ export function Bubble({
     case "processing":
     case "running_tool":
       content = (
-        <ProcessingSpinner className={phaseContent({ phase: "processing", size })} />
+        <ProcessingSpinner
+          className={phaseContent({ phase: "processing", size })}
+        />
       );
       break;
     case "compacting":
       content = (
-        <CompactingDots className={phaseContent({ phase: "compacting", size })} />
+        <CompactingDots
+          className={phaseContent({ phase: "compacting", size })}
+        />
       );
       break;
     case "waiting_for_approval":

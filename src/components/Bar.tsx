@@ -28,7 +28,12 @@ interface BarProps {
   onSelectSession?: (session: SessionState) => void;
 }
 
-export function Bar({ sessions, barHeight, onToggle, onSelectSession }: BarProps) {
+export function Bar({
+  sessions,
+  barHeight,
+  onToggle,
+  onSelectSession,
+}: BarProps) {
   const {
     activeSessions,
     positions,
@@ -80,14 +85,21 @@ export function Bar({ sessions, barHeight, onToggle, onSelectSession }: BarProps
                 style={{
                   left: pos.x,
                   cursor: "pointer",
-                  zIndex: isFading || isOverflow ? 0 : hoveredId === s.session_id ? 10 : 1,
+                  zIndex:
+                    isFading || isOverflow
+                      ? 0
+                      : hoveredId === s.session_id
+                        ? 10
+                        : 1,
                   opacity: isFading || isOverflow ? 0 : 1,
-                  transform: hoveredId === s.session_id
-                    ? `scale(${unitScale * 1.25})`
-                    : `scale(${unitScale})`,
-                  filter: hoveredId === s.session_id
-                    ? `drop-shadow(0 0 6px ${getClawdColor(s.color_index)}66)`
-                    : undefined,
+                  transform:
+                    hoveredId === s.session_id
+                      ? `scale(${unitScale * 1.25})`
+                      : `scale(${unitScale})`,
+                  filter:
+                    hoveredId === s.session_id
+                      ? `drop-shadow(0 0 6px ${getClawdColor(s.color_index)}66)`
+                      : undefined,
                   transition: isRunning
                     ? `left ${CLAWD_BAR_RUN_MS}ms ease-in-out, opacity 1.4s ease-out, transform 0.15s ease, filter 0.15s ease`
                     : `left ${CLAWD_BAR_WANDER_MS}ms ease-in-out, opacity 1.4s ease-out, transform 0.15s ease, filter 0.15s ease`,
@@ -110,28 +122,41 @@ export function Bar({ sessions, barHeight, onToggle, onSelectSession }: BarProps
                     size={BASE_CLAWD_SIZE}
                   />
                 </div>
-                <Bubble variant="bar" phase={s.phase} lastActivity={s.last_activity} />
+                <Bubble
+                  variant="bar"
+                  phase={s.phase}
+                  lastActivity={s.last_activity}
+                />
                 {s.subagent_count > 0 && (
                   <div className={miniBarRow}>
-                    {Array.from({ length: Math.min(s.subagent_count, 3) }).map((_, i) => {
-                      const miniPhases = ["processing", "compacting", "idle"] as const;
-                      return (
-                        <div
-                          key={i}
-                          className={miniBarWrap}
-                          style={{
-                            animationDelay: `${i * 0.2}s`,
-                            transform: i % 2 === 0 ? "scaleX(1)" : "scaleX(-1)",
-                          }}
-                        >
-                          <Clawd
-                            color={getClawdColor((s.color_index + i + 3) % COLOR_COUNT)}
-                            phase={miniPhases[i % miniPhases.length]}
-                            size={MINI_BAR_CLAWD_SIZE}
-                          />
-                        </div>
-                      );
-                    })}
+                    {Array.from({ length: Math.min(s.subagent_count, 3) }).map(
+                      (_, i) => {
+                        const miniPhases = [
+                          "processing",
+                          "compacting",
+                          "idle",
+                        ] as const;
+                        return (
+                          <div
+                            key={i}
+                            className={miniBarWrap}
+                            style={{
+                              animationDelay: `${i * 0.2}s`,
+                              transform:
+                                i % 2 === 0 ? "scaleX(1)" : "scaleX(-1)",
+                            }}
+                          >
+                            <Clawd
+                              color={getClawdColor(
+                                (s.color_index + i + 3) % COLOR_COUNT,
+                              )}
+                              phase={miniPhases[i % miniPhases.length]}
+                              size={MINI_BAR_CLAWD_SIZE}
+                            />
+                          </div>
+                        );
+                      },
+                    )}
                   </div>
                 )}
               </div>

@@ -151,6 +151,13 @@ export const chatHeaderLeft = css({
   gap: "2px",
 });
 
+export const chatClawdWrap = css({
+  cursor: "pointer",
+  transition: "transform 150ms cubic-bezier(0.2, 0, 0, 1)",
+  _hover: { transform: "scale(1.15)" },
+  _active: { transform: "scale(0.95)" },
+});
+
 export const chatMiniRow = css({
   display: "flex",
   alignItems: "flex-end",
@@ -161,7 +168,6 @@ export const chatMiniRow = css({
 export const chatMiniWrap = css({
   animation: "clawd-bounce 2s ease-in-out infinite",
 });
-
 
 export const chatHeaderLabel = css({
   fontSize: "0.72rem",
@@ -199,6 +205,27 @@ export const inputBar = css({
   flexShrink: 0,
 });
 
+export const approvalBar = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  padding: "6px 12px",
+  borderBottom: "0.5px solid token(colors.hairline)",
+  bg: "surfaceOverlay",
+  flexShrink: 0,
+  animation: "fade-in 150ms cubic-bezier(0.2, 0, 0, 1)",
+});
+
+export const approvalToolName = css({
+  flex: 1,
+  fontSize: "11px",
+  color: "text",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+});
+
 export const chatInput = css({
   flex: 1,
   bg: "surfaceOverlay",
@@ -216,4 +243,3 @@ export const chatInput = css({
     shadow: "0 0 0 2px rgba(97, 175, 239, 0.15)",
   },
 });
-

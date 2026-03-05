@@ -19,10 +19,16 @@ interface SubagentMessageProps {
   sessionColorIndex: number;
 }
 
-export function SubagentMessage({ message, index, sessionColorIndex }: SubagentMessageProps) {
+export function SubagentMessage({
+  message,
+  index,
+  sessionColorIndex,
+}: SubagentMessageProps) {
   const [showPrompt, setShowPrompt] = useState(false);
   const agentType = message.subagent_type ?? "";
-  const shortName = agentType.includes(":") ? (agentType.split(":").pop() ?? agentType) : agentType;
+  const shortName = agentType.includes(":")
+    ? (agentType.split(":").pop() ?? agentType)
+    : agentType;
   const isDone = message.tool_status === "done";
   const miniPhases = ["processing", "compacting", "idle"] as const;
   const phase = isDone ? miniPhases[index % miniPhases.length] : "processing";

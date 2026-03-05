@@ -24,7 +24,6 @@ const PHASE_PRIORITY: Record<string, number> = {
 
 export function sortByPriority(sessions: SessionState[]) {
   return [...sessions].sort(
-    (a, b) =>
-      (PHASE_PRIORITY[a.phase] ?? 3) - (PHASE_PRIORITY[b.phase] ?? 3),
+    (a, b) => (PHASE_PRIORITY[a.phase] ?? 3) - (PHASE_PRIORITY[b.phase] ?? 3),
   );
 }

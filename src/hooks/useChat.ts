@@ -8,7 +8,11 @@ export function useChat(sessionId: string, cwd: string, phase: string) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { messages, loading, isActive } = useChatMessages(sessionId, cwd, phase);
+  const { messages, loading, isActive } = useChatMessages(
+    sessionId,
+    cwd,
+    phase,
+  );
   const groups = groupMessages(messages);
 
   useEffect(() => {

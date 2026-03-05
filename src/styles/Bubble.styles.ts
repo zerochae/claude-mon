@@ -39,7 +39,11 @@ export const phaseContent = cva({
   },
   compoundVariants: [
     { phase: "processing", size: "lg", css: { fontSize: "15px" } },
-    { phase: "processing", size: "md", css: { fontSize: "13px", letterSpacing: "1px" } },
+    {
+      phase: "processing",
+      size: "md",
+      css: { fontSize: "13px", letterSpacing: "1px" },
+    },
     { phase: "processing", size: "sm", css: { fontSize: "11px" } },
     { phase: "compacting", size: "lg", css: { fontSize: "13px" } },
     { phase: "compacting", size: "md", css: { fontSize: "11px" } },

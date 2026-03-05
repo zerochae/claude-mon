@@ -2,6 +2,7 @@ import { css } from "@styled-system/css";
 import { SessionState } from "@/services/tauri";
 import { Bar } from "@/components/Bar";
 import { Button } from "@/components/Button";
+import { Glyph } from "@/components/Glyph";
 import { ui } from "@/constants/glyph";
 import {
   DEFAULT_BAR_HEIGHT,
@@ -73,25 +74,28 @@ export function Header({
             e.stopPropagation();
             onCollapse();
           }}
-          style={{ fontSize: "14px", fontFamily: "SpaceMonoNerd" }}
         >
-          {ui.minimize}
+          <Glyph size={14}>{ui.minimize}</Glyph>
         </Button>
         <Button
           active={!!settingsActive}
-          style={{ fontSize: "14px", fontFamily: "SpaceMonoNerd" }}
           onClick={(e) => {
             e.stopPropagation();
             onGearClick();
           }}
         >
-          &#9881;
+          <Glyph size={14}>&#9881;</Glyph>
         </Button>
       </div>
     );
   }
 
   return (
-    <Bar sessions={sessions} barHeight={barHeight} onToggle={onToggle} onSelectSession={onSelectSession} />
+    <Bar
+      sessions={sessions}
+      barHeight={barHeight}
+      onToggle={onToggle}
+      onSelectSession={onSelectSession}
+    />
   );
 }

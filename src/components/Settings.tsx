@@ -11,11 +11,7 @@ interface SettingsProps {
   onResetColors: () => void;
 }
 
-export function Settings({
-  settings,
-  onUpdate,
-  onResetColors,
-}: SettingsProps) {
+export function Settings({ settings, onUpdate, onResetColors }: SettingsProps) {
   return (
     <div className={columnsContainer}>
       <SettingsTheme theme={settings.theme} onUpdate={onUpdate} />

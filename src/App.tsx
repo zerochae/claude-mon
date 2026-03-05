@@ -38,7 +38,12 @@ export default function App() {
     handleBack,
     handleOpenDetail,
     handleGearClick,
-  } = useNavigation(sessions, vw, { expanded, activeWidth, expand, animateToView });
+  } = useNavigation(sessions, vw, {
+    expanded,
+    activeWidth,
+    expand,
+    animateToView,
+  });
 
   return (
     <div className="widget-container">
@@ -76,6 +81,8 @@ export default function App() {
             <Stage
               sessions={sessions}
               onSelectSession={handleSelectSession}
+              onApprove={(sid, tid) => void approve(sid, tid)}
+              onDeny={(sid, tid) => void deny(sid, tid)}
             />
           ) : view === "chat" ? (
             <Chat
@@ -86,7 +93,12 @@ export default function App() {
               projectName={selectedSession.project_name}
               lastActivity={selectedSession.last_activity}
               subagentCount={selectedSession.subagent_count}
+              toolName={selectedSession.tool_name}
+              toolInput={selectedSession.tool_input}
+              toolUseId={selectedSession.tool_use_id}
               onOpenDetail={handleOpenDetail}
+              onApprove={(sid, tid) => void approve(sid, tid)}
+              onDeny={(sid, tid) => void deny(sid, tid)}
             />
           ) : (
             <Detail

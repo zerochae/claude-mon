@@ -30,9 +30,11 @@ async fn get_sessions(state: State<'_, AppState>) -> Result<Vec<SessionState>, S
 
 #[tauri::command]
 async fn approve_permission(
+    session_id: String,
     tool_use_id: String,
     state: State<'_, AppState>,
 ) -> Result<bool, String> {
+    let _ = session_id;
     Ok(socket_server::respond_to_permission(
         tool_use_id,
         "allow".to_string(),
@@ -44,10 +46,12 @@ async fn approve_permission(
 
 #[tauri::command]
 async fn deny_permission(
+    session_id: String,
     tool_use_id: String,
     reason: Option<String>,
     state: State<'_, AppState>,
 ) -> Result<bool, String> {
+    let _ = session_id;
     Ok(socket_server::respond_to_permission(
         tool_use_id,
         "deny".to_string(),

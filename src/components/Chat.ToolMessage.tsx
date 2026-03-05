@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { ui } from "@/constants/glyph";
 import { Markdown } from "@/components/Markdown";
+import { Glyph } from "@/components/Glyph";
 import { ChatMessage } from "@/services/tauri";
 import { Button } from "@/components/Button";
 import {
@@ -18,14 +20,14 @@ export function ToolMessage({ message }: { message: ChatMessage }) {
   return (
     <div className={toolWrap}>
       <Button onClick={() => setExpanded(!expanded)} className={toolButton}>
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 12 12"
-          fill="none"
-          className={svgFlexShrink}
-        >
-          {isRunning ? (
+        {isRunning ? (
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+            className={svgFlexShrink}
+          >
             <circle
               cx="6"
               cy="6"
@@ -44,7 +46,15 @@ export function ToolMessage({ message }: { message: ChatMessage }) {
                 repeatCount="indefinite"
               />
             </circle>
-          ) : isError ? (
+          </svg>
+        ) : isError ? (
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+            className={svgFlexShrink}
+          >
             <circle
               cx="6"
               cy="6"
@@ -52,17 +62,12 @@ export function ToolMessage({ message }: { message: ChatMessage }) {
               fill="var(--colors-red, #E06C75)"
               opacity="0.8"
             />
-          ) : (
-            <path
-              d="M3 6l2 2 4-4"
-              stroke="var(--colors-green, #98c379)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="none"
-            />
-          )}
-        </svg>
+          </svg>
+        ) : (
+          <Glyph size={10} color="var(--colors-green, #98c379)">
+            {ui.oct_square_fill}
+          </Glyph>
+        )}
         <span>{message.tool_name}</span>
         <svg
           width="8"

@@ -34,9 +34,7 @@ export function SettingsTheme({ theme, onUpdate }: SettingsThemeProps) {
                 className={previewStrip}
                 style={{ border: `1px solid ${colors.border}` }}
               >
-                <div
-                  style={{ width: 10, height: 16, background: colors.bg }}
-                />
+                <div style={{ width: 10, height: 16, background: colors.bg }} />
                 {PREVIEW_KEYS.map((key) => (
                   <div
                     key={key}

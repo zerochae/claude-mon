@@ -8,7 +8,7 @@ export interface SessionState {
   project_name: string;
   phase: SessionPhase;
   tool_name: string | null;
-  tool_input: string | null;
+  tool_input: Record<string, unknown> | null;
   tool_use_id: string | null;
   pid: number | null;
   tty: string | null;
@@ -24,16 +24,16 @@ export function getSessions(): Promise<SessionState[]> {
 export function approvePermission(
   sessionId: string,
   toolUseId: string,
-): Promise<undefined> {
-  return invoke<undefined>("approve_permission", { sessionId, toolUseId });
+): Promise<boolean> {
+  return invoke<boolean>("approve_permission", { sessionId, toolUseId });
 }
 
 export function denyPermission(
   sessionId: string,
   toolUseId: string,
   reason?: string,
-): Promise<undefined> {
-  return invoke<undefined>("deny_permission", { sessionId, toolUseId, reason });
+): Promise<boolean> {
+  return invoke<boolean>("deny_permission", { sessionId, toolUseId, reason });
 }
 
 export interface ChatMessage {

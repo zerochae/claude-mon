@@ -20,12 +20,7 @@ const LEG_OFFSETS = [
 
 const canvasStyle = css({ imageRendering: "pixelated" });
 
-export function Clawd({
-  color,
-  phase,
-  size = 64,
-  onClick,
-}: ClawdCanvasProps) {
+export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameRef = useRef<number>(0);
   const legPhaseRef = useRef(0);

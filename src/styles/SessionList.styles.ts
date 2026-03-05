@@ -79,3 +79,9 @@ export const actionButtons = css({
   gap: "4px",
   flexShrink: 0,
 });
+
+export const approvalRow = css({
+  display: "flex",
+  gap: "4px",
+  flexShrink: 0,
+});

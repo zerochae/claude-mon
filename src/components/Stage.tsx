@@ -22,9 +22,16 @@ import {
 interface StageProps {
   sessions: SessionState[];
   onSelectSession: (session: SessionState) => void;
+  onApprove?: (sessionId: string, toolUseId: string) => void;
+  onDeny?: (sessionId: string, toolUseId: string) => void;
 }
 
-export function Stage({ sessions, onSelectSession }: StageProps) {
+export function Stage({
+  sessions,
+  onSelectSession,
+  onApprove,
+  onDeny,
+}: StageProps) {
   const {
     containerRef,
     hoveredId,
@@ -104,9 +111,17 @@ export function Stage({ sessions, onSelectSession }: StageProps) {
                 </div>
                 {session.subagent_count > 0 && (
                   <div className={miniClawdRow}>
-                    {Array.from({ length: Math.min(session.subagent_count, 5) }).map((_, i) => {
-                      const miniColor = getClawdColor((session.color_index + i + 3) % COLOR_COUNT);
-                      const miniPhases = ["processing", "compacting", "idle"] as const;
+                    {Array.from({
+                      length: Math.min(session.subagent_count, 5),
+                    }).map((_, i) => {
+                      const miniColor = getClawdColor(
+                        (session.color_index + i + 3) % COLOR_COUNT,
+                      );
+                      const miniPhases = [
+                        "processing",
+                        "compacting",
+                        "idle",
+                      ] as const;
                       const facingRight = i % 2 === 0;
                       return (
                         <div
@@ -139,6 +154,8 @@ export function Stage({ sessions, onSelectSession }: StageProps) {
       <SessionList
         sessions={sessions}
         onSelectSession={onSelectSession}
+        onApprove={onApprove}
+        onDeny={onDeny}
         onHover={setHoveredId}
       />
     </div>

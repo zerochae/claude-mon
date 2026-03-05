@@ -28,12 +28,7 @@ interface DetailProps {
   onDeny: (sessionId: string, toolUseId: string) => void;
 }
 
-export function Detail({
-  session,
-  onBack,
-  onApprove,
-  onDeny,
-}: DetailProps) {
+export function Detail({ session, onBack, onApprove, onDeny }: DetailProps) {
   const color = getClawdColor(session.color_index);
   const phaseLabel = PHASE_LABELS[session.phase];
 
@@ -81,7 +76,9 @@ export function Detail({
       {session.phase === "waiting_for_approval" && session.tool_use_id && (
         <div className={approvalSection}>
           {session.tool_input && (
-            <div className={toolInputBox}>{session.tool_input}</div>
+            <div className={toolInputBox}>
+              {JSON.stringify(session.tool_input, null, 2)}
+            </div>
           )}
           <PermissionActions
             onAllow={() => {

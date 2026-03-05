@@ -10,7 +10,10 @@ interface MessageGroupProps {
   sessionColorIndex: number;
 }
 
-export function MessageGroup({ messages, sessionColorIndex }: MessageGroupProps) {
+export function MessageGroup({
+  messages,
+  sessionColorIndex,
+}: MessageGroupProps) {
   const role = messages[0].role;
   return (
     <div className={messageGroup({ role })}>
@@ -22,7 +25,14 @@ export function MessageGroup({ messages, sessionColorIndex }: MessageGroupProps)
             return <AssistantMessage key={msg.id} message={msg} />;
           case "tool":
             if (msg.subagent_type) {
-              return <SubagentMessage key={msg.id} message={msg} index={i} sessionColorIndex={sessionColorIndex} />;
+              return (
+                <SubagentMessage
+                  key={msg.id}
+                  message={msg}
+                  index={i}
+                  sessionColorIndex={sessionColorIndex}
+                />
+              );
             }
             return <ToolMessage key={msg.id} message={msg} />;
         }
