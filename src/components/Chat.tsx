@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Markdown } from "@/components/Markdown";
 import { ChatMessage, sendMessage } from "@/lib/tauri";
 import { useChatMessages } from "@/hooks/useChatMessages";
-import { ProcessingSpinner } from "@/components/PhaseIndicators";
+import { ProcessingSpinner } from "@/components/Spinners";
 import { Loading } from "@/components/Loading";
 import { Button } from "@/components/Button";
 import { Clawd } from "@/components/Clawd";

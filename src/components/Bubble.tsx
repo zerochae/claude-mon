@@ -2,7 +2,7 @@ import { useBubbleLifecycle } from "@/hooks/useBubbleLifecycle";
 import {
   ProcessingSpinner,
   CompactingDots,
-} from "@/components/PhaseIndicators";
+} from "@/components/Spinners";
 import { ACTIVE_PHASES, DONE_PHASES } from "@/lib/phases";
 import {
   STALE_THRESHOLD_SEC,
