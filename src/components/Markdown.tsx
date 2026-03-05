@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ui, extensions } from "@/constants/glyph";
-import { highlight } from "@/utils/shiki-highlighter";
+import { extensions } from "@/constants/glyph";
+import { CALLOUT_ICONS_MAP } from "@/constants/callout";
+import { parseCallout, preInner } from "@/utils/markdown.utils";
+import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
 import {
   CALLOUT_COLORS,
-  MONO,
   type ColorToken,
   blockquoteRecipe,
   calloutHeading,
   calloutIcon,
   calloutContent,
-  shikiWrapClass,
   markdownWrap,
   h1Style,
   h2Style,
@@ -42,129 +42,6 @@ import {
 interface MarkdownProps {
   content: string;
 }
-
-const CALLOUT_ICONS_MAP: Record<string, string> = {
-  abstract: ui.abstract,
-  summary: ui.summary,
-  tldr: ui.tldr,
-  todo: ui.todo,
-  info: ui.info,
-  success: ui.success,
-  check: ui.check,
-  done: ui.done,
-  question: ui.question,
-  help: ui.help,
-  faq: ui.faq,
-  failure: ui.failure,
-  fail: ui.fail,
-  missing: ui.missing,
-  danger: ui.danger,
-  error: ui.error,
-  bug: ui.bug,
-  example: ui.example,
-  quote: ui.quote,
-  cite: ui.cite,
-  hint: ui.hint,
-  attention: ui.attention,
-  note: ui.note,
-  tip: ui.tip,
-  important: ui.important,
-  warning: ui.warning,
-  caution: ui.caution,
-};
-
-function parseCallout(children: React.ReactNode): {
-  tag: string | null;
-  content: React.ReactNode;
-} {
-  const arr = React.Children.toArray(children);
-  if (arr.length === 0) return { tag: null, content: children };
-
-  const firstIdx = arr.findIndex((c) => React.isValidElement(c));
-  if (firstIdx === -1) return { tag: null, content: children };
-  const first = arr[firstIdx];
-
-  const innerChildren = (
-    (first as React.ReactElement).props as { children?: React.ReactNode }
-  ).children;
-  if (!innerChildren) return { tag: null, content: children };
-
-  const innerArr = React.Children.toArray(innerChildren);
-  if (innerArr.length === 0) return { tag: null, content: children };
-
-  const firstText = innerArr[0];
-  if (typeof firstText !== "string") return { tag: null, content: children };
-
-  const match = /^\s*\[!(\w+)\]\s*/.exec(firstText);
-  if (!match) return { tag: null, content: children };
-
-  const tag = match[1].toLowerCase();
-  const cleaned = firstText.replace(/^\s*\[!\w+\]\s*/, "");
-  const newInner = [cleaned, ...innerArr.slice(1)];
-  const newFirst = React.cloneElement(
-    first as React.ReactElement,
-    {},
-    ...newInner,
-  );
-  const rest = arr.filter((_, i) => i !== firstIdx);
-
-  return { tag, content: [newFirst, ...rest] };
-}
-
-function ShikiBlock({ code, lang }: { code: string; lang: string }) {
-  const [html, setHtml] = useState<string | null>(null);
-  const codeRef = useRef(code);
-  const langRef = useRef(lang);
-
-  useEffect(() => {
-    let cancelled = false;
-    codeRef.current = code;
-    langRef.current = lang;
-    void highlight(code, lang).then((result) => {
-      if (!cancelled && codeRef.current === code && langRef.current === lang) {
-        setHtml(result);
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [code, lang]);
-
-  if (html) {
-    return (
-      <div
-        className={shikiWrapClass}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    );
-  }
-
-  return (
-    <pre
-      style={{
-        margin: 0,
-        padding: 0,
-        background: "transparent",
-        fontSize: "0.8rem",
-        lineHeight: 1.5,
-      }}
-    >
-      <code style={{ fontFamily: MONO, color: "var(--colors-text, #abb2bf)" }}>
-        {code}
-      </code>
-    </pre>
-  );
-}
-
-const preInner = (lang: string) => ({
-  background: "transparent",
-  color: "var(--colors-preText, #abb2bf)",
-  padding: "0.5rem 0.6rem",
-  paddingTop: lang ? "0" : "0.5rem",
-  overflowX: "auto" as const,
-  maxWidth: "100%",
-  fontSize: "0.8rem",
-});
 
 const components: Components = {
   h1: ({ node: _, ...rest }) => <h1 className={h1Style} {...rest} />,
@@ -288,7 +165,9 @@ const components: Components = {
   td: ({ node: _, ...rest }) => <td className={tdStyle} {...rest} />,
 };
 
-export const Markdown = React.memo(function Markdown({ content }: MarkdownProps) {
+export const Markdown = React.memo(function Markdown({
+  content,
+}: MarkdownProps) {
   return (
     <div className={markdownWrap}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
