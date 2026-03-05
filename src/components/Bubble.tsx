@@ -1,20 +1,15 @@
-import { useBubbleLifecycle } from "@/hooks/useBubbleLifecycle";
 import {
   ProcessingSpinner,
   CompactingDots,
 } from "@/components/Spinners";
-import { ACTIVE_PHASES, DONE_PHASES } from "@/constants/phases";
 import {
-  STALE_THRESHOLD_SEC,
-  DONE_VISIBLE_SEC,
-  FADE_OUT_MS,
-  SB_DONE_PHASES,
   phaseContent,
   wrapper,
   bubble,
   tailStyle,
 } from "@/styles/Bubble.styles";
 import { ui } from "@/constants/glyph";
+import { useBubble } from "@/hooks/useBubble";
 
 type BubbleVariant = "bar" | "chat" | "stage";
 type BubbleSize = "lg" | "md" | "sm";
@@ -40,26 +35,13 @@ export function Bubble({
   dismissed,
   disableStale,
 }: BubbleProps) {
-  const isStage = variant === "stage";
-  const donePhasesSet = isStage ? SB_DONE_PHASES : DONE_PHASES;
-
-  const { visible, fading, fadeOutMs, now } = useBubbleLifecycle({
+  const { isStage, visible, fading, fadeOutMs, effectivePhase } = useBubble({
+    variant,
     phase,
     lastActivity,
-    donePhasesSet,
-    activePhasesSet: ACTIVE_PHASES,
-    doneVisibleSec: isStage ? DONE_VISIBLE_SEC : undefined,
-    fadeOutMs: FADE_OUT_MS,
-    staleThresholdSec: isStage ? STALE_THRESHOLD_SEC : undefined,
-    disableStale: isStage ? (disableStale ?? false) || (dismissed ?? false) : true,
+    dismissed,
+    disableStale,
   });
-
-  const isActivePhase = ACTIVE_PHASES.has(
-    phase as "processing" | "running_tool" | "compacting",
-  );
-  const isStale =
-    isStage && !disableStale && isActivePhase && now - lastActivity > STALE_THRESHOLD_SEC;
-  const effectivePhase = isStage && dismissed && isStale ? "idle" : phase;
 
   if (phase === "ended" || !visible) return null;
 

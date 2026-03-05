@@ -1,14 +1,13 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Markdown } from "@/components/Markdown";
-import { ChatMessage, sendMessage } from "@/services/tauri";
-import { groupMessages } from "@/utils/chat.utils";
-import { useChatMessages } from "@/hooks/useChatMessages";
+import { ChatMessage } from "@/services/tauri";
 import { ProcessingSpinner } from "@/components/Spinners";
 import { Loading } from "@/components/Loading";
 import { Button } from "@/components/Button";
 import { Clawd } from "@/components/Clawd";
 import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
 import { Bubble } from "@/components/Bubble";
+import { useChat } from "@/hooks/useChat";
 import {
   userBubbleWrap,
   userBubble,
@@ -210,35 +209,18 @@ function ThinkingIndicator() {
 }
 
 export function Chat({ sessionId, cwd, phase, colorIndex, projectName, lastActivity, subagentCount, onOpenDetail }: ChatProps) {
-  const [input, setInput] = useState("");
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const { messages, loading: dataLoading, isActive } = useChatMessages(sessionId, cwd, phase);
-  const groups = groupMessages(messages);
-
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-      }
-    });
-  }, [dataLoading, messages.length, isActive]);
-
-  const canSend = phase === "waiting_for_input" && !sending;
-
-  const handleSend = () => {
-    if (!input.trim() || !canSend) return;
-    const msg = input.trim();
-    setInput("");
-    setError(null);
-    setSending(true);
-    sendMessage(sessionId, msg)
-      .catch((err: unknown) => setError(String(err)))
-      .finally(() => setSending(false));
-  };
-
-  const hasInput = !!input.trim();
+  const {
+    input,
+    setInput,
+    error,
+    scrollRef,
+    loading,
+    isActive,
+    groups,
+    canSend,
+    hasInput,
+    handleSend,
+  } = useChat(sessionId, cwd, phase);
 
   return (
     <div className={outerContainer}>
@@ -275,7 +257,7 @@ export function Chat({ sessionId, cwd, phase, colorIndex, projectName, lastActiv
         <span className={chatHeaderLabel}>{projectName}</span>
       </div>
       <div ref={scrollRef} className={scrollArea}>
-        {dataLoading ? (
+        {loading ? (
           <div style={{ display: "flex", flex: 1, minHeight: "100%" }}>
             <Loading />
           </div>

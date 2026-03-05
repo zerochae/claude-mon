@@ -1,11 +1,9 @@
-import { useState, useRef } from "react";
 import { SessionState } from "@/services/tauri";
 import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
 import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
-import { useClawdPositions } from "@/hooks/useClawdPositions";
-import { useActivityDismissal } from "@/hooks/useActivityDismissal";
 import { SessionList } from "@/components/SessionList";
+import { useStage } from "@/hooks/useStage";
 import {
   CLAWD_SIZE,
   MINI_CLAWD_SIZE,
@@ -27,10 +25,14 @@ interface StageProps {
 }
 
 export function Stage({ sessions, onSelectSession }: StageProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const positions = useClawdPositions(sessions, containerRef);
-  const { dismissedIds, dismiss } = useActivityDismissal(sessions);
+  const {
+    containerRef,
+    hoveredId,
+    setHoveredId,
+    positions,
+    dismissedIds,
+    dismiss,
+  } = useStage(sessions);
 
   if (sessions.length === 0) {
     return <div className={emptyState}>No sessions running</div>;
