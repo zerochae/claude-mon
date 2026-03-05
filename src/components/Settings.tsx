@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import type { AppSettings, ThemeName } from "@/hooks/useSettings";
+import { Button } from "@/components/Button";
 import {
   VIEW_WIDTH_ITEMS,
   THEMES,
@@ -160,7 +161,7 @@ export function Settings({
           {THEMES.map(({ name, label, colors }) => {
             const isActive = name === settings.theme;
             return (
-              <button
+              <Button
                 key={name}
                 onClick={() => onUpdate({ theme: name })}
                 className={themeButton({ active: isActive })}
@@ -183,7 +184,7 @@ export function Settings({
                   {label}
                 </span>
                 {isActive && <span className={checkMark}>&#10003;</span>}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -255,7 +256,7 @@ export function Settings({
                   }}
                 />
                 {isOverridden && (
-                  <button
+                  <Button
                     className={resetBtn}
                     onClick={() => {
                       const next = { ...settings.colorOverrides };
@@ -264,7 +265,7 @@ export function Settings({
                     }}
                   >
                     &#10005;
-                  </button>
+                  </Button>
                 )}
               </div>
             );
@@ -272,9 +273,9 @@ export function Settings({
           {hasOverrides && (
             <div className={rowStyle}>
               <span className={rowLabel} />
-              <button className={resetBtn} onClick={onResetColors}>
+              <Button className={resetBtn} onClick={onResetColors}>
                 Reset All
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -380,13 +381,13 @@ export function Settings({
             <span className={rowLabel}>Anchor</span>
             <div className={anchorGroup}>
               {ANCHOR_OPTIONS.map(({ value, label }) => (
-                <button
+                <Button
                   key={value}
                   className={anchorBtn({ active: settings.anchor === value })}
                   onClick={() => onUpdate({ anchor: value })}
                 >
                   {label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -394,13 +395,13 @@ export function Settings({
             <span className={rowLabel}>Dock</span>
             <div className={anchorGroup}>
               {DOCK_OPTIONS.map(({ value, label }) => (
-                <button
+                <Button
                   key={value}
                   className={anchorBtn({ active: settings.dock === value })}
                   onClick={() => onUpdate({ dock: value })}
                 >
                   {label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
@@ -419,14 +420,14 @@ export function Settings({
           )}
           <div className={rowStyle}>
             <span className={rowLabel}>Hide from Dock</span>
-            <button
+            <Button
               className={anchorBtn({ active: settings.accessoryMode })}
               onClick={() =>
                 onUpdate({ accessoryMode: !settings.accessoryMode })
               }
             >
               {settings.accessoryMode ? "On" : "Off"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

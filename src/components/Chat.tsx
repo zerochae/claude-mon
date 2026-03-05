@@ -76,7 +76,7 @@ function SubagentMessage({ message, index, sessionColorIndex }: { message: ChatM
 
   return (
     <div className={subagentWrap}>
-      <button
+      <Button
         onClick={() => message.subagent_prompt && setShowPrompt(!showPrompt)}
         className={subagentClickable}
       >
@@ -91,7 +91,7 @@ function SubagentMessage({ message, index, sessionColorIndex }: { message: ChatM
             <span className={subagentDesc}>{message.content}</span>
           )}
         </div>
-      </button>
+      </Button>
       {showPrompt && message.subagent_prompt && (
         <div className={subagentPromptWrap}>
           <Markdown content={`\`\`\`\n${message.subagent_prompt}\n\`\`\``} />
@@ -108,7 +108,7 @@ function ToolMessage({ message }: { message: ChatMessage }) {
 
   return (
     <div className={toolWrap}>
-      <button onClick={() => setExpanded(!expanded)} className={toolButton}>
+      <Button onClick={() => setExpanded(!expanded)} className={toolButton}>
         <svg
           width="12"
           height="12"
@@ -170,7 +170,7 @@ function ToolMessage({ message }: { message: ChatMessage }) {
             strokeLinecap="round"
           />
         </svg>
-      </button>
+      </Button>
       {expanded && (
         <div className={toolExpanded}>
           <Markdown content={message.content} />
