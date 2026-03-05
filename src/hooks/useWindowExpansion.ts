@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import { resizeAnchored, animateWindowSize } from "@/lib/windowManager";
+import { resizeAnchored, animateWindowSize } from "@/utils/windowManager";
 import { type WindowAnchor, type DockPosition } from "@/hooks/useSettings";
 
 const EXPANDED_HEIGHT = 460;

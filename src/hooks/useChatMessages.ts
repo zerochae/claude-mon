@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useTransition } from "react";
-import { type ChatMessage, getChatMessages } from "@/lib/tauri";
+import { type ChatMessage, getChatMessages } from "@/services/tauri";
 
 export function useChatMessages(sessionId: string, cwd: string, phase: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);

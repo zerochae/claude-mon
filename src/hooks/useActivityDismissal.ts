@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { type SessionState } from "@/lib/tauri";
+import { type SessionState } from "@/services/tauri";
 
 export function useActivityDismissal(sessions: SessionState[]) {
   const [dismissedActivity, setDismissedActivity] = useState<

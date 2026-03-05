@@ -1,5 +1,5 @@
 import { css, cva } from "@styled-system/css";
-import { MOTION } from "@/lib/motion";
+import { MOTION } from "@/constants/motion";
 
 export const CLAWD_SIZE = 20;
 export const MINI_CLAWD_SIZE = 10;

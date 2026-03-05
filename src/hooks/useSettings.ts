@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { getTheme, injectTheme, type ThemeName } from "@styled-system/themes";
-import { setVibrancy } from "@/lib/tauri";
+import { setVibrancy } from "@/services/tauri";
 
 export type { ThemeName };
 

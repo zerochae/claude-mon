@@ -3,7 +3,7 @@ import {
   ProcessingSpinner,
   CompactingDots,
 } from "@/components/Spinners";
-import { ACTIVE_PHASES, DONE_PHASES } from "@/lib/phases";
+import { ACTIVE_PHASES, DONE_PHASES } from "@/constants/phases";
 import {
   STALE_THRESHOLD_SEC,
   DONE_VISIBLE_SEC,
@@ -14,7 +14,7 @@ import {
   bubble,
   tailStyle,
 } from "./Bubble.styles";
-import { ui } from "@/lib/glyph";
+import { ui } from "@/constants/glyph";
 
 type BubbleVariant = "bar" | "chat" | "house";
 type BubbleSize = "lg" | "md" | "sm";

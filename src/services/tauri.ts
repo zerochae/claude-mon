@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import type { SessionPhase } from "@/lib/phases";
+import type { SessionPhase } from "@/constants/phases";
 
 export interface SessionState {
   session_id: string;

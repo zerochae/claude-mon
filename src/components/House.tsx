@@ -1,10 +1,10 @@
 import { useState, useRef } from "react";
-import { SessionState } from "@/lib/tauri";
-import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
+import { SessionState } from "@/services/tauri";
+import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
 import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
 import { Button } from "@/components/Button";
-import { PHASE_LABELS } from "@/lib/phases";
+import { PHASE_LABELS } from "@/constants/phases";
 import { useClawdPositions } from "@/hooks/useClawdPositions";
 import { useActivityDismissal } from "@/hooks/useActivityDismissal";
 import {

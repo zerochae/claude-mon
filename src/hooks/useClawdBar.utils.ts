@@ -1,5 +1,5 @@
-import { SessionState } from "@/lib/tauri";
-import { ACTIVE_PHASES } from "@/lib/phases";
+import { SessionState } from "@/services/tauri";
+import { ACTIVE_PHASES } from "@/constants/phases";
 
 export const BASE_BAR_H = 48;
 export const BASE_CLAWD_W = 80;

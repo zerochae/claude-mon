@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { SessionState } from "@/lib/tauri";
-import { ACTIVE_PHASES, type SessionPhase } from "@/lib/phases";
+import { SessionState } from "@/services/tauri";
+import { ACTIVE_PHASES, type SessionPhase } from "@/constants/phases";
 import {
   BASE_CLAWD_W,
   BASE_HITBOX_W,

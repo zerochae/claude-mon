@@ -1,8 +1,8 @@
 import { css } from "@styled-system/css";
-import { SessionState } from "@/lib/tauri";
+import { SessionState } from "@/services/tauri";
 import { Bar } from "@/components/Bar";
 import { Button } from "@/components/Button";
-import { ui } from "@/lib/glyph";
+import { ui } from "@/constants/glyph";
 import {
   DEFAULT_BAR_HEIGHT,
   handleBar,

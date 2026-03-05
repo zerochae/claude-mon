@@ -10,8 +10,8 @@ import {
   PAD_L,
   type ClawdPos1D,
 } from "./useClawdBar.utils";
-import type { SessionState } from "@/lib/tauri";
-import type { SessionPhase } from "@/lib/phases";
+import type { SessionState } from "@/services/tauri";
+import type { SessionPhase } from "@/constants/phases";
 
 function makeSession(id: string, phase: SessionPhase = "idle"): SessionState {
   return {

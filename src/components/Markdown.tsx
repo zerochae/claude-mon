@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ui, extensions } from "@/lib/glyph";
-import { highlight } from "@/lib/shiki-highlighter";
+import { ui, extensions } from "@/constants/glyph";
+import { highlight } from "@/utils/shiki-highlighter";
 import {
   CALLOUT_COLORS,
   MONO,

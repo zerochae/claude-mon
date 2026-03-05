@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useActivityDismissal } from "./useActivityDismissal";
-import type { SessionState } from "@/lib/tauri";
-import type { SessionPhase } from "@/lib/phases";
+import type { SessionState } from "@/services/tauri";
+import type { SessionPhase } from "@/constants/phases";
 
 function makeSession(
   id: string,

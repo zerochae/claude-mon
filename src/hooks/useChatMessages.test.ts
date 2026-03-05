@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useChatMessages } from "./useChatMessages";
-import type { ChatMessage } from "@/lib/tauri";
+import type { ChatMessage } from "@/services/tauri";
 
 const mockGetChatMessages =
   vi.fn<(sessionId: string, cwd: string) => Promise<ChatMessage[]>>();
 
-vi.mock("@/lib/tauri", () => ({
+vi.mock("@/services/tauri", () => ({
   getChatMessages: (sessionId: string, cwd: string) =>
     mockGetChatMessages(sessionId, cwd),
 }));

@@ -5,8 +5,8 @@ import {
   approvePermission,
   denyPermission,
   SessionState,
-} from "@/lib/tauri";
-import { MOCK_SESSIONS } from "@/lib/mockSessions";
+} from "@/services/tauri";
+import { MOCK_SESSIONS } from "@/mocks/mockSessions";
 
 const isTauri = "__TAURI_INTERNALS__" in window;
 

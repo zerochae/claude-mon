@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Clawd } from "@/components/Clawd";
-import { SessionState } from "@/lib/tauri";
-import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
+import { SessionState } from "@/services/tauri";
+import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
 import {
   useClawdBar,
   CLAWD_BAR_WANDER_MS,
   CLAWD_BAR_RUN_MS,
 } from "@/hooks/useClawdBar";
 import { Bubble } from "@/components/Bubble";
-import { BAR_VISIBLE_PHASES, STALE_THRESHOLD_SEC } from "@/lib/phases";
+import { BAR_VISIBLE_PHASES, STALE_THRESHOLD_SEC } from "@/constants/phases";
 import {
   BASE_BAR_HEIGHT,
   BASE_CLAWD_SIZE,

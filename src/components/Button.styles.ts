@@ -1,5 +1,5 @@
 import { cva } from "@styled-system/css";
-import { MOTION } from "@/lib/motion";
+import { MOTION } from "@/constants/motion";
 
 export type Variant = "ghost" | "solid" | "outline";
 export type Size = "icon" | "sm" | "md";

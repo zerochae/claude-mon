@@ -1,5 +1,5 @@
-import type { SessionPhase } from "@/lib/phases";
-import { SessionState } from "@/lib/tauri";
+import type { SessionPhase } from "@/constants/phases";
+import { SessionState } from "@/services/tauri";
 
 const now = Date.now();
 

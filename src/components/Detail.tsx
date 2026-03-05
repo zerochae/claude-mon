@@ -1,10 +1,10 @@
-import { SessionState } from "@/lib/tauri";
-import { getClawdColor } from "@/lib/colors";
+import { SessionState } from "@/services/tauri";
+import { getClawdColor } from "@/constants/colors";
 import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
 import { PermissionActions } from "@/components/PermissionActions";
 import { Button } from "@/components/Button";
-import { PHASE_LABELS } from "@/lib/phases";
+import { PHASE_LABELS } from "@/constants/phases";
 import {
   container,
   clawdCenter,

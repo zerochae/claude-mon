@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type RefObject } from "react";
-import { type SessionState } from "@/lib/tauri";
+import { type SessionState } from "@/services/tauri";
 import {
   CLAWD_SIZE,
   LABEL_HEIGHT,

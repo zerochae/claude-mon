@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { SessionState } from "@/lib/tauri";
+import { SessionState } from "@/services/tauri";
 import { useSessions } from "@/hooks/useSessions";
 import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
@@ -8,7 +8,7 @@ import { House } from "@/components/House";
 import { Detail } from "@/components/Detail";
 import { Chat } from "@/components/Chat";
 import { Settings } from "@/components/Settings";
-import { MOTION } from "@/lib/motion";
+import { MOTION } from "@/constants/motion";
 
 type View = "house" | "detail" | "chat" | "settings";
 
