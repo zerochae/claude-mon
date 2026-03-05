@@ -1,6 +1,6 @@
 import { SessionState } from "@/lib/tauri";
 import { getClawdColor } from "@/lib/colors";
-import { ClawdCanvas } from "@/components/ClawdCanvas";
+import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
 import { PermissionActions } from "@/components/PermissionActions";
 import { Button } from "@/components/Button";
@@ -49,7 +49,7 @@ export function Detail({
           phase={session.phase}
           lastActivity={session.last_activity}
         />
-        <ClawdCanvas color={color} phase={session.phase} size={64} />
+        <Clawd color={color} phase={session.phase} size={64} />
       </div>
 
       <div className={projectInfo}>

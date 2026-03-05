@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { SessionState } from "@/lib/tauri";
 import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
-import { ClawdCanvas } from "@/components/ClawdCanvas";
+import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
 import { Button } from "@/components/Button";
 import { PHASE_LABELS } from "@/lib/phases";
@@ -29,14 +29,14 @@ import {
   sessionName,
   sessionPhase,
   actionButtons,
-} from "./HouseView.styles";
+} from "./House.styles";
 
-interface HouseViewProps {
+interface HouseProps {
   sessions: SessionState[];
   onSelectSession: (session: SessionState) => void;
 }
 
-export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
+export function House({ sessions, onSelectSession }: HouseProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const positions = useClawdPositions(sessions, containerRef);
@@ -109,7 +109,7 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
                       animation: animVariant,
                     })}
                   >
-                    <ClawdCanvas
+                    <Clawd
                       color={color}
                       phase={session.phase}
                       size={CLAWD_SIZE}
@@ -131,7 +131,7 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
                             transform: facingRight ? "scaleX(1)" : "scaleX(-1)",
                           }}
                         >
-                          <ClawdCanvas
+                          <Clawd
                             color={miniColor}
                             phase={miniPhases[i % miniPhases.length]}
                             size={MINI_CLAWD_SIZE}

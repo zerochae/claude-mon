@@ -1,15 +1,15 @@
 import { css } from "@styled-system/css";
 import { SessionState } from "@/lib/tauri";
-import { BarView } from "@/components/BarView";
+import { Bar } from "@/components/Bar";
 import { Button } from "@/components/Button";
 import { ui } from "@/lib/glyph";
 import {
   DEFAULT_BAR_HEIGHT,
   handleBar,
   handlePill,
-} from "./WidgetHeader.styles";
+} from "./Header.styles";
 
-interface WidgetHeaderProps {
+interface HeaderProps {
   onGearClick: () => void;
   onToggle: () => void;
   onCollapse: () => void;
@@ -22,7 +22,7 @@ interface WidgetHeaderProps {
   barHeight?: number;
 }
 
-export function WidgetHeader({
+export function Header({
   onGearClick,
   onToggle,
   onCollapse,
@@ -33,7 +33,7 @@ export function WidgetHeader({
   showBack,
   sessions = [],
   barHeight = DEFAULT_BAR_HEIGHT,
-}: WidgetHeaderProps) {
+}: HeaderProps) {
   if (expanded) {
     return (
       <div className={handleBar}>
@@ -92,6 +92,6 @@ export function WidgetHeader({
   }
 
   return (
-    <BarView sessions={sessions} barHeight={barHeight} onToggle={onToggle} onSelectSession={onSelectSession} />
+    <Bar sessions={sessions} barHeight={barHeight} onToggle={onToggle} onSelectSession={onSelectSession} />
   );
 }

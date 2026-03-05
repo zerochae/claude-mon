@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { ClawdCanvas } from "@/components/ClawdCanvas";
+import { Clawd } from "@/components/Clawd";
 import { SessionState } from "@/lib/tauri";
 import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
 import {
@@ -25,9 +25,9 @@ import {
   zSmall,
   zMedium,
   zLarge,
-} from "./BarView.styles";
+} from "./Bar.styles";
 
-interface BarViewProps {
+interface BarProps {
   sessions: SessionState[];
   barHeight: number;
   onToggle: () => void;
@@ -48,7 +48,7 @@ function activeKey(sessions: SessionState[]) {
   return sessions.map((s) => `${s.session_id}:${s.phase}`).join();
 }
 
-export function BarView({ sessions, barHeight, onToggle, onSelectSession }: BarViewProps) {
+export function Bar({ sessions, barHeight, onToggle, onSelectSession }: BarProps) {
   const [activeSessions, setActiveSessions] = useState(() =>
     filterActive(sessions),
   );
@@ -138,7 +138,7 @@ export function BarView({ sessions, barHeight, onToggle, onSelectSession }: BarV
                     pos.facingRight ? undefined : { transform: "scaleX(-1)" }
                   }
                 >
-                  <ClawdCanvas
+                  <Clawd
                     color={getClawdColor(s.color_index)}
                     phase={isRunning ? "processing" : s.phase}
                     size={BASE_CLAWD_SIZE}
@@ -158,7 +158,7 @@ export function BarView({ sessions, barHeight, onToggle, onSelectSession }: BarV
                             transform: i % 2 === 0 ? "scaleX(1)" : "scaleX(-1)",
                           }}
                         >
-                          <ClawdCanvas
+                          <Clawd
                             color={getClawdColor((s.color_index + i + 3) % COLOR_COUNT)}
                             phase={miniPhases[i % miniPhases.length]}
                             size={MINI_BAR_CLAWD_SIZE}
@@ -175,7 +175,7 @@ export function BarView({ sessions, barHeight, onToggle, onSelectSession }: BarV
       ) : (
         <div className={sleepingWrap}>
           <div style={{ opacity: 0.5 }}>
-            <ClawdCanvas
+            <Clawd
               color="var(--colors-text, #abb2bf)"
               phase="idle"
               size={BASE_CLAWD_SIZE}

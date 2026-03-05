@@ -5,7 +5,7 @@ import { useChatMessages } from "@/hooks/useChatMessages";
 import { ProcessingSpinner } from "@/components/PhaseIndicators";
 import { Loading } from "@/components/Loading";
 import { Button } from "@/components/Button";
-import { ClawdCanvas } from "@/components/ClawdCanvas";
+import { Clawd } from "@/components/Clawd";
 import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
 import { Bubble } from "@/components/Bubble";
 import {
@@ -34,9 +34,9 @@ import {
   scrollArea,
   inputBar,
   chatInput,
-} from "./ChatView.styles";
+} from "./Chat.styles";
 
-interface ChatViewProps {
+interface ChatProps {
   sessionId: string;
   cwd: string;
   phase: string;
@@ -79,7 +79,7 @@ function SubagentMessage({ message, index, sessionColorIndex }: { message: ChatM
         onClick={() => message.subagent_prompt && setShowPrompt(!showPrompt)}
         className={subagentClickable}
       >
-        <ClawdCanvas
+        <Clawd
           color={getClawdColor((sessionColorIndex + index + 3) % COLOR_COUNT)}
           phase={phase}
           size={16}
@@ -224,7 +224,7 @@ function ThinkingIndicator() {
   );
 }
 
-export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastActivity, subagentCount, onOpenDetail }: ChatViewProps) {
+export function Chat({ sessionId, cwd, phase, colorIndex, projectName, lastActivity, subagentCount, onOpenDetail }: ChatProps) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -260,7 +260,7 @@ export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastA
       <div className={chatHeader}>
         <div className={chatHeaderLeft}>
           <div onClick={onOpenDetail} style={{ cursor: onOpenDetail ? "pointer" : undefined }}>
-            <ClawdCanvas color={getClawdColor(colorIndex)} phase={phase} size={24} />
+            <Clawd color={getClawdColor(colorIndex)} phase={phase} size={24} />
           </div>
           <Bubble variant="chat" phase={phase} lastActivity={lastActivity} />
           {subagentCount > 0 && (
@@ -276,7 +276,7 @@ export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastA
                       transform: i % 2 === 0 ? "scaleX(1)" : "scaleX(-1)",
                     }}
                   >
-                    <ClawdCanvas
+                    <Clawd
                       color={getClawdColor((colorIndex + i + 3) % COLOR_COUNT)}
                       phase={miniPhases[i % miniPhases.length]}
                       size={12}

@@ -8,13 +8,13 @@ import {
   PAD_Y_TOP,
   PAD_Y_BOTTOM,
   WANDER_INTERVAL,
-} from "@/components/HouseView.styles";
+} from "@/components/House.styles";
 import {
   type ClawdPos2D,
   getMoveParams,
   hasCollision,
   resolveOverlaps2D,
-} from "@/components/HouseView.utils";
+} from "@/components/House.utils";
 
 export function useClawdPositions(
   sessions: SessionState[],

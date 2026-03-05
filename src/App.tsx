@@ -3,11 +3,11 @@ import { SessionState } from "@/lib/tauri";
 import { useSessions } from "@/hooks/useSessions";
 import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
-import { WidgetHeader } from "@/components/WidgetHeader";
-import { HouseView } from "@/components/HouseView";
+import { Header } from "@/components/Header";
+import { House } from "@/components/House";
 import { Detail } from "@/components/Detail";
-import { ChatView } from "@/components/ChatView";
-import { SettingsView } from "@/components/SettingsView";
+import { Chat } from "@/components/Chat";
+import { Settings } from "@/components/Settings";
 import { MOTION } from "@/lib/motion";
 
 type View = "house" | "detail" | "chat" | "settings";
@@ -81,7 +81,7 @@ export default function App() {
 
   return (
     <div className="widget-container">
-      <WidgetHeader
+      <Header
         onGearClick={handleGearClick}
         onToggle={() => toggleExpand(viewWidth(view))}
         onCollapse={collapse}
@@ -106,18 +106,18 @@ export default function App() {
           }}
         >
           {view === "settings" ? (
-            <SettingsView
+            <Settings
               settings={settings}
               onUpdate={updateSettings}
               onResetColors={resetColorOverrides}
             />
           ) : view === "house" || !selectedSession ? (
-            <HouseView
+            <House
               sessions={sessions}
               onSelectSession={handleSelectSession}
             />
           ) : view === "chat" ? (
-            <ChatView
+            <Chat
               sessionId={selectedSession.session_id}
               cwd={selectedSession.cwd}
               phase={selectedSession.phase}

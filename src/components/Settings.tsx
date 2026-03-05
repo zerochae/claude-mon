@@ -27,9 +27,9 @@ import {
   previewStrip,
   themeOptLabel,
   checkMark,
-} from "./SettingsView.styles";
+} from "./Settings.styles";
 
-interface SettingsViewProps {
+interface SettingsProps {
   settings: AppSettings;
   onUpdate: (patch: Partial<AppSettings>) => void;
   onResetColors: () => void;
@@ -144,11 +144,11 @@ function getThemeColor(themeName: ThemeName, key: string): string {
   return THEMES.find((t) => t.name === themeName)?.colors[key] ?? "#888";
 }
 
-export function SettingsView({
+export function Settings({
   settings,
   onUpdate,
   onResetColors,
-}: SettingsViewProps) {
+}: SettingsProps) {
   const hasOverrides = Object.keys(settings.colorOverrides).length > 0;
 
   return (
