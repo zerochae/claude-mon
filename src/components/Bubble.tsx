@@ -3,93 +3,106 @@ import {
   ProcessingSpinner,
   CompactingDots,
 } from "@/components/PhaseIndicators";
-import { ACTIVE_PHASES } from "@/lib/phases";
+import { ACTIVE_PHASES, DONE_PHASES } from "@/lib/phases";
 import {
   STALE_THRESHOLD_SEC,
   DONE_VISIBLE_SEC,
   FADE_OUT_MS,
   SB_DONE_PHASES,
   phaseContent,
-  bubbleWrapper,
-  bubbleStyle,
+  wrapper,
+  bubble,
   tailStyle,
-} from "./StatusBubble.styles";
+} from "./Bubble.styles";
 import { ui } from "@/lib/glyph";
 
-export { ProcessingSpinner } from "@/components/PhaseIndicators";
+type BubbleVariant = "bar" | "chat" | "house";
+type BubbleSize = "lg" | "md" | "sm";
 
-interface StatusBubbleProps {
+const VARIANT_SIZE: Record<BubbleVariant, BubbleSize> = {
+  bar: "lg",
+  chat: "sm",
+  house: "md",
+};
+
+interface BubbleProps {
+  variant: BubbleVariant;
   phase: string;
   lastActivity: number;
   dismissed?: boolean;
   disableStale?: boolean;
 }
 
-export function StatusBubble({
+export function Bubble({
+  variant,
   phase,
   lastActivity,
   dismissed,
   disableStale,
-}: StatusBubbleProps) {
+}: BubbleProps) {
+  const isHouse = variant === "house";
+  const donePhasesSet = isHouse ? SB_DONE_PHASES : DONE_PHASES;
+
   const { visible, fading, fadeOutMs, now } = useBubbleLifecycle({
     phase,
     lastActivity,
-    donePhasesSet: SB_DONE_PHASES,
+    donePhasesSet,
     activePhasesSet: ACTIVE_PHASES,
-    doneVisibleSec: DONE_VISIBLE_SEC,
+    doneVisibleSec: isHouse ? DONE_VISIBLE_SEC : undefined,
     fadeOutMs: FADE_OUT_MS,
-    staleThresholdSec: STALE_THRESHOLD_SEC,
-    disableStale: (disableStale ?? false) || (dismissed ?? false),
+    staleThresholdSec: isHouse ? STALE_THRESHOLD_SEC : undefined,
+    disableStale: isHouse ? (disableStale ?? false) || (dismissed ?? false) : true,
   });
 
   const isActivePhase = ACTIVE_PHASES.has(
     phase as "processing" | "running_tool" | "compacting",
   );
   const isStale =
-    !disableStale && isActivePhase && now - lastActivity > STALE_THRESHOLD_SEC;
-  const effectivePhase = dismissed && isStale ? "idle" : phase;
+    isHouse && !disableStale && isActivePhase && now - lastActivity > STALE_THRESHOLD_SEC;
+  const effectivePhase = isHouse && dismissed && isStale ? "idle" : phase;
 
   if (phase === "ended" || !visible) return null;
 
+  const size = VARIANT_SIZE[variant];
   let content: React.ReactNode;
 
   switch (effectivePhase) {
     case "processing":
     case "running_tool":
       content = (
-        <ProcessingSpinner className={phaseContent({ phase: "processing" })} />
+        <ProcessingSpinner className={phaseContent({ phase: "processing", size })} />
       );
       break;
     case "compacting":
       content = (
-        <CompactingDots className={phaseContent({ phase: "compacting" })} />
+        <CompactingDots className={phaseContent({ phase: "compacting", size })} />
       );
       break;
     case "waiting_for_approval":
       content = (
-        <span className={phaseContent({ phase: "approval" })}>
+        <span className={phaseContent({ phase: "approval", size })}>
           {ui.bubble_waiting_for_approval}
         </span>
       );
       break;
     case "waiting_for_input":
       content = (
-        <span className={phaseContent({ phase: "done" })}>
+        <span className={phaseContent({ phase: "input", size })}>
           {ui.bubble_waiting_for_input}
         </span>
       );
       break;
     case "idle":
-      content = <span className={phaseContent({ phase: "idle" })}></span>;
+      content = <span className={phaseContent({ phase: "idle", size })}></span>;
       break;
     default:
       return null;
   }
 
   return (
-    <div className={bubbleWrapper}>
+    <div className={wrapper({ variant })}>
       <div
-        className={bubbleStyle}
+        className={bubble({ variant })}
         style={
           fading
             ? { animation: `scale-out ${fadeOutMs}ms ease forwards` }
@@ -97,7 +110,7 @@ export function StatusBubble({
         }
       >
         {content}
-        <div className={tailStyle} />
+        {isHouse && <div className={tailStyle} />}
       </div>
     </div>
   );

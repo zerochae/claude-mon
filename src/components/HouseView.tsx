@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { SessionState } from "@/lib/tauri";
 import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
 import { ClawdCanvas } from "@/components/ClawdCanvas";
-import { StatusBubble } from "@/components/StatusBubble";
+import { Bubble } from "@/components/Bubble";
 import { Button } from "@/components/Button";
 import { PHASE_LABELS } from "@/lib/phases";
 import { useClawdPositions } from "@/hooks/useClawdPositions";
@@ -97,7 +97,8 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
             >
               <div className={clawdRow}>
                 <div>
-                  <StatusBubble
+                  <Bubble
+                    variant="house"
                     phase={session.phase}
                     lastActivity={session.last_activity}
                     dismissed={dismissedIds.has(session.session_id)}

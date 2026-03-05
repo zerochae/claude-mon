@@ -8,7 +8,7 @@ import {
   CLAWD_BAR_WANDER_MS,
   CLAWD_BAR_RUN_MS,
 } from "@/hooks/useClawdBar";
-import { BarBubble } from "@/components/BarBubble";
+import { Bubble } from "@/components/Bubble";
 import { BAR_VISIBLE_PHASES, STALE_THRESHOLD_SEC } from "@/lib/phases";
 import {
   BASE_BAR_HEIGHT,
@@ -144,7 +144,7 @@ export function BarView({ sessions, barHeight, onToggle, onSelectSession }: BarV
                     size={BASE_CLAWD_SIZE}
                   />
                 </div>
-                <BarBubble phase={s.phase} lastActivity={s.last_activity} />
+                <Bubble variant="bar" phase={s.phase} lastActivity={s.last_activity} />
                 {s.subagent_count > 0 && (
                   <div className={miniBarRow}>
                     {Array.from({ length: Math.min(s.subagent_count, 3) }).map((_, i) => {

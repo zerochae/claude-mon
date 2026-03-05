@@ -2,11 +2,11 @@ import { useState, useRef, useEffect } from "react";
 import { Markdown } from "@/components/Markdown";
 import { ChatMessage, sendMessage } from "@/lib/tauri";
 import { useChatMessages } from "@/hooks/useChatMessages";
-import { ProcessingSpinner } from "@/components/StatusBubble";
+import { ProcessingSpinner } from "@/components/PhaseIndicators";
 import { Button } from "@/components/Button";
 import { ClawdCanvas } from "@/components/ClawdCanvas";
 import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
-import { ChatBubble } from "@/components/ChatBubble";
+import { Bubble } from "@/components/Bubble";
 import {
   userBubbleWrap,
   userBubble,
@@ -256,7 +256,7 @@ export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastA
       <div className={chatHeader}>
         <div className={chatHeaderLeft}>
           <ClawdCanvas color={getClawdColor(colorIndex)} phase={phase} size={24} />
-          <ChatBubble phase={phase} lastActivity={lastActivity} />
+          <Bubble variant="chat" phase={phase} lastActivity={lastActivity} />
           {subagentCount > 0 && (
             <div className={chatMiniRow}>
               {Array.from({ length: Math.min(subagentCount, 3) }).map((_, i) => {

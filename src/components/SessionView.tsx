@@ -1,7 +1,7 @@
 import { SessionState } from "@/lib/tauri";
 import { getClawdColor } from "@/lib/colors";
 import { ClawdCanvas } from "@/components/ClawdCanvas";
-import { StatusBubble } from "@/components/StatusBubble";
+import { Bubble } from "@/components/Bubble";
 import { PermissionActions } from "@/components/PermissionActions";
 import { Button } from "@/components/Button";
 import { PHASE_LABELS } from "@/lib/phases";
@@ -44,7 +44,8 @@ export function SessionView({
       </Button>
 
       <div className={clawdCenter}>
-        <StatusBubble
+        <Bubble
+          variant="house"
           phase={session.phase}
           lastActivity={session.last_activity}
         />
