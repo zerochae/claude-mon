@@ -65,8 +65,8 @@ function AssistantMessage({ message }: { message: ChatMessage }) {
 
 function SubagentMessage({ message, index, sessionColorIndex }: { message: ChatMessage; index: number; sessionColorIndex: number }) {
   const [showPrompt, setShowPrompt] = useState(false);
-  const agentType = message.subagent_type || "";
-  const shortName = agentType.includes(":") ? agentType.split(":").pop()! : agentType;
+  const agentType = message.subagent_type ?? "";
+  const shortName = agentType.includes(":") ? (agentType.split(":").pop() ?? agentType) : agentType;
   const isDone = message.tool_status === "done";
   const miniPhases = ["processing", "compacting", "idle"] as const;
   const phase = isDone ? miniPhases[index % miniPhases.length] : "processing";
@@ -245,7 +245,7 @@ export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastA
     setError(null);
     setSending(true);
     sendMessage(sessionId, msg)
-      .catch((err) => setError(String(err)))
+      .catch((err: unknown) => setError(String(err)))
       .finally(() => setSending(false));
   };
 
