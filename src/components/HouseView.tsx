@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { SessionState } from "@/lib/tauri";
-import { getClawdColor } from "@/lib/colors";
+import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
 import { ClawdCanvas } from "@/components/ClawdCanvas";
 import { StatusBubble } from "@/components/StatusBubble";
 import { Button } from "@/components/Button";
@@ -9,6 +9,7 @@ import { useClawdPositions } from "@/hooks/useClawdPositions";
 import { useActivityDismissal } from "@/hooks/useActivityDismissal";
 import {
   CLAWD_SIZE,
+  MINI_CLAWD_SIZE,
   WANDER_INTERVAL,
   emptyState,
   outerContainer,
@@ -16,6 +17,8 @@ import {
   clawdSlot,
   spriteWrapper,
   clawdLabel,
+  miniClawdRow,
+  miniClawdWrap,
   bottomPanel,
   statusBar,
   sessionListScroll,
@@ -108,6 +111,31 @@ export function HouseView({ sessions, onSelectSession }: HouseViewProps) {
                   size={CLAWD_SIZE}
                 />
               </div>
+              {session.subagent_count > 0 && (
+                <div className={miniClawdRow}>
+                  {Array.from({ length: Math.min(session.subagent_count, 5) }).map((_, i) => {
+                    const miniColor = getClawdColor((session.color_index + i + 3) % COLOR_COUNT);
+                    const miniPhases = ["processing", "compacting", "idle"] as const;
+                    const facingRight = i % 2 === 0;
+                    return (
+                      <div
+                        key={i}
+                        className={miniClawdWrap}
+                        style={{
+                          animationDelay: `${i * 0.2}s`,
+                          transform: facingRight ? "scaleX(1)" : "scaleX(-1)",
+                        }}
+                      >
+                        <ClawdCanvas
+                          color={miniColor}
+                          phase={miniPhases[i % miniPhases.length]}
+                          size={MINI_CLAWD_SIZE}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
               <span className={clawdLabel({ urgent: isUrgent })}>
                 {session.project_name}
               </span>

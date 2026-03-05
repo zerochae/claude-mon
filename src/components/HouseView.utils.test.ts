@@ -37,17 +37,17 @@ describe("overlaps", () => {
     expect(overlaps(base, { x: 141, y: 100, facingRight: true })).toBe(false);
   });
 
-  it("returns false when y distance exceeds HITBOX_Y (74)", () => {
-    expect(overlaps(base, { x: 100, y: 175, facingRight: true })).toBe(false);
+  it("returns false when y distance exceeds HITBOX_Y (88)", () => {
+    expect(overlaps(base, { x: 100, y: 189, facingRight: true })).toBe(false);
   });
 
   it("returns true at exact boundary minus 1", () => {
-    expect(overlaps(base, { x: 139, y: 173, facingRight: true })).toBe(true);
+    expect(overlaps(base, { x: 139, y: 187, facingRight: true })).toBe(true);
   });
 
   it("returns false at exact HITBOX distance", () => {
     expect(overlaps(base, { x: 140, y: 100, facingRight: true })).toBe(false);
-    expect(overlaps(base, { x: 100, y: 174, facingRight: true })).toBe(false);
+    expect(overlaps(base, { x: 100, y: 188, facingRight: true })).toBe(false);
   });
 });
 

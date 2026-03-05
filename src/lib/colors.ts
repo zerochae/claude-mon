@@ -44,8 +44,10 @@ const FALLBACKS: Record<string, string> = {
   "--colors-tangerine": "#ff9e64",
 };
 
+export const COLOR_COUNT = MASCOT_COLOR_VARS.length;
+
 export function getClawdColor(colorIndex: number): string {
-  const varName = MASCOT_COLOR_VARS[colorIndex % MASCOT_COLOR_VARS.length];
+  const varName = MASCOT_COLOR_VARS[colorIndex % COLOR_COUNT];
   const computed = getComputedStyle(document.documentElement)
     .getPropertyValue(varName)
     .trim();

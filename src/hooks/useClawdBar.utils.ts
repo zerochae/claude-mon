@@ -3,7 +3,7 @@ import { ACTIVE_PHASES } from "@/lib/phases";
 
 export const BASE_BAR_H = 48;
 export const BASE_CLAWD_W = 80;
-export const BASE_HITBOX_W = 110;
+export const BASE_HITBOX_W = 140;
 export const BASE_HOME_SLOT_W = 42;
 export const BASE_PAD_R = 40;
 export const PAD_L = 20;

@@ -23,6 +23,8 @@ function makeSession(id: string, phase: SessionPhase = "idle"): SessionState {
     tool_input: null,
     tool_use_id: null,
     pid: null,
+    tty: null,
+    subagent_count: 0,
     color_index: 0,
     last_activity: Date.now() / 1000,
   };

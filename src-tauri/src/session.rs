@@ -15,6 +15,8 @@ pub struct SessionState {
     pub tool_input: Option<Value>,
     pub tool_use_id: Option<String>,
     pub pid: Option<u32>,
+    pub tty: Option<String>,
+    pub subagent_count: u32,
     pub color_index: usize,
     pub last_activity: u64,
 }
@@ -69,6 +71,8 @@ impl SessionManager {
                 tool_input: None,
                 tool_use_id: None,
                 pid: event.pid,
+                tty: event.tty.clone(),
+                subagent_count: 0,
                 color_index: color,
                 last_activity: now,
             }
@@ -85,6 +89,12 @@ impl SessionManager {
 
         if let Some(pid) = event.pid {
             session.pid = Some(pid);
+        }
+
+        if let Some(tty) = &event.tty {
+            if !tty.is_empty() {
+                session.tty = Some(tty.clone());
+            }
         }
 
         let status = event.status.as_deref().unwrap_or("");
@@ -139,8 +149,8 @@ impl SessionManager {
         self.sessions.get(session_id)
     }
 
-    pub fn remove_ended_sessions(&mut self) {
-        self.sessions.retain(|_, s| s.phase != "ended");
+    pub fn get_session_mut(&mut self, session_id: &str) -> Option<&mut SessionState> {
+        self.sessions.get_mut(session_id)
     }
 
     pub fn cleanup_stale_ended(&mut self, max_age_secs: u64) {

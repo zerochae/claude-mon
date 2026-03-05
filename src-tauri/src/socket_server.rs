@@ -10,7 +10,7 @@ use tauri::{AppHandle, Emitter};
 
 use crate::session::SessionManager;
 
-pub const SOCKET_PATH: &str = "/tmp/claude-house.sock";
+pub const SOCKET_PATH: &str = "/tmp/claude-mon.sock";
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct HookEvent {
@@ -199,6 +199,16 @@ async fn handle_connection(
     {
         let mut sm = session_manager.lock().await;
         sm.process_event(&event, None);
+        if event.event == "PreToolUse" && matches!(event.tool.as_deref(), Some("Agent" | "Task")) {
+            if let Some(s) = sm.get_session_mut(&session_id) {
+                s.subagent_count = s.subagent_count.saturating_add(1);
+            }
+        }
+        if event.event == "SubagentStop" {
+            if let Some(s) = sm.get_session_mut(&session_id) {
+                s.subagent_count = s.subagent_count.saturating_sub(1);
+            }
+        }
     }
 
     let payload = get_sessions_payload(&session_manager).await;
@@ -221,7 +231,7 @@ fn build_permission_output(response: &PermissionResponse) -> String {
                 "hookEventName": "PermissionRequest",
                 "decision": {
                     "behavior": "deny",
-                    "message": response.reason.as_deref().unwrap_or("Denied by user via Claude House")
+                    "message": response.reason.as_deref().unwrap_or("Denied by user via ClaudeMon")
                 }
             }
         })

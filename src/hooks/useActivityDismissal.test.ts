@@ -18,6 +18,8 @@ function makeSession(
     tool_input: null,
     tool_use_id: null,
     pid: null,
+    tty: null,
+    subagent_count: 0,
     color_index: 0,
     last_activity: lastActivity,
   };

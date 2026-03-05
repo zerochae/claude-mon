@@ -2,6 +2,7 @@ import { css, cva } from "@styled-system/css";
 import { MOTION } from "@/lib/motion";
 
 export const CLAWD_SIZE = 20;
+export const MINI_CLAWD_SIZE = 10;
 export const LABEL_HEIGHT = 16;
 export const BUBBLE_HEIGHT = 30;
 export const SLOT_W = 70;
@@ -9,7 +10,8 @@ export const PAD_X = 10;
 export const PAD_Y_TOP = BUBBLE_HEIGHT + 6;
 export const PAD_Y_BOTTOM = LABEL_HEIGHT + 4;
 export const HITBOX_X = CLAWD_SIZE + 20;
-export const HITBOX_Y = CLAWD_SIZE + BUBBLE_HEIGHT + LABEL_HEIGHT + 8;
+export const MINI_ROW_HEIGHT = MINI_CLAWD_SIZE + 4;
+export const HITBOX_Y = CLAWD_SIZE + BUBBLE_HEIGHT + LABEL_HEIGHT + MINI_ROW_HEIGHT + 8;
 export const WANDER_INTERVAL = 2200;
 
 export const emptyState = css({
@@ -157,4 +159,15 @@ export const actionButtons = css({
   display: "flex",
   gap: "4px",
   flexShrink: 0,
+});
+
+export const miniClawdRow = css({
+  display: "flex",
+  gap: "2px",
+  justifyContent: "center",
+  marginTop: "-2px",
+});
+
+export const miniClawdWrap = css({
+  animation: "clawd-bounce 1.4s ease-in-out infinite",
 });

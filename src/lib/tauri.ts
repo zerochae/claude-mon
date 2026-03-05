@@ -11,6 +11,8 @@ export interface SessionState {
   tool_input: string | null;
   tool_use_id: string | null;
   pid: number | null;
+  tty: string | null;
+  subagent_count: number;
   color_index: number;
   last_activity: number;
 }
@@ -41,6 +43,13 @@ export interface ChatMessage {
   tool_name?: string;
   tool_status?: string;
   timestamp: number;
+}
+
+export function sendMessage(
+  sessionId: string,
+  message: string,
+): Promise<boolean> {
+  return invoke<boolean>("send_message", { sessionId, message });
 }
 
 export function getChatMessages(

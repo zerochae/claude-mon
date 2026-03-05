@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { ClawdCanvas } from "@/components/ClawdCanvas";
 import { SessionState } from "@/lib/tauri";
-import { getClawdColor } from "@/lib/colors";
+import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
 import {
   useClawdBar,
   CLAWD_BAR_WANDER_MS,
@@ -13,9 +13,12 @@ import { BAR_VISIBLE_PHASES, STALE_THRESHOLD_SEC } from "@/lib/phases";
 import {
   BASE_BAR_HEIGHT,
   BASE_CLAWD_SIZE,
+  MINI_BAR_CLAWD_SIZE,
   collapsedBar,
   clawdList,
   clawdItem,
+  miniBarRow,
+  miniBarWrap,
   sleepingWrap,
   zzzRow,
   zzz,
@@ -127,6 +130,29 @@ export function BarView({ sessions, barHeight, onToggle }: BarViewProps) {
                     size={BASE_CLAWD_SIZE}
                   />
                 </div>
+                {s.subagent_count > 0 && (
+                  <div className={miniBarRow}>
+                    {Array.from({ length: Math.min(s.subagent_count, 3) }).map((_, i) => {
+                      const miniPhases = ["processing", "compacting", "idle"] as const;
+                      return (
+                        <div
+                          key={i}
+                          className={miniBarWrap}
+                          style={{
+                            animationDelay: `${i * 0.2}s`,
+                            transform: i % 2 === 0 ? "scaleX(1)" : "scaleX(-1)",
+                          }}
+                        >
+                          <ClawdCanvas
+                            color={getClawdColor((s.color_index + i + 3) % COLOR_COUNT)}
+                            phase={miniPhases[i % miniPhases.length]}
+                            size={MINI_BAR_CLAWD_SIZE}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
                 <BarBubble phase={s.phase} lastActivity={s.last_activity} />
               </div>
             );

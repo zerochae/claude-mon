@@ -29,6 +29,19 @@ export const clawdItem = css({
   gap: "4px",
 });
 
+export const MINI_BAR_CLAWD_SIZE = 8;
+
+export const miniBarRow = css({
+  display: "flex",
+  alignItems: "flex-end",
+  gap: "1px",
+  marginLeft: "-2px",
+});
+
+export const miniBarWrap = css({
+  animation: "clawd-bounce 1.4s ease-in-out infinite",
+});
+
 export const sleepingWrap = css({
   display: "flex",
   alignItems: "flex-end",
