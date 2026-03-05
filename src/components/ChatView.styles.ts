@@ -216,3 +216,4 @@ export const chatInput = css({
     shadow: "0 0 0 2px rgba(97, 175, 239, 0.15)",
   },
 });
+

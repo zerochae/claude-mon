@@ -1,29 +1,35 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useTransition } from "react";
 import { type ChatMessage, getChatMessages } from "@/lib/tauri";
 
 export function useChatMessages(sessionId: string, cwd: string, phase: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(true);
   const [staleCount, setStaleCount] = useState(0);
+  const [, startTransition] = useTransition();
   const prevCountRef = useRef(0);
   const prevSessionIdRef = useRef(sessionId);
 
   const loadMessages = useCallback(() => {
     getChatMessages(sessionId, cwd)
       .then((msgs) => {
-        if (prevSessionIdRef.current !== sessionId) {
-          prevSessionIdRef.current = sessionId;
-          prevCountRef.current = 0;
-          setStaleCount(0);
+        startTransition(() => {
+          if (prevSessionIdRef.current !== sessionId) {
+            prevSessionIdRef.current = sessionId;
+            prevCountRef.current = 0;
+            setStaleCount(0);
+            setMessages(msgs);
+            setLoading(false);
+            return;
+          }
           setMessages(msgs);
-          return;
-        }
-        setMessages(msgs);
-        setStaleCount((prev) =>
-          msgs.length === prevCountRef.current ? prev + 1 : 0,
-        );
-        prevCountRef.current = msgs.length;
+          setLoading(false);
+          setStaleCount((prev) =>
+            msgs.length === prevCountRef.current ? prev + 1 : 0,
+          );
+          prevCountRef.current = msgs.length;
+        });
       })
-      .catch(() => undefined);
+      .catch(() => setLoading(false));
   }, [sessionId, cwd]);
 
   useEffect(() => {
@@ -38,5 +44,5 @@ export function useChatMessages(sessionId: string, cwd: string, phase: string) {
       phase === "compacting") &&
     staleCount < 3;
 
-  return { messages, isActive };
+  return { messages, loading, isActive };
 }

@@ -19,21 +19,21 @@ import {
   pidValue,
   approvalSection,
   toolInputBox,
-} from "./SessionView.styles";
+} from "./Detail.styles";
 
-interface SessionViewProps {
+interface DetailProps {
   session: SessionState;
   onBack: () => void;
   onApprove: (sessionId: string, toolUseId: string) => void;
   onDeny: (sessionId: string, toolUseId: string) => void;
 }
 
-export function SessionView({
+export function Detail({
   session,
   onBack,
   onApprove,
   onDeny,
-}: SessionViewProps) {
+}: DetailProps) {
   const color = getClawdColor(session.color_index);
   const phaseLabel = PHASE_LABELS[session.phase];
 

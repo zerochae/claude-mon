@@ -103,6 +103,10 @@ const keyframes = defineKeyframes({
     from: { opacity: "0" },
     to: { opacity: "1" },
   },
+  "glyph-spin": {
+    "0%": { transform: "translateY(0%)" },
+    "100%": { transform: "translateY(-100%)" },
+  },
   "crab-drop": {
     from: { opacity: "0", transform: "translateY(-24px) scale(0.85)" },
     to: { opacity: "1", transform: "translateY(0) scale(0.85)" },

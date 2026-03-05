@@ -288,7 +288,7 @@ const components: Components = {
   td: ({ node: _, ...rest }) => <td className={tdStyle} {...rest} />,
 };
 
-export function Markdown({ content }: MarkdownProps) {
+export const Markdown = React.memo(function Markdown({ content }: MarkdownProps) {
   return (
     <div className={markdownWrap}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
@@ -296,4 +296,4 @@ export function Markdown({ content }: MarkdownProps) {
       </ReactMarkdown>
     </div>
   );
-}
+});

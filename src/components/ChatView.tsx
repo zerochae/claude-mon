@@ -3,6 +3,7 @@ import { Markdown } from "@/components/Markdown";
 import { ChatMessage, sendMessage } from "@/lib/tauri";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { ProcessingSpinner } from "@/components/PhaseIndicators";
+import { Loading } from "@/components/Loading";
 import { Button } from "@/components/Button";
 import { ClawdCanvas } from "@/components/ClawdCanvas";
 import { getClawdColor, COLOR_COUNT } from "@/lib/colors";
@@ -43,6 +44,7 @@ interface ChatViewProps {
   projectName: string;
   lastActivity: number;
   subagentCount: number;
+  onOpenDetail?: () => void;
 }
 
 function UserMessage({ message }: { message: ChatMessage }) {
@@ -222,19 +224,21 @@ function ThinkingIndicator() {
   );
 }
 
-export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastActivity, subagentCount }: ChatViewProps) {
+export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastActivity, subagentCount, onOpenDetail }: ChatViewProps) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { messages, isActive } = useChatMessages(sessionId, cwd, phase);
+  const { messages, loading: dataLoading, isActive } = useChatMessages(sessionId, cwd, phase);
   const groups = groupMessages(messages);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages.length, isActive]);
+    requestAnimationFrame(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    });
+  }, [dataLoading, messages.length, isActive]);
 
   const canSend = phase === "waiting_for_input" && !sending;
 
@@ -255,7 +259,9 @@ export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastA
     <div className={outerContainer}>
       <div className={chatHeader}>
         <div className={chatHeaderLeft}>
-          <ClawdCanvas color={getClawdColor(colorIndex)} phase={phase} size={24} />
+          <div onClick={onOpenDetail} style={{ cursor: onOpenDetail ? "pointer" : undefined }}>
+            <ClawdCanvas color={getClawdColor(colorIndex)} phase={phase} size={24} />
+          </div>
           <Bubble variant="chat" phase={phase} lastActivity={lastActivity} />
           {subagentCount > 0 && (
             <div className={chatMiniRow}>
@@ -284,10 +290,18 @@ export function ChatView({ sessionId, cwd, phase, colorIndex, projectName, lastA
         <span className={chatHeaderLabel}>{projectName}</span>
       </div>
       <div ref={scrollRef} className={scrollArea}>
-        {groups.map((group) => (
-          <MessageGroup key={group[0].id} messages={group} sessionColorIndex={colorIndex} />
-        ))}
-        {isActive && <ThinkingIndicator />}
+        {dataLoading ? (
+          <div style={{ display: "flex", flex: 1, minHeight: "100%" }}>
+            <Loading />
+          </div>
+        ) : (
+          <>
+            {groups.map((group) => (
+              <MessageGroup key={group[0].id} messages={group} sessionColorIndex={colorIndex} />
+            ))}
+            {isActive && <ThinkingIndicator />}
+          </>
+        )}
       </div>
 
       {error && (

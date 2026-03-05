@@ -5,7 +5,7 @@ import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
 import { WidgetHeader } from "@/components/WidgetHeader";
 import { HouseView } from "@/components/HouseView";
-import { SessionView } from "@/components/SessionView";
+import { Detail } from "@/components/Detail";
 import { ChatView } from "@/components/ChatView";
 import { SettingsView } from "@/components/SettingsView";
 import { MOTION } from "@/lib/motion";
@@ -59,6 +59,13 @@ export default function App() {
     setView("house");
     setSelectedSessionId(null);
     if (expanded) animateToView(prevW, nextW);
+  };
+
+  const handleOpenDetail = () => {
+    if (!selectedSession) return;
+    const prevW = activeWidth;
+    setView("detail");
+    if (expanded) animateToView(prevW, viewWidth("detail"));
   };
 
   const handleGearClick = () => {
@@ -118,9 +125,10 @@ export default function App() {
               projectName={selectedSession.project_name}
               lastActivity={selectedSession.last_activity}
               subagentCount={selectedSession.subagent_count}
+              onOpenDetail={handleOpenDetail}
             />
           ) : (
-            <SessionView
+            <Detail
               session={selectedSession}
               onBack={handleBack}
               onApprove={(sessionId, toolUseId) => {
