@@ -13,7 +13,7 @@ import {
   wrapper,
   bubble,
   tailStyle,
-} from "./Bubble.styles";
+} from "@/styles/Bubble.styles";
 import { ui } from "@/constants/glyph";
 
 type BubbleVariant = "bar" | "chat" | "house";

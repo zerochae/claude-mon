@@ -37,7 +37,7 @@ import {
   trStyle,
   thStyle,
   tdStyle,
-} from "./Markdown.styles";
+} from "@/styles/Markdown.styles";
 
 interface MarkdownProps {
   content: string;

@@ -19,7 +19,7 @@ import {
   pidValue,
   approvalSection,
   toolInputBox,
-} from "./Detail.styles";
+} from "@/styles/Detail.styles";
 
 interface DetailProps {
   session: SessionState;

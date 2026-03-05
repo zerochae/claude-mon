@@ -27,7 +27,7 @@ import {
   previewStrip,
   themeOptLabel,
   checkMark,
-} from "./Settings.styles";
+} from "@/styles/Settings.styles";
 
 interface SettingsProps {
   settings: AppSettings;

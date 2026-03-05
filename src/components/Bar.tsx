@@ -9,7 +9,7 @@ import {
   CLAWD_BAR_RUN_MS,
 } from "@/hooks/useClawdBar";
 import { Bubble } from "@/components/Bubble";
-import { BAR_VISIBLE_PHASES, STALE_THRESHOLD_SEC } from "@/constants/phases";
+import { filterActive, activeKey } from "@/utils/session.utils";
 import {
   BASE_BAR_HEIGHT,
   BASE_CLAWD_SIZE,
@@ -25,27 +25,13 @@ import {
   zSmall,
   zMedium,
   zLarge,
-} from "./Bar.styles";
+} from "@/styles/Bar.styles";
 
 interface BarProps {
   sessions: SessionState[];
   barHeight: number;
   onToggle: () => void;
   onSelectSession?: (session: SessionState) => void;
-}
-
-function filterActive(sessions: SessionState[]) {
-  const now = Math.floor(Date.now() / 1000);
-  return sessions.filter(
-    (s) =>
-      s.phase !== "ended" &&
-      (BAR_VISIBLE_PHASES.has(s.phase) ||
-        now - s.last_activity < STALE_THRESHOLD_SEC),
-  );
-}
-
-function activeKey(sessions: SessionState[]) {
-  return sessions.map((s) => `${s.session_id}:${s.phase}`).join();
 }
 
 export function Bar({ sessions, barHeight, onToggle, onSelectSession }: BarProps) {

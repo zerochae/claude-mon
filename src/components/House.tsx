@@ -5,6 +5,7 @@ import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
 import { Button } from "@/components/Button";
 import { PHASE_LABELS } from "@/constants/phases";
+import { sortByPriority } from "@/utils/session.utils";
 import { useClawdPositions } from "@/hooks/useClawdPositions";
 import { useActivityDismissal } from "@/hooks/useActivityDismissal";
 import {
@@ -29,7 +30,7 @@ import {
   sessionName,
   sessionPhase,
   actionButtons,
-} from "./House.styles";
+} from "@/styles/House.styles";
 
 interface HouseProps {
   sessions: SessionState[];
@@ -157,20 +158,7 @@ export function House({ sessions, onSelectSession }: HouseProps) {
           <span>{waitingSessions.length} waiting</span>
         </div>
         <div className={sessionListScroll}>
-          {[...sessions]
-            .sort((a, b) => {
-              const priority = (p: string) =>
-                p === "waiting_for_approval"
-                  ? 0
-                  : p === "waiting_for_input"
-                    ? 1
-                    : p === "processing"
-                      ? 2
-                      : p === "ended"
-                        ? 4
-                        : 3;
-              return priority(a.phase) - priority(b.phase);
-            })
+          {sortByPriority(sessions)
             .map((session) => {
               const color = getClawdColor(session.color_index);
               const isUrgent = session.phase === "waiting_for_approval";

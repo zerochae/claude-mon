@@ -7,7 +7,7 @@ import {
   DEFAULT_BAR_HEIGHT,
   handleBar,
   handlePill,
-} from "./Header.styles";
+} from "@/styles/Header.styles";
 
 interface HeaderProps {
   onGearClick: () => void;

@@ -4,7 +4,7 @@ import {
   type Variant,
   type Size,
   type Color,
-} from "./Button.styles";
+} from "@/styles/Button.styles";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;

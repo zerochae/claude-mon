@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Markdown } from "@/components/Markdown";
 import { ChatMessage, sendMessage } from "@/services/tauri";
+import { groupMessages } from "@/utils/chat.utils";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { ProcessingSpinner } from "@/components/Spinners";
 import { Loading } from "@/components/Loading";
@@ -34,7 +35,7 @@ import {
   scrollArea,
   inputBar,
   chatInput,
-} from "./Chat.styles";
+} from "@/styles/Chat.styles";
 
 interface ChatProps {
   sessionId: string;
@@ -198,22 +199,6 @@ function MessageGroup({ messages, sessionColorIndex }: { messages: ChatMessage[]
       })}
     </div>
   );
-}
-
-function groupMessages(messages: ChatMessage[]): ChatMessage[][] {
-  const groups: ChatMessage[][] = [];
-  let current: ChatMessage[] = [];
-
-  for (const msg of messages) {
-    if (current.length === 0 || current[0].role === msg.role) {
-      current.push(msg);
-    } else {
-      groups.push(current);
-      current = [msg];
-    }
-  }
-  if (current.length > 0) groups.push(current);
-  return groups;
 }
 
 function ThinkingIndicator() {
