@@ -66,7 +66,8 @@ const ansiPre = css({
 });
 
 export const ToolMessage = memo(function ToolMessage({ message }: { message: ChatMessage }) {
-  const [expanded, setExpanded] = useState(true);
+  const defaultOpen = message.tool_name !== "Read";
+  const [expanded, setExpanded] = useState(defaultOpen);
   const isRunning = message.tool_status === "running";
   const isError = message.tool_status === "error";
 
@@ -103,6 +104,9 @@ export const ToolMessage = memo(function ToolMessage({ message }: { message: Cha
           </Glyph>
         </span>
         <span>{label}</span>
+        <span style={{ fontSize: "8px", opacity: 0.5, marginLeft: "2px" }}>
+          {expanded ? "▼" : "▶"}
+        </span>
       </div>
       {expanded && (
         <div className={contentWrap}>
