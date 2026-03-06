@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { css } from "@styled-system/css";
 import { Markdown } from "@/components/Markdown";
 import { Glyph } from "@/components/Glyph";
@@ -65,7 +65,7 @@ const ansiPre = css({
   overflowY: "auto",
 });
 
-export function ToolMessage({ message }: { message: ChatMessage }) {
+export const ToolMessage = memo(function ToolMessage({ message }: { message: ChatMessage }) {
   const [expanded, setExpanded] = useState(true);
   const isRunning = message.tool_status === "running";
   const isError = message.tool_status === "error";
@@ -125,4 +125,4 @@ export function ToolMessage({ message }: { message: ChatMessage }) {
       )}
     </div>
   );
-}
+});

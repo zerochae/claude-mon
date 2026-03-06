@@ -78,22 +78,32 @@ function applyColorOverrides(overrides: Record<string, string>) {
   }
 }
 
-function applyAppearance(settings: AppSettings) {
+interface AppearanceParams {
+  opacity: number;
+  bgBlur: number;
+  borderEnabled: boolean;
+  borderRadius: number;
+  fontSize: number;
+  vibrancy: string;
+  accessoryMode: boolean;
+}
+
+function applyAppearance(p: AppearanceParams) {
   const container = document.querySelector<HTMLElement>(".widget-container");
   if (!container) return;
 
-  container.style.opacity = String(settings.opacity);
-  const blurPx = Math.round(settings.bgBlur * 50);
+  container.style.opacity = String(p.opacity);
+  const blurPx = Math.round(p.bgBlur * 50);
   container.style.backdropFilter = blurPx > 0 ? `blur(${blurPx}px)` : "";
   container.style.setProperty(
     "-webkit-backdrop-filter",
     blurPx > 0 ? `blur(${blurPx}px)` : "",
   );
 
-  if (settings.border.enabled) {
+  if (p.borderEnabled) {
     container.style.border =
       "1px solid var(--colors-border, rgba(255,255,255,0.15))";
-    container.style.borderRadius = `${settings.border.radius}px`;
+    container.style.borderRadius = `${p.borderRadius}px`;
   } else {
     container.style.border = "";
     container.style.borderRadius = "";
@@ -101,11 +111,11 @@ function applyAppearance(settings: AppSettings) {
 
   document.documentElement.style.setProperty(
     "--app-font-size",
-    `${settings.fontSize}px`,
+    `${p.fontSize}px`,
   );
 
-  setVibrancy(settings.vibrancy).catch(() => undefined);
-  invoke("set_accessory_mode", { enabled: settings.accessoryMode }).catch(
+  setVibrancy(p.vibrancy).catch(() => undefined);
+  invoke("set_accessory_mode", { enabled: p.accessoryMode }).catch(
     () => undefined,
   );
 }
@@ -162,9 +172,20 @@ export function useSettings() {
   useEffect(() => {
     if (!loaded) return;
     void applyTheme(settings.theme);
+  }, [loaded, settings.theme, applyTheme]);
+
+  useEffect(() => {
+    if (!loaded) return;
     applyColorOverrides(settings.colorOverrides);
-    applyAppearance(settings);
-  }, [loaded, settings, applyTheme]);
+  }, [loaded, settings.colorOverrides]);
+
+  const { opacity, bgBlur, fontSize, vibrancy, accessoryMode } = settings;
+  const { enabled: borderEnabled, radius: borderRadius } = settings.border;
+
+  useEffect(() => {
+    if (!loaded) return;
+    applyAppearance({ opacity, bgBlur, borderEnabled, borderRadius, fontSize, vibrancy, accessoryMode });
+  }, [loaded, opacity, bgBlur, borderEnabled, borderRadius, fontSize, vibrancy, accessoryMode]);
 
   const updateSettings = useCallback(
     (patch: Partial<AppSettings>) => {

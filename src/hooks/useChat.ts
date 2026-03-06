@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { sendMessage } from "@/services/tauri";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { groupMessages } from "@/utils/chat.utils";
@@ -13,7 +13,7 @@ export function useChat(sessionId: string, cwd: string, phase: string) {
     cwd,
     phase,
   );
-  const groups = groupMessages(messages);
+  const groups = useMemo(() => groupMessages(messages), [messages]);
 
   useEffect(() => {
     requestAnimationFrame(() => {

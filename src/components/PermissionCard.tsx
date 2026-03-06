@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { css } from "@styled-system/css";
 import { Button } from "@/components/Button";
 import { Glyph } from "@/components/Glyph";
@@ -115,7 +116,7 @@ const actions = css({
   gap: "6px",
 });
 
-export function PermissionCard({
+export const PermissionCard = memo(function PermissionCard({
   toolName,
   toolInput,
   onAllow,
@@ -196,4 +197,4 @@ export function PermissionCard({
       </div>
     </div>
   );
-}
+});

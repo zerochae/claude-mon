@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { useSessions } from "@/hooks/useSessions";
 import type { SessionState } from "@/services/tauri";
 import { useSettings } from "@/hooks/useSettings";
@@ -17,12 +17,16 @@ export default function App() {
   const { settings, updateSettings, resetColorOverrides } = useSettings();
   const vw = settings.viewWidths;
 
-  const pendingPermissions = sessions.filter(
-    (s): s is SessionState & { tool_use_id: string; tool_name: string } =>
-      !!s.tool_use_id &&
-      s.phase === "waiting_for_approval" &&
-      !!s.tool_name &&
-      s.tool_name !== "unknown",
+  const pendingPermissions = useMemo(
+    () =>
+      sessions.filter(
+        (s): s is SessionState & { tool_use_id: string; tool_name: string } =>
+          !!s.tool_use_id &&
+          s.phase === "waiting_for_approval" &&
+          !!s.tool_name &&
+          s.tool_name !== "unknown",
+      ),
+    [sessions],
   );
 
   const {
@@ -65,11 +69,24 @@ export default function App() {
 
   const barPermissions = !expanded ? pendingPermissions : [];
 
+  const handleToggle = useCallback(
+    () => toggleExpand(viewWidth(view)),
+    [toggleExpand, viewWidth, view],
+  );
+  const handleApprove = useCallback(
+    (sid: string, tid: string) => void approve(sid, tid),
+    [approve],
+  );
+  const handleDeny = useCallback(
+    (sid: string, tid: string) => void deny(sid, tid),
+    [deny],
+  );
+
   return (
     <div className="widget-container">
       <Header
         onGearClick={handleGearClick}
-        onToggle={() => toggleExpand(viewWidth(view))}
+        onToggle={handleToggle}
         onCollapse={collapse}
         onBack={handleBack}
         onSelectSession={handleSelectSession}
@@ -79,7 +96,7 @@ export default function App() {
         sessions={sessions}
         barHeight={settings.barHeight}
       />
-      {barPermissions.length > 0 && (
+      {barPermissions.length > 0 ? (
         <div
           style={{
             padding: "4px 6px 6px",
@@ -99,8 +116,8 @@ export default function App() {
             />
           ))}
         </div>
-      )}
-      {expanded && (
+      ) : null}
+      {expanded ? (
         <div
           style={{
             flex: 1,
@@ -122,8 +139,8 @@ export default function App() {
             <Stage
               sessions={sessions}
               onSelectSession={handleSelectSession}
-              onApprove={(sid, tid) => void approve(sid, tid)}
-              onDeny={(sid, tid) => void deny(sid, tid)}
+              onApprove={handleApprove}
+              onDeny={handleDeny}
             />
           ) : view === "chat" ? (
             <Chat
@@ -137,22 +154,18 @@ export default function App() {
               toolName={selectedSession.tool_name}
               toolInput={selectedSession.tool_input}
               toolUseId={selectedSession.tool_use_id}
-              onApprove={(sid, tid) => void approve(sid, tid)}
-              onDeny={(sid, tid) => void deny(sid, tid)}
+              onApprove={handleApprove}
+              onDeny={handleDeny}
             />
           ) : (
             <Detail
               session={selectedSession}
-              onApprove={(sessionId, toolUseId) => {
-                void approve(sessionId, toolUseId);
-              }}
-              onDeny={(sessionId, toolUseId) => {
-                void deny(sessionId, toolUseId);
-              }}
+              onApprove={handleApprove}
+              onDeny={handleDeny}
             />
           )}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

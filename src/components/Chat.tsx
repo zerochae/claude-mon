@@ -1,3 +1,4 @@
+import { memo, useState, useEffect, useRef } from "react";
 import { Clawd } from "@/components/Clawd";
 import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
 import { Bubble } from "@/components/Bubble";
@@ -6,7 +7,6 @@ import { Loading } from "@/components/Loading";
 import { MessageGroup } from "@/components/Chat.MessageGroup";
 import { ThinkingIndicator } from "@/components/Chat.ThinkingIndicator";
 import { useChat } from "@/hooks/useChat";
-import { useState, useEffect } from "react";
 import { PermissionCard } from "@/components/PermissionCard";
 import { getSessionStats, type SessionStats } from "@/services/tauri";
 import {
@@ -36,7 +36,7 @@ interface ChatProps {
   onDeny?: (sessionId: string, toolUseId: string) => void;
 }
 
-export function Chat({
+export const Chat = memo(function Chat({
   sessionId,
   cwd,
   phase,
@@ -64,9 +64,13 @@ export function Chat({
   } = useChat(sessionId, cwd, phase);
 
   const [stats, setStats] = useState<SessionStats | null>(null);
+  const prevGroupsLenRef = useRef(0);
   useEffect(() => {
+    const len = groups.length;
+    if (len === prevGroupsLenRef.current && stats !== null) return;
+    prevGroupsLenRef.current = len;
     void getSessionStats(sessionId, cwd).then(setStats);
-  }, [sessionId, cwd, groups.length]);
+  }, [sessionId, cwd, groups.length, stats]);
 
   const modelLabel =
     stats?.model?.replace("claude-", "").replace(/-/g, " ") ?? null;
@@ -87,7 +91,7 @@ export function Chat({
         <div className={chatHeaderLeft}>
           <Clawd color={getClawdColor(colorIndex)} phase={phase} size={24} />
           <Bubble variant="chat" phase={phase} lastActivity={lastActivity} />
-          {subagentCount > 0 && (
+          {subagentCount > 0 ? (
             <div className={chatMiniRow}>
               {Array.from({ length: Math.min(subagentCount, 3) }).map(
                 (_, i) => {
@@ -117,7 +121,7 @@ export function Chat({
                 },
               )}
             </div>
-          )}
+          ) : null}
         </div>
         <span className={chatHeaderLabel}>{projectName}</span>
       </div>
@@ -219,4 +223,4 @@ export function Chat({
       </div>
     </div>
   );
-}
+});

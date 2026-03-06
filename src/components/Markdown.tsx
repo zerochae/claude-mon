@@ -40,6 +40,8 @@ import {
   tdStyle,
 } from "@/styles/Markdown.styles";
 
+const LANG_RE = /language-([\w:]+)/;
+
 interface MarkdownProps {
   content: string;
 }
@@ -63,7 +65,7 @@ const components: Components = {
     </a>
   ),
   code: ({ node: _, className, children, ...rest }) => {
-    const match = /language-([\w:]+)/.exec(className ?? "");
+    const match = LANG_RE.exec(className ?? "");
     if (match) {
       const raw = match[1];
       const codeStr = (
@@ -87,7 +89,7 @@ const components: Components = {
     const child = React.Children.toArray(children)[0];
     if (React.isValidElement(child)) {
       const cls = (child.props as { className?: string }).className ?? "";
-      const m = /language-([\w:]+)/.exec(cls);
+      const m = LANG_RE.exec(cls);
       if (m) lang = m[1];
     }
 

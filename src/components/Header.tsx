@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { css } from "@styled-system/css";
 import { SessionState } from "@/services/tauri";
 import { Bar } from "@/components/Bar";
@@ -23,7 +24,7 @@ interface HeaderProps {
   barHeight?: number;
 }
 
-export function Header({
+export const Header = memo(function Header({
   onGearClick,
   onToggle,
   onCollapse,
@@ -98,4 +99,4 @@ export function Header({
       onSelectSession={onSelectSession}
     />
   );
-}
+});

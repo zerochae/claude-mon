@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { SessionState } from "@/services/tauri";
 import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
 import { Clawd } from "@/components/Clawd";
@@ -26,7 +27,7 @@ interface StageProps {
   onDeny?: (sessionId: string, toolUseId: string) => void;
 }
 
-export function Stage({
+export const Stage = memo(function Stage({
   sessions,
   onSelectSession,
   onApprove,
@@ -109,7 +110,7 @@ export function Stage({
                     />
                   </div>
                 </div>
-                {session.subagent_count > 0 && (
+                {session.subagent_count > 0 ? (
                   <div className={miniClawdRow}>
                     {Array.from({
                       length: Math.min(session.subagent_count, 5),
@@ -141,7 +142,7 @@ export function Stage({
                       );
                     })}
                   </div>
-                )}
+                ) : null}
               </div>
               <span className={clawdLabel({ urgent: isUrgent })}>
                 {session.project_name}
@@ -160,4 +161,4 @@ export function Stage({
       />
     </div>
   );
-}
+});

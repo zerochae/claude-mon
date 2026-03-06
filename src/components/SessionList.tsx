@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { SessionState } from "@/services/tauri";
 import { getClawdColor } from "@/constants/colors";
 import { PHASE_LABELS } from "@/constants/phases";
@@ -24,7 +25,7 @@ interface SessionListProps {
   onHover?: (sessionId: string | null) => void;
 }
 
-export function SessionList({
+export const SessionList = memo(function SessionList({
   sessions,
   onSelectSession,
   onApprove,
@@ -130,4 +131,4 @@ export function SessionList({
       </div>
     </div>
   );
-}
+});

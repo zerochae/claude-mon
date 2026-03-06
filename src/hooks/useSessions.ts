@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   getSessions,
   listenSessionUpdate,
@@ -14,6 +14,7 @@ export function useSessions() {
   const [sessions, setSessions] = useState<SessionState[]>(() =>
     isTauri ? [] : MOCK_SESSIONS,
   );
+  const lastEventRef = useRef(0);
 
   useEffect(() => {
     if (!isTauri) return;
@@ -27,10 +28,15 @@ export function useSessions() {
     fetchSessions();
 
     const unlistenPromise = listenSessionUpdate((updated) => {
+      lastEventRef.current = Date.now();
       setSessions(updated);
     });
 
-    const pollId = setInterval(fetchSessions, 2000);
+    const pollId = setInterval(() => {
+      if (Date.now() - lastEventRef.current > 5000) {
+        fetchSessions();
+      }
+    }, 5000);
 
     return () => {
       clearInterval(pollId);
@@ -38,7 +44,7 @@ export function useSessions() {
     };
   }, []);
 
-  const optimisticClear = (sessionId: string) => {
+  const optimisticClear = useCallback((sessionId: string) => {
     setSessions((prev) =>
       prev.map((s) =>
         s.session_id === sessionId
@@ -46,19 +52,27 @@ export function useSessions() {
           : s,
       ),
     );
-  };
+  }, []);
 
-  const approve = (sessionId: string, toolUseId: string) => {
-    if (!isTauri) return Promise.resolve();
-    optimisticClear(sessionId);
-    return approvePermission(sessionId, toolUseId).catch(() => undefined);
-  };
+  const approve = useCallback(
+    (sessionId: string, toolUseId: string) => {
+      if (!isTauri) return Promise.resolve();
+      optimisticClear(sessionId);
+      return approvePermission(sessionId, toolUseId).catch(() => undefined);
+    },
+    [optimisticClear],
+  );
 
-  const deny = (sessionId: string, toolUseId: string, reason?: string) => {
-    if (!isTauri) return Promise.resolve();
-    optimisticClear(sessionId);
-    return denyPermission(sessionId, toolUseId, reason).catch(() => undefined);
-  };
+  const deny = useCallback(
+    (sessionId: string, toolUseId: string, reason?: string) => {
+      if (!isTauri) return Promise.resolve();
+      optimisticClear(sessionId);
+      return denyPermission(sessionId, toolUseId, reason).catch(
+        () => undefined,
+      );
+    },
+    [optimisticClear],
+  );
 
   return { sessions, approve, deny };
 }
