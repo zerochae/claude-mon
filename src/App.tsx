@@ -45,7 +45,7 @@ export default function App() {
     dock: settings.dock,
     dockMargin: settings.dockMargin,
     barExtraHeight:
-      pendingPermissions.length > 0 ? pendingPermissions.length * 150 : 0,
+      pendingPermissions.length > 0 ? pendingPermissions.length * 220 : 0,
   });
 
   const {

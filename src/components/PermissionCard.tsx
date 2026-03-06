@@ -95,7 +95,6 @@ const summaryBox = css({
   bg: "bg",
   borderRadius: "4px",
   padding: "4px 6px",
-  maxHeight: "100px",
   overflowY: "auto",
   border: "0.5px solid token(colors.hairline)",
   "& pre": { margin: 0, padding: 0, background: "transparent !important" },
@@ -106,7 +105,6 @@ const detailBox = css({
   fontSize: "10px",
   fontFamily: "inherit",
   color: "textMuted",
-  maxHeight: "120px",
   overflowY: "auto",
   lineHeight: 1.5,
 });
