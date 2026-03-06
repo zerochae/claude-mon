@@ -16,9 +16,10 @@ function formatBashCommand(raw: string): string {
   const heredocRe = /\$\(cat\s*<<'?(\w+)'?\n([\s\S]*?)\n\s*\1\s*\)/g;
   let result = raw.replace(heredocRe, (_, _tag, body: string) => {
     const lines = body.split("\n");
+    const leadingWs = /^\s*/;
     const minIndent = lines
       .filter((l) => l.trim())
-      .reduce((min, l) => Math.min(min, (l.match(/^\s*/)?.[0].length ?? 0)), Infinity);
+      .reduce((min, l) => Math.min(min, (leadingWs.exec(l)?.[0].length ?? 0)), Infinity);
     const dedented = lines.map((l) => l.slice(minIndent)).join("\n");
     return `\n${dedented}`;
   });

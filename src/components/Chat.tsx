@@ -48,6 +48,17 @@ export const Chat = memo(function Chat({
     loadMore,
   } = useChat(sessionId, cwd, phase);
 
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (el && el.scrollTop < 40 && hasMore) {
+      const prevHeight = el.scrollHeight;
+      loadMore();
+      requestAnimationFrame(() => {
+        el.scrollTop = el.scrollHeight - prevHeight;
+      });
+    }
+  }, [scrollRef, hasMore, loadMore]);
+
   const [stats, setStats] = useState<SessionStats | null>(null);
   const prevGroupsLenRef = useRef(0);
   useEffect(() => {
@@ -150,16 +161,7 @@ export const Chat = memo(function Chat({
       <div
         ref={scrollRef}
         className={scrollArea}
-        onScroll={useCallback(() => {
-          const el = scrollRef.current;
-          if (el && el.scrollTop < 40 && hasMore) {
-            const prevHeight = el.scrollHeight;
-            loadMore();
-            requestAnimationFrame(() => {
-              el.scrollTop = el.scrollHeight - prevHeight;
-            });
-          }
-        }, [hasMore, loadMore])}
+        onScroll={handleScroll}
       >
         {loading ? (
           <div style={{ display: "flex", flex: 1, minHeight: "100%" }}>
