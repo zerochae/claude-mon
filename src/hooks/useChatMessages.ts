@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useCallback, useTransition } from "react";
 import { type ChatMessage, getChatMessages } from "@/services/tauri";
 
+const MAX_MESSAGES = 50;
+
 export function useChatMessages(sessionId: string, cwd: string, phase: string) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +13,8 @@ export function useChatMessages(sessionId: string, cwd: string, phase: string) {
 
   const loadMessages = useCallback(() => {
     getChatMessages(sessionId, cwd)
-      .then((msgs) => {
+      .then((raw) => {
+        const msgs = raw.length > MAX_MESSAGES ? raw.slice(-MAX_MESSAGES) : raw;
         startTransition(() => {
           if (prevSessionIdRef.current !== sessionId) {
             prevSessionIdRef.current = sessionId;
@@ -24,9 +27,9 @@ export function useChatMessages(sessionId: string, cwd: string, phase: string) {
           setMessages(msgs);
           setLoading(false);
           setStaleCount((prev) =>
-            msgs.length === prevCountRef.current ? prev + 1 : 0,
+            raw.length === prevCountRef.current ? prev + 1 : 0,
           );
-          prevCountRef.current = msgs.length;
+          prevCountRef.current = raw.length;
         });
       })
       .catch(() => setLoading(false));
