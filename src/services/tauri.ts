@@ -61,6 +61,23 @@ export function getChatMessages(
   return invoke<ChatMessage[]>("get_chat_messages", { sessionId, cwd });
 }
 
+export interface SessionStats {
+  model: string | null;
+  total_input_tokens: number;
+  total_output_tokens: number;
+  total_cache_read_tokens: number;
+  total_cache_write_tokens: number;
+  context_window: number;
+  message_count: number;
+}
+
+export function getSessionStats(
+  sessionId: string,
+  cwd: string,
+): Promise<SessionStats> {
+  return invoke<SessionStats>("get_session_stats", { sessionId, cwd });
+}
+
 export function setVibrancy(effect: string): Promise<undefined> {
   return invoke<undefined>("set_vibrancy", { effect });
 }

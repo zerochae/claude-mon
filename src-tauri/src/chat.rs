@@ -26,6 +26,27 @@ struct JsonlEntry {
 #[derive(Deserialize)]
 struct MessagePayload {
     content: serde_json::Value,
+    model: Option<String>,
+    usage: Option<UsagePayload>,
+}
+
+#[derive(Deserialize)]
+struct UsagePayload {
+    input_tokens: Option<u64>,
+    output_tokens: Option<u64>,
+    cache_creation_input_tokens: Option<u64>,
+    cache_read_input_tokens: Option<u64>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct SessionStats {
+    pub model: Option<String>,
+    pub total_input_tokens: u64,
+    pub total_output_tokens: u64,
+    pub total_cache_read_tokens: u64,
+    pub total_cache_write_tokens: u64,
+    pub context_window: u64,
+    pub message_count: u32,
 }
 
 #[derive(Deserialize)]
@@ -325,4 +346,67 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
     }
 
     messages
+}
+
+fn context_window_for_model(model: &str) -> u64 {
+    if model.contains("opus") {
+        200_000
+    } else if model.contains("sonnet") {
+        200_000
+    } else if model.contains("haiku") {
+        200_000
+    } else {
+        200_000
+    }
+}
+
+pub fn parse_session_stats(cwd: &str, session_id: &str) -> SessionStats {
+    let mut stats = SessionStats {
+        model: None,
+        total_input_tokens: 0,
+        total_output_tokens: 0,
+        total_cache_read_tokens: 0,
+        total_cache_write_tokens: 0,
+        context_window: 200_000,
+        message_count: 0,
+    };
+
+    let path = match find_transcript_path(cwd, session_id) {
+        Some(p) => p,
+        None => return stats,
+    };
+    let content = match fs::read_to_string(&path) {
+        Ok(c) => c,
+        Err(_) => return stats,
+    };
+
+    for line in content.lines() {
+        let line = line.trim();
+        if line.is_empty() { continue; }
+
+        let entry: JsonlEntry = match serde_json::from_str(line) {
+            Ok(e) => e,
+            Err(_) => continue,
+        };
+
+        if entry.entry_type == "assistant" {
+            if let Some(msg) = &entry.message {
+                if let Some(model) = &msg.model {
+                    if stats.model.is_none() {
+                        stats.context_window = context_window_for_model(model);
+                    }
+                    stats.model = Some(model.clone());
+                }
+                if let Some(usage) = &msg.usage {
+                    stats.total_input_tokens += usage.input_tokens.unwrap_or(0);
+                    stats.total_output_tokens += usage.output_tokens.unwrap_or(0);
+                    stats.total_cache_read_tokens += usage.cache_read_input_tokens.unwrap_or(0);
+                    stats.total_cache_write_tokens += usage.cache_creation_input_tokens.unwrap_or(0);
+                }
+                stats.message_count += 1;
+            }
+        }
+    }
+
+    stats
 }

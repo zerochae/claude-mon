@@ -41,11 +41,15 @@ export function useNavigation(
 
   const handleBack = useCallback(() => {
     const prevW = activeWidth;
-    const nextW = viewWidths.stage;
-    setView("stage");
-    setSelectedSessionId(null);
-    if (expanded) animateToView(prevW, nextW);
-  }, [expanded, activeWidth, animateToView, viewWidths.stage]);
+    if (view === "detail") {
+      setView("chat");
+      if (expanded) animateToView(prevW, viewWidth("chat"));
+    } else {
+      setView("stage");
+      setSelectedSessionId(null);
+      if (expanded) animateToView(prevW, viewWidths.stage);
+    }
+  }, [view, expanded, activeWidth, animateToView, viewWidths.stage, viewWidth]);
 
   const handleOpenDetail = useCallback(() => {
     if (!selectedSession) return;

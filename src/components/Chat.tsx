@@ -6,13 +6,14 @@ import { Loading } from "@/components/Loading";
 import { MessageGroup } from "@/components/Chat.MessageGroup";
 import { ThinkingIndicator } from "@/components/Chat.ThinkingIndicator";
 import { useChat } from "@/hooks/useChat";
+import { useState, useEffect } from "react";
 import { PermissionCard } from "@/components/PermissionCard";
+import { getSessionStats, type SessionStats } from "@/services/tauri";
 import {
   outerContainer,
   chatHeader,
   chatHeaderLeft,
   chatHeaderLabel,
-  chatClawdWrap,
   chatMiniRow,
   chatMiniWrap,
   scrollArea,
@@ -31,7 +32,6 @@ interface ChatProps {
   toolName: string | null;
   toolInput: Record<string, unknown> | null;
   toolUseId: string | null;
-  onOpenDetail?: () => void;
   onApprove?: (sessionId: string, toolUseId: string) => void;
   onDeny?: (sessionId: string, toolUseId: string) => void;
 }
@@ -47,7 +47,6 @@ export function Chat({
   toolName,
   toolInput,
   toolUseId,
-  onOpenDetail,
   onApprove,
   onDeny,
 }: ChatProps) {
@@ -64,16 +63,21 @@ export function Chat({
     handleSend,
   } = useChat(sessionId, cwd, phase);
 
+  const [stats, setStats] = useState<SessionStats | null>(null);
+  useEffect(() => {
+    void getSessionStats(sessionId, cwd).then(setStats);
+  }, [sessionId, cwd, groups.length]);
+
+  const modelLabel = stats?.model?.replace("claude-", "").replace(/-/g, " ") ?? null;
+  const tokenPct = stats
+    ? Math.min(100, Math.round(((stats.total_input_tokens + stats.total_cache_write_tokens) / stats.context_window) * 100))
+    : null;
+
   return (
     <div className={outerContainer}>
       <div className={chatHeader}>
         <div className={chatHeaderLeft}>
-          <div
-            className={onOpenDetail ? chatClawdWrap : undefined}
-            onClick={onOpenDetail}
-          >
-            <Clawd color={getClawdColor(colorIndex)} phase={phase} size={24} />
-          </div>
+          <Clawd color={getClawdColor(colorIndex)} phase={phase} size={24} />
           <Bubble variant="chat" phase={phase} lastActivity={lastActivity} />
           {subagentCount > 0 && (
             <div className={chatMiniRow}>
@@ -108,6 +112,25 @@ export function Chat({
           )}
         </div>
         <span className={chatHeaderLabel}>{projectName}</span>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "6px",
+          padding: "3px 12px",
+          fontSize: "9px",
+          color: "var(--colors-textMuted, #848992)",
+          borderBottom: "0.5px solid var(--colors-hairline, rgba(255,255,255,0.06))",
+          flexShrink: 0,
+        }}
+      >
+        {modelLabel && <span style={{ opacity: 0.7 }}>{modelLabel}</span>}
+        {tokenPct !== null && (
+          <span style={{ color: tokenPct > 80 ? "var(--colors-red, #E06C75)" : tokenPct > 50 ? "var(--colors-yellow, #e5c07b)" : "var(--colors-green, #98c379)" }}>
+            {tokenPct}%
+          </span>
+        )}
       </div>
       {phase === "waiting_for_approval" && toolUseId && (
         <PermissionCard

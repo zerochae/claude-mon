@@ -3,7 +3,6 @@ import { getClawdColor } from "@/constants/colors";
 import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
 import { PermissionActions } from "@/components/PermissionActions";
-import { Button } from "@/components/Button";
 import { PHASE_LABELS } from "@/constants/phases";
 import {
   container,
@@ -23,21 +22,16 @@ import {
 
 interface DetailProps {
   session: SessionState;
-  onBack: () => void;
   onApprove: (sessionId: string, toolUseId: string) => void;
   onDeny: (sessionId: string, toolUseId: string) => void;
 }
 
-export function Detail({ session, onBack, onApprove, onDeny }: DetailProps) {
+export function Detail({ session, onApprove, onDeny }: DetailProps) {
   const color = getClawdColor(session.color_index);
   const phaseLabel = PHASE_LABELS[session.phase];
 
   return (
     <div className={container}>
-      <Button size="sm" onClick={onBack}>
-        &#8592; Back
-      </Button>
-
       <div className={clawdCenter}>
         <Bubble
           variant="stage"

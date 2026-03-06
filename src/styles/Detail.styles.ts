@@ -14,6 +14,7 @@ export const clawdCenter = css({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
+  pt: "32px",
 });
 
 export const projectInfo = css({ textAlign: "center" });

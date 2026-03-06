@@ -208,6 +208,14 @@ async fn get_chat_messages(
 }
 
 #[tauri::command]
+async fn get_session_stats(
+    session_id: String,
+    cwd: String,
+) -> Result<chat::SessionStats, String> {
+    Ok(chat::parse_session_stats(&cwd, &session_id))
+}
+
+#[tauri::command]
 fn set_vibrancy(window: tauri::Window, effect: String) -> Result<(), String> {
     if effect == "none" {
         window
@@ -322,6 +330,7 @@ pub fn run() {
             deny_permission,
             send_message,
             get_chat_messages,
+            get_session_stats,
             settings::load_settings,
             settings::save_settings,
             set_vibrancy,

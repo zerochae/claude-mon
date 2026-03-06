@@ -36,7 +36,6 @@ export default function App() {
     selectedSession,
     handleSelectSession,
     handleBack,
-    handleOpenDetail,
     handleGearClick,
   } = useNavigation(sessions, vw, {
     expanded,
@@ -96,14 +95,12 @@ export default function App() {
               toolName={selectedSession.tool_name}
               toolInput={selectedSession.tool_input}
               toolUseId={selectedSession.tool_use_id}
-              onOpenDetail={handleOpenDetail}
               onApprove={(sid, tid) => void approve(sid, tid)}
               onDeny={(sid, tid) => void deny(sid, tid)}
             />
           ) : (
             <Detail
               session={selectedSession}
-              onBack={handleBack}
               onApprove={(sessionId, toolUseId) => {
                 void approve(sessionId, toolUseId);
               }}
