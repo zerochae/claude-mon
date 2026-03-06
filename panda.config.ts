@@ -56,7 +56,7 @@ const semanticTokens = defineSemanticTokens({
     heading4: { value: "{colors.blue}" },
     heading5: { value: "{colors.magenta}" },
     heading6: { value: "{colors.yellow}" },
-    strong: { value: "{colors.cyan}" },
+    strong: { value: "{colors.red}" },
     em: { value: "{colors.yellow}" },
     del: { value: "{colors.comment}" },
     code: { value: "{colors.orange}" },
