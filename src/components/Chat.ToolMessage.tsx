@@ -3,7 +3,7 @@ import { css } from "@styled-system/css";
 import { Markdown } from "@/components/Markdown";
 import { Glyph } from "@/components/Glyph";
 import { ChatMessage } from "@/services/tauri";
-import { getToolIcon, getToolColor } from "@/constants/tools";
+import { getToolIcon, getToolColor, getToolLabel } from "@/constants/tools";
 
 const wrap = css({
   px: "12px",
@@ -37,8 +37,9 @@ export function ToolMessage({ message }: { message: ChatMessage }) {
   const isRunning = message.tool_status === "running";
   const isError = message.tool_status === "error";
 
-  const icon = getToolIcon(message.tool_name ?? null);
-  const baseColor = getToolColor(message.tool_name ?? null);
+  const icon = getToolIcon(message.tool_name ?? null, message.content);
+  const baseColor = getToolColor(message.tool_name ?? null, message.content);
+  const label = getToolLabel(message.tool_name ?? null, message.content);
 
   const iconColor = isRunning
     ? "var(--colors-yellow, #e5c07b)"
@@ -67,7 +68,7 @@ export function ToolMessage({ message }: { message: ChatMessage }) {
             {icon}
           </Glyph>
         </span>
-        <span>{message.tool_name}</span>
+        <span>{label}</span>
       </div>
       {expanded && (
         <div className={contentWrap}>

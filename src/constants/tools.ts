@@ -45,14 +45,49 @@ export const HIDDEN_TOOLS = new Set([
   "ReadMcpResourceTool",
 ]);
 
-export function getToolIcon(toolName: string | null): string {
+export function detectBashSubtype(content: string): string | null {
+  const m = content.match(/```bash\n\s*(git|gh)\s/);
+  if (m) return m[1];
+  const inline = content.match(/^`(git|gh)\s/);
+  if (inline) return inline[1];
+  return null;
+}
+
+const BASH_SUBTYPE_ICONS: Record<string, string> = {
+  git: "",
+  gh: "",
+};
+
+const BASH_SUBTYPE_COLORS: Record<string, string> = {
+  git: "var(--colors-orange, #D19A66)",
+  gh: "var(--colors-blue, #61AFEF)",
+};
+
+export function getToolIcon(toolName: string | null, content?: string): string {
   if (!toolName) return "󰋗";
+  if (toolName === "Bash" && content) {
+    const sub = detectBashSubtype(content);
+    if (sub && BASH_SUBTYPE_ICONS[sub]) return BASH_SUBTYPE_ICONS[sub];
+  }
   if (toolName.startsWith("mcp__")) return "󱂛";
   return TOOL_ICONS[toolName] ?? "󰋗";
 }
 
-export function getToolColor(toolName: string | null): string {
+export function getToolColor(toolName: string | null, content?: string): string {
   if (!toolName) return "var(--colors-comment, #565c64)";
+  if (toolName === "Bash" && content) {
+    const sub = detectBashSubtype(content);
+    if (sub && BASH_SUBTYPE_COLORS[sub]) return BASH_SUBTYPE_COLORS[sub];
+  }
   if (toolName.startsWith("mcp__")) return "var(--colors-cyan, #56b6c2)";
   return TOOL_COLORS[toolName] ?? "var(--colors-comment, #565c64)";
+}
+
+export function getToolLabel(toolName: string | null, content?: string): string {
+  if (toolName === "Bash" && content) {
+    const sub = detectBashSubtype(content);
+    if (sub === "git") return "git";
+    if (sub === "gh") return "gh";
+  }
+  return toolName ?? "Unknown";
 }
