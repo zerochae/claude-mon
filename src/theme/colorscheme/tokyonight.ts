@@ -9,6 +9,7 @@ export const tokyonightColors = {
   floatBorder: "#2ac3de",
   text: "#a9b1d6",
   comment: "#565f89",
+  textMuted: "#7f88b0",
   red: "#f7768e",
   yellow: "#e0af68",
   blue: "#7aa2f7",

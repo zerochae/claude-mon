@@ -9,6 +9,7 @@ export const blossomlightColors = {
   floatBorder: "#b3816a",
   text: "#746862",
   comment: "#998b85",
+  textMuted: "#877a74",
   red: "#8779a8",
   yellow: "#738199",
   blue: "#b3816a",

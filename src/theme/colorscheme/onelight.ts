@@ -9,6 +9,7 @@ export const onelightColors = {
   floatBorder: "#4078f2",
   text: "#383a42",
   comment: "#a0a1a7",
+  textMuted: "#6c6d74",
   red: "#d84a3d",
   yellow: "#c18401",
   blue: "#4078f2",

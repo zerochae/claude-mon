@@ -9,6 +9,7 @@ export const gruvboxlightColors = {
   floatBorder: "#076678",
   text: "#504945",
   comment: "#928374",
+  textMuted: "#71665d",
   red: "#9d0006",
   yellow: "#b57614",
   blue: "#076678",

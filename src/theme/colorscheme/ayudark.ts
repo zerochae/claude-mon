@@ -9,6 +9,7 @@ export const ayudarkColors = {
   floatBorder: "#56c3f9",
   text: "#c9c7be",
   comment: "#5C6773",
+  textMuted: "#929798",
   red: "#F07174",
   yellow: "#FFB454",
   blue: "#56c3f9",

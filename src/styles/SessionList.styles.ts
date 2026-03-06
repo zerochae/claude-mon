@@ -11,7 +11,7 @@ export const bottomPanel = css({
 
 export const statusBar = css({
   padding: "5px 12px",
-  color: "comment",
+  color: "textMuted",
   fontSize: "10px",
   display: "flex",
   gap: "6px",
@@ -67,7 +67,7 @@ export const sessionName = css({
 });
 
 export const sessionPhase = css({
-  color: "comment",
+  color: "textMuted",
   fontSize: "9px",
   whiteSpace: "nowrap",
   overflow: "hidden",

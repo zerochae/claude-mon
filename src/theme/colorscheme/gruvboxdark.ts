@@ -9,6 +9,7 @@ export const gruvboxdarkColors = {
   floatBorder: "#83a598",
   text: "#ebdbb2",
   comment: "#928374",
+  textMuted: "#bdaf93",
   red: "#fb4934",
   yellow: "#fabd2f",
   blue: "#83a598",

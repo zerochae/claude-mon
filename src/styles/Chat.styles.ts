@@ -29,7 +29,7 @@ export const toolButton = css({
   borderRadius: "4px",
   fontSize: "0.78rem",
   fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-  color: "comment",
+  color: "textMuted",
   transition: MOTION.transition.color,
   _hover: { color: "text", bg: "surfaceHover" },
   _active: { transform: "scale(0.97)" },
@@ -97,7 +97,7 @@ export const subagentPromptWrap = css({
   pl: "8px",
   borderLeft: "1px solid token(colors.hairline)",
   fontSize: "0.75rem",
-  color: "comment",
+  color: "textMuted",
   maxH: "200px",
   overflowY: "auto",
 });
@@ -120,7 +120,7 @@ export const subagentName = css({
 });
 
 export const subagentDesc = css({
-  color: "comment",
+  color: "textMuted",
   fontSize: "0.7rem",
   maxW: "200px",
   overflow: "hidden",
@@ -171,7 +171,7 @@ export const chatMiniWrap = css({
 
 export const chatHeaderLabel = css({
   fontSize: "0.72rem",
-  color: "comment",
+  color: "textMuted",
   fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
   overflow: "hidden",
   textOverflow: "ellipsis",
@@ -205,26 +205,6 @@ export const inputBar = css({
   flexShrink: 0,
 });
 
-export const approvalBar = css({
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  padding: "6px 12px",
-  borderBottom: "0.5px solid token(colors.hairline)",
-  bg: "surfaceOverlay",
-  flexShrink: 0,
-  animation: "fade-in 150ms cubic-bezier(0.2, 0, 0, 1)",
-});
-
-export const approvalToolName = css({
-  flex: 1,
-  fontSize: "11px",
-  color: "text",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-});
 
 export const chatInput = css({
   flex: 1,

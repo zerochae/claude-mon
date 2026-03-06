@@ -9,6 +9,7 @@ export const githubdarkColors = {
   floatBorder: "#6AB1F0",
   text: "#c9d1d9",
   comment: "#768390",
+  textMuted: "#a0aab4",
   red: "#B392E9",
   yellow: "#ffdf5d",
   blue: "#6AB1F0",

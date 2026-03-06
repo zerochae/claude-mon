@@ -9,6 +9,7 @@ export const ayulightColors = {
   floatBorder: "#55B4D4",
   text: "#5C6166",
   comment: "#8A9199",
+  textMuted: "#737b80",
   red: "#F07171",
   yellow: "#F2AE49",
   blue: "#55B4D4",

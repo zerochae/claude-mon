@@ -103,6 +103,10 @@ fn format_tool_content(name: &str, input: &Option<serde_json::Value>) -> String 
         }
         "Edit" => {
             let path = get_str(v, "file_path");
+            let ext = std::path::Path::new(path)
+                .extension()
+                .and_then(|e| e.to_str())
+                .unwrap_or("");
             let old = get_str(v, "old_string");
             let new_s = get_str(v, "new_string");
             let old_lines: Vec<&str> = old.lines().collect();
@@ -114,7 +118,7 @@ fn format_tool_content(name: &str, input: &Option<serde_json::Value>) -> String 
                 .zip(new_lines[prefix..].iter().rev())
                 .take_while(|(a, b)| a == b).count();
 
-            let mut out = format!("`{path}`\n```diff\n");
+            let mut out = format!("`{path}`\n```diff:{ext}\n");
             for &line in &old_lines[..prefix] {
                 out.push_str(&format!("  {line}\n"));
             }

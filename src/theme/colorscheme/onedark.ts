@@ -9,6 +9,7 @@ export const onedarkColors = {
   floatBorder: "#a0add0",
   text: "#abb2bf",
   comment: "#565c64",
+  textMuted: "#848992",
   red: "#E06C75",
   yellow: "#e5c07b",
   blue: "#61afef",

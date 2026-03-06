@@ -9,6 +9,7 @@ export const githublightColors = {
   floatBorder: "#005cc5",
   text: "#383d42",
   comment: "#8b949e",
+  textMuted: "#626970",
   red: "#5a32a3",
   yellow: "#b08800",
   blue: "#005cc5",

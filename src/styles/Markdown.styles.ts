@@ -94,7 +94,7 @@ export const calloutIcon = css({ fontSize: "0.8rem", fontFamily: NERD });
 export const calloutContent = css({ color: "gray" });
 
 export const shikiWrapClass = css({
-  fontSize: "0.8rem",
+  fontSize: "0.75rem",
   lineHeight: 1.5,
   fontFamily: MONO,
   "& pre": {
@@ -113,7 +113,7 @@ export const markdownWrap = css({ userSelect: "text", cursor: "text" });
 
 export const h1Style = css({
   color: "heading1",
-  fontSize: "1.1rem",
+  fontSize: "1.0rem",
   fontWeight: 700,
   letterSpacing: "-0.01em",
   mt: "0.6rem",
@@ -122,7 +122,7 @@ export const h1Style = css({
 
 export const h2Style = css({
   color: "heading2",
-  fontSize: "1.0rem",
+  fontSize: "0.95rem",
   fontWeight: 700,
   letterSpacing: "-0.01em",
   mt: "0.6rem",
@@ -131,7 +131,7 @@ export const h2Style = css({
 
 export const h3Style = css({
   color: "heading3",
-  fontSize: "0.95rem",
+  fontSize: "0.88rem",
   fontWeight: 600,
   mt: "0.5rem",
   mb: "0.2rem",
@@ -139,7 +139,7 @@ export const h3Style = css({
 
 export const h4Style = css({
   color: "heading4",
-  fontSize: "0.9rem",
+  fontSize: "0.84rem",
   fontWeight: 600,
   mt: "0.4rem",
   mb: "0.15rem",
@@ -147,7 +147,7 @@ export const h4Style = css({
 
 export const h5Style = css({
   color: "heading5",
-  fontSize: "0.85rem",
+  fontSize: "0.8rem",
   fontWeight: 600,
   mt: "0.35rem",
   mb: "0.1rem",
@@ -155,7 +155,7 @@ export const h5Style = css({
 
 export const h6Style = css({
   color: "heading6",
-  fontSize: "0.82rem",
+  fontSize: "0.78rem",
   fontWeight: 600,
   mt: "0.3rem",
   mb: "0.1rem",
@@ -163,10 +163,10 @@ export const h6Style = css({
 
 export const pStyle = css({
   color: "text",
-  fontSize: "0.85rem",
+  fontSize: "0.8rem",
   lineHeight: 1.6,
   mt: "0.15rem",
-  mb: "0.5rem",
+  mb: "0.15rem",
   overflowWrap: "break-word",
   wordBreak: "break-word",
 });
@@ -190,7 +190,7 @@ export const inlineCode = css({
   px: "0.3rem",
   py: "0.05rem",
   borderRadius: "3px",
-  fontSize: "0.8rem",
+  fontSize: "0.75rem",
   fontFamily: MONO,
 });
 
@@ -210,8 +210,8 @@ export const langBar = css({
   gap: "0.3rem",
   px: "0.6rem",
   py: "0.3rem",
-  fontSize: "0.65rem",
-  color: "comment",
+  fontSize: "0.6rem",
+  color: "textMuted",
   fontFamily: MONO,
 });
 
@@ -220,7 +220,7 @@ export const langIcon = css({ fontSize: "0.85rem", fontFamily: NERD });
 export const ulStyle = css({
   pl: "0.4rem",
   ml: "0.6rem",
-  fontSize: "0.85rem",
+  fontSize: "0.8rem",
   color: "text",
   listStyleType: "disc",
   mt: "0.15rem",
@@ -229,7 +229,7 @@ export const ulStyle = css({
 export const olStyle = css({
   pl: "0.4rem",
   ml: "0.6rem",
-  fontSize: "0.85rem",
+  fontSize: "0.8rem",
   color: "text",
   listStyleType: "decimal",
   mt: "0.15rem",
@@ -238,7 +238,7 @@ export const olStyle = css({
 export const liStyle = css({
   my: "0.1rem",
   lineHeight: 1.6,
-  fontSize: "0.85rem",
+  fontSize: "0.8rem",
 });
 
 export const hrStyle = css({ my: "0.5rem", h: "1.5px", opacity: 0.3 });
@@ -247,7 +247,7 @@ export const tableWrap = css({ overflowX: "auto", my: "0.3rem" });
 
 export const tableStyle = css({
   width: "100%",
-  fontSize: "0.8rem",
+  fontSize: "0.75rem",
   borderCollapse: "collapse",
 });
 

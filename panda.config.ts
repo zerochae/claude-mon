@@ -122,6 +122,11 @@ const keyframes = defineKeyframes({
     "0%, 100%": { opacity: "0.3", transform: "translateY(0)" },
     "50%": { opacity: "0.7", transform: "translateY(-3px)" },
   },
+  "card-enter": {
+    "0%": { opacity: "0", transform: "translateY(-8px) scaleY(0.95)", maxHeight: "0px" },
+    "60%": { opacity: "1", transform: "translateY(1px) scaleY(1.01)", maxHeight: "300px" },
+    "100%": { opacity: "1", transform: "translateY(0) scaleY(1)", maxHeight: "300px" },
+  },
 });
 
 export default defineConfig({

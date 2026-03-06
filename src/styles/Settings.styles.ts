@@ -119,7 +119,7 @@ export const columnHeader = css({
   fontWeight: 600,
   textTransform: "uppercase",
   letterSpacing: "0.05em",
-  color: "comment",
+  color: "textMuted",
   padding: "6px 10px",
   flexShrink: 0,
 });
@@ -182,7 +182,7 @@ export const hexInput = css({
 
 export const resetBtn = css({
   fontSize: "9px",
-  color: "comment",
+  color: "textMuted",
   cursor: "pointer",
   border: "none",
   background: "transparent",

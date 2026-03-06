@@ -216,6 +216,33 @@ void getHighlighter();
 
 const cache = new Map<string, string>();
 
+export async function highlightLines(
+  code: string,
+  lang: string,
+): Promise<string[]> {
+  const highlighter = await getHighlighter();
+  const resolvedLang = highlighter.getLoadedLanguages().includes(lang as never)
+    ? lang
+    : "plaintext";
+  const { tokens } = highlighter.codeToTokens(code, {
+    lang: resolvedLang as Parameters<typeof highlighter.codeToTokens>[1]["lang"],
+    theme: "onedark-css-vars",
+  });
+  return tokens.map((lineTokens) =>
+    lineTokens
+      .map((t) => {
+        const escaped = t.content
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+        return t.color
+          ? `<span style="color:${t.color}">${escaped}</span>`
+          : escaped;
+      })
+      .join(""),
+  );
+}
+
 export async function highlight(code: string, lang: string): Promise<string> {
   const key = `${lang}:${code}`;
   const cached = cache.get(key);

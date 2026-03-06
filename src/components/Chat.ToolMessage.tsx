@@ -1,92 +1,76 @@
 import { useState } from "react";
-import { ui } from "@/constants/glyph";
+import { css } from "@styled-system/css";
 import { Markdown } from "@/components/Markdown";
 import { Glyph } from "@/components/Glyph";
 import { ChatMessage } from "@/services/tauri";
-import { Button } from "@/components/Button";
-import {
-  toolWrap,
-  toolButton,
-  svgFlexShrink,
-  chevron,
-  toolExpanded,
-} from "@/styles/Chat.styles";
+import { getToolIcon, getToolColor } from "@/constants/tools";
+
+const wrap = css({
+  px: "12px",
+  pt: "4px",
+  pb: "2px",
+});
+
+const toolHeader = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "5px",
+  cursor: "pointer",
+  padding: "3px 4px",
+  borderRadius: "4px",
+  fontSize: "0.78rem",
+  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  color: "textMuted",
+  transition: "color 120ms ease, background 120ms ease",
+  _hover: { color: "text", bg: "surfaceHover" },
+  _active: { transform: "scale(0.97)" },
+});
+
+const contentWrap = css({
+  mt: "3px",
+  pl: "0.5rem",
+  borderLeft: "1px solid token(colors.hairline)",
+});
 
 export function ToolMessage({ message }: { message: ChatMessage }) {
   const [expanded, setExpanded] = useState(true);
   const isRunning = message.tool_status === "running";
   const isError = message.tool_status === "error";
 
+  const icon = getToolIcon(message.tool_name ?? null);
+  const baseColor = getToolColor(message.tool_name ?? null);
+
+  const iconColor = isRunning
+    ? "var(--colors-yellow, #e5c07b)"
+    : isError
+      ? "var(--colors-red, #E06C75)"
+      : baseColor;
+
   return (
-    <div className={toolWrap}>
-      <Button onClick={() => setExpanded(!expanded)} className={toolButton}>
-        {isRunning ? (
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-            className={svgFlexShrink}
-          >
-            <circle
-              cx="6"
-              cy="6"
-              r="3"
-              stroke="var(--colors-yellow, #e5c07b)"
-              strokeWidth="1.5"
-              strokeDasharray="4 3"
-              fill="none"
-            >
-              <animateTransform
-                attributeName="transform"
-                type="rotate"
-                from="0 6 6"
-                to="360 6 6"
-                dur="1s"
-                repeatCount="indefinite"
-              />
-            </circle>
-          </svg>
-        ) : isError ? (
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-            className={svgFlexShrink}
-          >
-            <circle
-              cx="6"
-              cy="6"
-              r="3.5"
-              fill="var(--colors-red, #E06C75)"
-              opacity="0.8"
-            />
-          </svg>
-        ) : (
-          <Glyph size={10} color="var(--colors-green, #98c379)">
-            {ui.oct_square_fill}
-          </Glyph>
-        )}
-        <span>{message.tool_name}</span>
-        <svg
-          width="8"
-          height="8"
-          viewBox="0 0 8 8"
-          fill="currentColor"
-          className={chevron({ expanded })}
+    <div className={wrap}>
+      <div
+        className={toolHeader}
+        onClick={() => setExpanded(!expanded)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === "Enter" && setExpanded(!expanded)}
+        style={{ color: iconColor }}
+      >
+        <span
+          style={
+            isRunning
+              ? { animation: "bubble-blink 1.5s ease-in-out infinite" }
+              : undefined
+          }
         >
-          <path
-            d="M2.5 1L6 4L2.5 7"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-          />
-        </svg>
-      </Button>
+          <Glyph size={16} color={iconColor}>
+            {icon}
+          </Glyph>
+        </span>
+        <span>{message.tool_name}</span>
+      </div>
       {expanded && (
-        <div className={toolExpanded}>
+        <div className={contentWrap}>
           <Markdown content={message.content} />
         </div>
       )}

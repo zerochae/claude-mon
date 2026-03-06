@@ -3,6 +3,7 @@ import { UserMessage } from "@/components/Chat.UserMessage";
 import { AssistantMessage } from "@/components/Chat.AssistantMessage";
 import { SubagentMessage } from "@/components/Chat.SubagentMessage";
 import { ToolMessage } from "@/components/Chat.ToolMessage";
+import { HIDDEN_TOOLS } from "@/constants/tools";
 import { messageGroup } from "@/styles/Chat.styles";
 
 interface MessageGroupProps {
@@ -34,6 +35,7 @@ export function MessageGroup({
                 />
               );
             }
+            if (msg.tool_name && HIDDEN_TOOLS.has(msg.tool_name)) return null;
             return <ToolMessage key={msg.id} message={msg} />;
         }
       })}

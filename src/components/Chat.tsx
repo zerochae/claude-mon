@@ -6,7 +6,7 @@ import { Loading } from "@/components/Loading";
 import { MessageGroup } from "@/components/Chat.MessageGroup";
 import { ThinkingIndicator } from "@/components/Chat.ThinkingIndicator";
 import { useChat } from "@/hooks/useChat";
-import { PermissionActions } from "@/components/PermissionActions";
+import { PermissionCard } from "@/components/PermissionCard";
 import {
   outerContainer,
   chatHeader,
@@ -15,8 +15,6 @@ import {
   chatClawdWrap,
   chatMiniRow,
   chatMiniWrap,
-  approvalBar,
-  approvalToolName,
   scrollArea,
   inputBar,
   chatInput,
@@ -112,35 +110,12 @@ export function Chat({
         <span className={chatHeaderLabel}>{projectName}</span>
       </div>
       {phase === "waiting_for_approval" && toolUseId && (
-        <div className={approvalBar}>
-          <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
-            <span className={approvalToolName}>{toolName}</span>
-            {toolInput && (
-              <div
-                style={{
-                  fontSize: "10px",
-                  color: "var(--colors-comment, #565c64)",
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  marginTop: "2px",
-                }}
-              >
-                {Object.entries(toolInput)
-                  .map(
-                    ([k, v]) =>
-                      `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`,
-                  )
-                  .join(" · ")}
-              </div>
-            )}
-          </div>
-          <PermissionActions
-            onAllow={() => onApprove?.(sessionId, toolUseId)}
-            onDeny={() => onDeny?.(sessionId, toolUseId)}
-          />
-        </div>
+        <PermissionCard
+          toolName={toolName}
+          toolInput={toolInput}
+          onAllow={() => onApprove?.(sessionId, toolUseId)}
+          onDeny={() => onDeny?.(sessionId, toolUseId)}
+        />
       )}
       <div ref={scrollRef} className={scrollArea}>
         {loading ? (

@@ -5,6 +5,7 @@ import { extensions } from "@/constants/glyph";
 import { CALLOUT_ICONS_MAP } from "@/constants/callout";
 import { parseCallout, preInner } from "@/utils/markdown.utils";
 import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
+import { DiffBlock } from "@/components/Markdown.DiffBlock";
 import {
   CALLOUT_COLORS,
   type ColorToken,
@@ -62,17 +63,18 @@ const components: Components = {
     </a>
   ),
   code: ({ node: _, className, children, ...rest }) => {
-    const match = /language-(\w+)/.exec(className ?? "");
+    const match = /language-([\w:]+)/.exec(className ?? "");
     if (match) {
-      return (
-        <ShikiBlock
-          lang={match[1]}
-          code={(Array.isArray(children)
-            ? children.join("")
-            : (children as string)
-          ).replace(/\n$/, "")}
-        />
-      );
+      const raw = match[1];
+      const codeStr = (
+        Array.isArray(children) ? children.join("") : (children as string)
+      ).replace(/\n$/, "");
+
+      if (raw.startsWith("diff:") && raw.length > 5) {
+        return <DiffBlock code={codeStr} lang={raw.slice(5)} />;
+      }
+
+      return <ShikiBlock lang={raw} code={codeStr} />;
     }
     return (
       <code className={inlineCode} {...rest}>
@@ -85,20 +87,23 @@ const components: Components = {
     const child = React.Children.toArray(children)[0];
     if (React.isValidElement(child)) {
       const cls = (child.props as { className?: string }).className ?? "";
-      const m = /language-(\w+)/.exec(cls);
+      const m = /language-([\w:]+)/.exec(cls);
       if (m) lang = m[1];
     }
 
+    const isDiff = lang.startsWith("diff:");
+    const displayLang = isDiff ? lang.slice(5) : lang;
+
     return (
       <div className={preOuter}>
-        {lang &&
+        {displayLang &&
           (() => {
             const ext = (
               extensions as Record<
                 string,
                 { icon: string; color: string; name: string } | undefined
               >
-            )[lang];
+            )[displayLang];
             return (
               <div className={langBar}>
                 {ext && (
@@ -106,11 +111,11 @@ const components: Components = {
                     {ext.icon}
                   </span>
                 )}
-                {ext?.name ?? lang}
+                {isDiff ? `${ext?.name ?? displayLang} (diff)` : (ext?.name ?? displayLang)}
               </div>
             );
           })()}
-        <pre style={preInner(lang)} {...rest}>
+        <pre style={preInner(displayLang)} {...rest}>
           {children}
         </pre>
       </div>

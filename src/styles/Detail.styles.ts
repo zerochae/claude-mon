@@ -26,7 +26,7 @@ export const projectName = css({
 });
 
 export const projectCwd = css({
-  color: "comment",
+  color: "textMuted",
   fontSize: "11px",
   wordBreak: "break-all",
 });
@@ -49,7 +49,7 @@ export const infoRow = css({
 });
 
 export const infoLabel = css({
-  color: "comment",
+  color: "textMuted",
   fontSize: "11px",
 });
 

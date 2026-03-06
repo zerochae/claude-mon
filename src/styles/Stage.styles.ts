@@ -19,7 +19,7 @@ export const emptyState = css({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  color: "comment",
+  color: "textMuted",
   fontSize: "13px",
 });
 
@@ -76,7 +76,7 @@ export const clawdLabel = cva({
   variants: {
     urgent: {
       true: { color: "red", fontWeight: 600 },
-      false: { color: "comment", fontWeight: 400 },
+      false: { color: "textMuted", fontWeight: 400 },
     },
   },
   defaultVariants: { urgent: false },

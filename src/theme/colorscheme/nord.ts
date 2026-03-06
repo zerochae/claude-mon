@@ -9,6 +9,7 @@ export const nordColors = {
   floatBorder: "#4C566A",
   text: "#E5E9F0",
   comment: "#4C566A",
+  textMuted: "#909aad",
   red: "#88C0D0",
   yellow: "#EBCB8B",
   blue: "#81A1C1",
