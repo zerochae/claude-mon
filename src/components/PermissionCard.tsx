@@ -12,13 +12,29 @@ interface PermissionCardProps {
   onDeny: () => void;
 }
 
+function formatBashCommand(raw: string): string {
+  const heredocRe = /\$\(cat\s*<<'?(\w+)'?\n([\s\S]*?)\n\s*\1\s*\)/g;
+  let result = raw.replace(heredocRe, (_, _tag, body: string) => {
+    const lines = body.split("\n");
+    const minIndent = lines
+      .filter((l) => l.trim())
+      .reduce((min, l) => Math.min(min, (l.match(/^\s*/)?.[0].length ?? 0)), Infinity);
+    const dedented = lines.map((l) => l.slice(minIndent)).join("\n");
+    return `\n${dedented}`;
+  });
+
+  result = result.replace(/\s*&&\s*/g, "\n");
+
+  return result.trim();
+}
+
 function extractSummary(
   toolName: string | null,
   toolInput: Record<string, unknown> | null,
 ): { code: string; lang: string } | null {
   if (!toolInput) return null;
   if (toolName === "Bash" && typeof toolInput.command === "string")
-    return { code: toolInput.command, lang: "bash" };
+    return { code: formatBashCommand(toolInput.command), lang: "bash" };
   if (toolName === "Edit" && typeof toolInput.file_path === "string") {
     const ext = toolInput.file_path.split(".").pop() ?? "";
     const langMap: Record<string, string> = {
