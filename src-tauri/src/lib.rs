@@ -1,280 +1,33 @@
 mod chat;
+mod commands;
 mod hook_installer;
 mod session;
 mod settings;
 mod socket_server;
+mod tmux;
+mod window;
 
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use tauri::{
-    AppHandle, Manager, State,
+    AppHandle, Manager,
     menu::{MenuBuilder, MenuItemBuilder},
     tray::TrayIconBuilder,
-    window::{Effect, EffectState, EffectsBuilder},
 };
 
-use session::{SessionManager, SessionState};
-use socket_server::{PendingPermissions, ToolUseIdCache};
+use session::SessionManager;
+use socket_server::SocketServer;
 
 pub struct AppState {
     pub session_manager: Arc<Mutex<SessionManager>>,
-    pub pending_permissions: PendingPermissions,
-    pub tool_use_id_cache: ToolUseIdCache,
-}
-
-#[tauri::command]
-async fn get_sessions(state: State<'_, AppState>) -> Result<Vec<SessionState>, String> {
-    let sm = state.session_manager.lock().await;
-    Ok(sm.get_all_sessions().into_iter().cloned().collect())
-}
-
-#[tauri::command]
-async fn approve_permission(
-    session_id: String,
-    tool_use_id: String,
-    state: State<'_, AppState>,
-) -> Result<bool, String> {
-    let _ = session_id;
-    Ok(socket_server::respond_to_permission(
-        tool_use_id,
-        "allow".to_string(),
-        None,
-        state.pending_permissions.clone(),
-    )
-    .await)
-}
-
-#[tauri::command]
-async fn deny_permission(
-    session_id: String,
-    tool_use_id: String,
-    reason: Option<String>,
-    state: State<'_, AppState>,
-) -> Result<bool, String> {
-    let _ = session_id;
-    Ok(socket_server::respond_to_permission(
-        tool_use_id,
-        "deny".to_string(),
-        reason,
-        state.pending_permissions.clone(),
-    )
-    .await)
-}
-
-#[tauri::command]
-async fn send_message(
-    session_id: String,
-    message: String,
-    state: State<'_, AppState>,
-) -> Result<bool, String> {
-    let (tty_path, pid) = {
-        let sm = state.session_manager.lock().await;
-        let session = sm
-            .get_session(&session_id)
-            .ok_or_else(|| "Session not found".to_string())?;
-
-        if session.phase != "waiting_for_input" {
-            return Err("Session is not waiting for input".to_string());
-        }
-
-        let path = session
-            .tty
-            .as_ref()
-            .ok_or_else(|| "No TTY available for this session".to_string())?
-            .clone();
-
-        if !path.starts_with("/dev/tty") && !path.starts_with("/dev/pts/") {
-            return Err(format!("Invalid TTY path: {}", path));
-        }
-
-        (path, session.pid)
-    };
-
-    tokio::task::spawn_blocking(move || {
-        let tmux = find_tmux_bin()?;
-        let target = find_tmux_target(&tty_path, pid)?;
-
-        std::process::Command::new(&tmux)
-            .args(["send-keys", "-t", &target, "-l", &message])
-            .output()
-            .map_err(|e| format!("Failed to send text via tmux: {}", e))?;
-
-        std::process::Command::new(&tmux)
-            .args(["send-keys", "-t", &target, "Enter"])
-            .output()
-            .map_err(|e| format!("Failed to send Enter via tmux: {}", e))?;
-
-        Ok(true)
-    })
-    .await
-    .map_err(|e| format!("Task join error: {}", e))?
-}
-
-fn find_tmux_bin() -> Result<String, String> {
-    let candidates = [
-        "/opt/homebrew/bin/tmux",
-        "/usr/local/bin/tmux",
-        "/usr/bin/tmux",
-        "/bin/tmux",
-    ];
-    for path in candidates {
-        if std::path::Path::new(path).exists() {
-            return Ok(path.to_string());
-        }
-    }
-    Err("tmux not found".to_string())
-}
-
-fn find_tmux_target(tty_path: &str, pid: Option<u32>) -> Result<String, String> {
-    let tmux = find_tmux_bin()?;
-    let output = std::process::Command::new(&tmux)
-        .args(["list-panes", "-a", "-F", "#{pane_tty} #{session_name}:#{window_index}.#{pane_index}"])
-        .output()
-        .map_err(|e| format!("tmux not available: {}", e))?;
-
-    if !output.status.success() {
-        return Err("tmux is not running".to_string());
-    }
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let panes: Vec<(&str, &str)> = stdout
-        .lines()
-        .filter_map(|line| {
-            let mut parts = line.splitn(2, ' ');
-            Some((parts.next()?, parts.next()?))
-        })
-        .collect();
-
-    for &(tty, target) in &panes {
-        if tty == tty_path {
-            return Ok(target.to_string());
-        }
-    }
-
-    if let Some(pid) = pid {
-        let ancestor_ttys = collect_ancestor_ttys(pid);
-        for ancestor_tty in &ancestor_ttys {
-            for &(tty, target) in &panes {
-                if tty == ancestor_tty {
-                    return Ok(target.to_string());
-                }
-            }
-        }
-    }
-
-    Err(format!("No tmux pane found for TTY {}", tty_path))
-}
-
-fn collect_ancestor_ttys(pid: u32) -> Vec<String> {
-    let mut ttys = Vec::new();
-    let mut current_pid = pid;
-    for _ in 0..10 {
-        let output = std::process::Command::new("ps")
-            .args(["-o", "ppid=,tty=", "-p", &current_pid.to_string()])
-            .output();
-        let output = match output {
-            Ok(o) if o.status.success() => o,
-            _ => break,
-        };
-        let line = String::from_utf8_lossy(&output.stdout).trim().to_string();
-        let mut parts = line.split_whitespace();
-        let ppid: u32 = match parts.next().and_then(|s| s.parse().ok()) {
-            Some(p) if p > 1 => p,
-            _ => break,
-        };
-        if let Some(tty) = parts.next() {
-            if tty != "??" && tty != "-" {
-                let full_tty = if tty.starts_with("/dev/") {
-                    tty.to_string()
-                } else {
-                    format!("/dev/{}", tty)
-                };
-                if !ttys.contains(&full_tty) {
-                    ttys.push(full_tty);
-                }
-            }
-        }
-        current_pid = ppid;
-    }
-    ttys
-}
-
-#[tauri::command]
-async fn get_chat_messages(
-    session_id: String,
-    cwd: String,
-) -> Result<Vec<chat::ChatMessage>, String> {
-    Ok(chat::parse_transcript(&cwd, &session_id))
-}
-
-#[tauri::command]
-async fn get_session_stats(
-    session_id: String,
-    cwd: String,
-) -> Result<chat::SessionStats, String> {
-    Ok(chat::parse_session_stats(&cwd, &session_id))
-}
-
-#[tauri::command]
-fn set_vibrancy(window: tauri::Window, effect: String) -> Result<(), String> {
-    if effect == "none" {
-        window
-            .set_effects(EffectsBuilder::new().build())
-            .map_err(|e| e.to_string())?;
-        return Ok(());
-    }
-
-    let eff = match effect.as_str() {
-        "sidebar" => Effect::Sidebar,
-        "popover" => Effect::Popover,
-        "hud" => Effect::HudWindow,
-        "menu" => Effect::Menu,
-        "header" => Effect::HeaderView,
-        "sheet" => Effect::Sheet,
-        "window" => Effect::WindowBackground,
-        "under_window" => Effect::UnderWindowBackground,
-        "under_page" => Effect::UnderPageBackground,
-        "content" => Effect::ContentBackground,
-        "tooltip" => Effect::Tooltip,
-        "fullscreen" => Effect::FullScreenUI,
-        "titlebar" => Effect::Titlebar,
-        "selection" => Effect::Selection,
-        _ => return Err(format!("unknown effect: {}", effect)),
-    };
-
-    window
-        .set_effects(
-            EffectsBuilder::new()
-                .effect(eff)
-                .state(EffectState::Active)
-                .build(),
-        )
-        .map_err(|e| e.to_string())
-}
-
-#[tauri::command]
-fn set_accessory_mode(enabled: bool) -> Result<(), String> {
-    #[cfg(target_os = "macos")]
-    {
-        use objc2::MainThreadMarker;
-        use objc2_app_kit::NSApplication;
-        use objc2_app_kit::NSApplicationActivationPolicy;
-        let mtm = MainThreadMarker::new().ok_or("not on main thread")?;
-        let app_ns = NSApplication::sharedApplication(mtm);
-        let policy = if enabled {
-            NSApplicationActivationPolicy::Accessory
-        } else {
-            NSApplicationActivationPolicy::Regular
-        };
-        app_ns.setActivationPolicy(policy);
-    }
-    Ok(())
+    pub pending_permissions: socket_server::PendingPermissions,
+    pub tool_use_id_cache: socket_server::ToolUseIdCache,
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let session_manager = Arc::new(Mutex::new(SessionManager::new()));
-    let server = socket_server::SocketServer::new();
+    let server = SocketServer::new();
     let pending_permissions = server.pending_permissions.clone();
     let tool_use_id_cache = server.tool_use_id_cache.clone();
 
@@ -325,16 +78,16 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            get_sessions,
-            approve_permission,
-            deny_permission,
-            send_message,
-            get_chat_messages,
-            get_session_stats,
+            commands::get_sessions,
+            commands::approve_permission,
+            commands::deny_permission,
+            commands::send_message,
+            commands::get_chat_messages,
+            commands::get_session_stats,
             settings::load_settings,
             settings::save_settings,
-            set_vibrancy,
-            set_accessory_mode,
+            window::set_vibrancy,
+            window::set_accessory_mode,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useSessions } from "@/hooks/useSessions";
+import type { SessionState } from "@/services/tauri";
 import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
 import { useNavigation } from "@/hooks/useNavigation";
@@ -17,10 +18,10 @@ export default function App() {
   const vw = settings.viewWidths;
 
   const pendingPermissions = sessions.filter(
-    (s) =>
-      s.tool_use_id &&
+    (s): s is SessionState & { tool_use_id: string; tool_name: string } =>
+      !!s.tool_use_id &&
       s.phase === "waiting_for_approval" &&
-      s.tool_name &&
+      !!s.tool_name &&
       s.tool_name !== "unknown",
   );
 
@@ -93,8 +94,8 @@ export default function App() {
               key={s.session_id}
               toolName={s.tool_name}
               toolInput={s.tool_input}
-              onAllow={() => void approve(s.session_id, s.tool_use_id!)}
-              onDeny={() => void deny(s.session_id, s.tool_use_id!)}
+              onAllow={() => void approve(s.session_id, s.tool_use_id)}
+              onDeny={() => void deny(s.session_id, s.tool_use_id)}
             />
           ))}
         </div>
