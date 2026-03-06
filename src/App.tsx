@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useSessions } from "@/hooks/useSessions";
 import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
@@ -7,6 +8,7 @@ import { Stage } from "@/components/Stage";
 import { Detail } from "@/components/Detail";
 import { Chat } from "@/components/Chat";
 import { Settings } from "@/components/Settings";
+import { PermissionCard } from "@/components/PermissionCard";
 import { MOTION } from "@/constants/motion";
 
 export default function App() {
@@ -14,10 +16,19 @@ export default function App() {
   const { settings, updateSettings, resetColorOverrides } = useSettings();
   const vw = settings.viewWidths;
 
+  const pendingPermissions = sessions.filter(
+    (s) =>
+      s.tool_use_id &&
+      s.phase === "waiting_for_approval" &&
+      s.tool_name &&
+      s.tool_name !== "unknown",
+  );
+
   const {
     expanded,
     showContent,
     activeWidth,
+    setActiveWidth,
     expand,
     collapse,
     toggleExpand,
@@ -28,6 +39,8 @@ export default function App() {
     anchor: settings.anchor,
     dock: settings.dock,
     dockMargin: settings.dockMargin,
+    barExtraHeight:
+      pendingPermissions.length > 0 ? pendingPermissions.length * 150 : 0,
   });
 
   const {
@@ -44,6 +57,13 @@ export default function App() {
     animateToView,
   });
 
+  const currentViewWidth = viewWidth(view);
+  useEffect(() => {
+    if (expanded) setActiveWidth(currentViewWidth);
+  }, [expanded, currentViewWidth, setActiveWidth]);
+
+  const barPermissions = !expanded ? pendingPermissions : [];
+
   return (
     <div className="widget-container">
       <Header
@@ -58,6 +78,27 @@ export default function App() {
         sessions={sessions}
         barHeight={settings.barHeight}
       />
+      {barPermissions.length > 0 && (
+        <div
+          style={{
+            padding: "4px 6px 6px",
+            background: "var(--colors-bg)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+          }}
+        >
+          {barPermissions.map((s) => (
+            <PermissionCard
+              key={s.session_id}
+              toolName={s.tool_name}
+              toolInput={s.tool_input}
+              onAllow={() => void approve(s.session_id, s.tool_use_id!)}
+              onDeny={() => void deny(s.session_id, s.tool_use_id!)}
+            />
+          ))}
+        </div>
+      )}
       {expanded && (
         <div
           style={{

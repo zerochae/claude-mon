@@ -50,7 +50,8 @@ const outputWrap = css({
 });
 
 const ansiPre = css({
-  fontFamily: "'SpaceMonoNerd', 'JetBrainsMono Nerd Font Mono', 'FiraCode Nerd Font', monospace",
+  fontFamily:
+    "'SpaceMonoNerd', 'JetBrainsMono Nerd Font Mono', 'FiraCode Nerd Font', monospace",
   fontSize: "0.75rem",
   lineHeight: 1.4,
   whiteSpace: "pre",

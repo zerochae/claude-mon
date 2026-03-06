@@ -18,17 +18,22 @@ export function useSessions() {
   useEffect(() => {
     if (!isTauri) return;
 
-    getSessions()
-      .then((initial) => {
-        setSessions(initial);
-      })
-      .catch(() => undefined);
+    const fetchSessions = () => {
+      getSessions()
+        .then(setSessions)
+        .catch(() => undefined);
+    };
+
+    fetchSessions();
 
     const unlistenPromise = listenSessionUpdate((updated) => {
       setSessions(updated);
     });
 
+    const pollId = setInterval(fetchSessions, 2000);
+
     return () => {
+      clearInterval(pollId);
       void unlistenPromise.then((unlisten) => unlisten());
     };
   }, []);

@@ -71,7 +71,9 @@ function parseSgr(codes: number[]): string | null {
     } else if (c >= 40 && c <= 47) {
       styles.push(`background:${ansi256(c - 40)}`);
     } else if (c === 48 && codes[i + 1] === 2 && i + 4 < codes.length) {
-      styles.push(`background:rgb(${codes[i + 2]},${codes[i + 3]},${codes[i + 4]})`);
+      styles.push(
+        `background:rgb(${codes[i + 2]},${codes[i + 3]},${codes[i + 4]})`,
+      );
       i += 4;
     } else if (c === 48 && codes[i + 1] === 5 && i + 2 < codes.length) {
       styles.push(`background:${ansi256(codes[i + 2])}`);
@@ -86,10 +88,22 @@ function parseSgr(codes: number[]): string | null {
 }
 
 const BASIC_COLORS = [
-  "#282c34", "#e06c75", "#98c379", "#e5c07b",
-  "#61afef", "#c678dd", "#56b6c2", "#abb2bf",
-  "#5c6370", "#e06c75", "#98c379", "#e5c07b",
-  "#61afef", "#c678dd", "#56b6c2", "#ffffff",
+  "#282c34",
+  "#e06c75",
+  "#98c379",
+  "#e5c07b",
+  "#61afef",
+  "#c678dd",
+  "#56b6c2",
+  "#abb2bf",
+  "#5c6370",
+  "#e06c75",
+  "#98c379",
+  "#e5c07b",
+  "#61afef",
+  "#c678dd",
+  "#56b6c2",
+  "#ffffff",
 ];
 
 function ansi256(n: number): string {
@@ -107,11 +121,16 @@ function ansi256(n: number): string {
 
 function escapeHtml(ch: string): string {
   switch (ch) {
-    case "&": return "&amp;";
-    case "<": return "&lt;";
-    case ">": return "&gt;";
-    case '"': return "&quot;";
-    default: return ch;
+    case "&":
+      return "&amp;";
+    case "<":
+      return "&lt;";
+    case ">":
+      return "&gt;";
+    case '"':
+      return "&quot;";
+    default:
+      return ch;
   }
 }
 

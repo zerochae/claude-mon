@@ -142,7 +142,17 @@ async fn handle_connection(
     if event.event == "PostToolUse" {
         if let Some(tool_use_id) = &event.tool_use_id {
             let mut perms = pending_permissions.lock().await;
-            perms.remove(tool_use_id);
+            if perms.remove(tool_use_id).is_some() {
+                let mut sm = session_manager.lock().await;
+                if let Some(s) = sm.get_session_mut(&session_id) {
+                    if s.phase == "waiting_for_approval" {
+                        s.phase = "processing".to_string();
+                        s.tool_use_id = None;
+                    }
+                }
+                drop(sm);
+                let _ = app.emit("session-updated", get_sessions_payload(&session_manager).await);
+            }
         }
     }
 
@@ -180,17 +190,30 @@ async fn handle_connection(
             "tool_input": event.tool_input,
         }));
 
-        match tokio::time::timeout(
-            std::time::Duration::from_secs(86400),
-            rx,
-        )
-        .await
-        {
-            Ok(Ok(response)) => {
-                let output = build_permission_output(&response);
-                let _ = stream.write_all(output.as_bytes()).await;
+        let mut eof_buf = [0u8; 1];
+        tokio::select! {
+            result = rx => {
+                if let Ok(response) = result {
+                    let output = build_permission_output(&response);
+                    let _ = stream.write_all(output.as_bytes()).await;
+                }
             }
-            _ => {}
+            _ = stream.read(&mut eof_buf) => {
+                {
+                    let mut sm = session_manager.lock().await;
+                    if let Some(s) = sm.get_session_mut(&session_id) {
+                        if s.phase == "waiting_for_approval" {
+                            s.phase = "processing".to_string();
+                            s.tool_use_id = None;
+                        }
+                    }
+                }
+                {
+                    let mut perms = pending_permissions.lock().await;
+                    perms.remove(&tool_use_id);
+                }
+                let _ = app.emit("session-updated", get_sessions_payload(&session_manager).await);
+            }
         }
 
         return;
@@ -198,6 +221,14 @@ async fn handle_connection(
 
     {
         let mut sm = session_manager.lock().await;
+        if let Some(s) = sm.get_session(&session_id) {
+            if s.phase == "waiting_for_approval" {
+                if let Some(tid) = &s.tool_use_id {
+                    let mut perms = pending_permissions.lock().await;
+                    perms.remove(tid);
+                }
+            }
+        }
         sm.process_event(&event, None);
         if event.event == "PreToolUse" && matches!(event.tool.as_deref(), Some("Agent" | "Task")) {
             if let Some(s) = sm.get_session_mut(&session_id) {

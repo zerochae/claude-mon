@@ -11,34 +11,52 @@ export interface WindowExpansionConfig {
   anchor: WindowAnchor;
   dock: DockPosition;
   dockMargin: number;
+  barExtraHeight?: number;
 }
 
 export function useWindowExpansion(
-  expandedWidth: number,
+  defaultExpandedWidth: number,
   config: WindowExpansionConfig,
 ) {
-  const { barWidth, barHeight, anchor, dock, dockMargin } = config;
+  const {
+    barWidth,
+    barHeight,
+    anchor,
+    dock,
+    dockMargin,
+    barExtraHeight = 0,
+  } = config;
   const [expanded, setExpanded] = useState(false);
   const [showContent, setShowContent] = useState(false);
+  const [currentWidth, setCurrentWidth] = useState(defaultExpandedWidth);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const animatingRef = useRef(false);
 
-  const activeWidth = expanded ? expandedWidth : barWidth;
+  const activeWidth = expanded ? currentWidth : barWidth;
 
   useEffect(() => {
     if (animatingRef.current) return;
     resizeAnchored(
       activeWidth,
-      expanded ? EXPANDED_HEIGHT : barHeight,
+      expanded ? EXPANDED_HEIGHT : barHeight + barExtraHeight,
       anchor,
       dock,
       dockMargin,
     ).catch(() => undefined);
-  }, [activeWidth, barHeight, expanded, anchor, dock, dockMargin]);
+  }, [
+    activeWidth,
+    barHeight,
+    barExtraHeight,
+    expanded,
+    anchor,
+    dock,
+    dockMargin,
+  ]);
 
   const expand = useCallback(
     (targetW: number) => {
       clearTimeout(timerRef.current);
+      setCurrentWidth(targetW);
       setExpanded(true);
       animatingRef.current = true;
       void animateWindowSize(
@@ -92,6 +110,7 @@ export function useWindowExpansion(
   const animateToView = useCallback(
     (fromW: number, toW: number) => {
       if (fromW === toW) return;
+      setCurrentWidth(toW);
       animatingRef.current = true;
       void animateWindowSize(
         fromW,
@@ -122,6 +141,7 @@ export function useWindowExpansion(
     expanded,
     showContent,
     activeWidth,
+    setActiveWidth: setCurrentWidth,
     expand,
     collapse,
     toggleExpand,

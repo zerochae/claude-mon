@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { css } from "@styled-system/css";
 import { Button } from "@/components/Button";
 import { Glyph } from "@/components/Glyph";
@@ -102,17 +101,6 @@ const summaryBox = css({
   "& code": { fontSize: "11px !important" },
 });
 
-const detailToggle = css({
-  fontSize: "10px",
-  color: "textMuted",
-  cursor: "pointer",
-  bg: "transparent",
-  border: "none",
-  padding: 0,
-  fontFamily: "inherit",
-  _hover: { color: "text" },
-});
-
 const detailBox = css({
   fontSize: "10px",
   fontFamily: "inherit",
@@ -133,15 +121,20 @@ export function PermissionCard({
   onAllow,
   onDeny,
 }: PermissionCardProps) {
-  const [showDetail, setShowDetail] = useState(false);
   const icon = getToolIcon(toolName);
   const iconColor = getToolColor(toolName);
   const summary = extractSummary(toolName, toolInput);
-  const summaryKeys = new Set(["command", "file_path", "pattern", "url"]);
+  const hiddenKeys = new Set([
+    "command",
+    "file_path",
+    "pattern",
+    "url",
+    "description",
+  ]);
+  const description = toolInput?.description as string | undefined;
   const extraEntries = toolInput
-    ? Object.entries(toolInput).filter(([k]) => !summaryKeys.has(k))
+    ? Object.entries(toolInput).filter(([k]) => !hiddenKeys.has(k))
     : [];
-  const hasExtra = extraEntries.length > 0;
 
   return (
     <div className={card}>
@@ -153,33 +146,33 @@ export function PermissionCard({
         <span className={badge}>PERMISSION</span>
       </div>
 
+      {description && (
+        <span
+          style={{
+            fontSize: "10px",
+            color: "var(--colors-text-muted)",
+            lineHeight: 1.4,
+          }}
+        >
+          {description}
+        </span>
+      )}
+
       {summary && (
         <div className={summaryBox}>
           <ShikiBlock code={summary.code} lang={summary.lang} />
         </div>
       )}
 
-      {hasExtra && (
-        <>
-          <button
-            className={detailToggle}
-            onClick={() => setShowDetail((p) => !p)}
-          >
-            {showDetail ? "Hide details" : "Show details"}
-          </button>
-          {showDetail && (
-            <div className={detailBox}>
-              {extraEntries.map(([k, v]) => (
-                <div key={k}>
-                  <span style={{ color: "var(--colors-blue, #61AFEF)" }}>
-                    {k}
-                  </span>
-                  : {typeof v === "string" ? v : JSON.stringify(v, null, 2)}
-                </div>
-              ))}
+      {extraEntries.length > 0 && (
+        <div className={detailBox}>
+          {extraEntries.map(([k, v]) => (
+            <div key={k}>
+              <span style={{ color: "var(--colors-blue, #61AFEF)" }}>{k}</span>:{" "}
+              {typeof v === "string" ? v : JSON.stringify(v, null, 2)}
             </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
 
       <div className={actions}>

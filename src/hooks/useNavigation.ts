@@ -32,11 +32,13 @@ export function useNavigation(
 
   const handleSelectSession = useCallback(
     (session: SessionState) => {
+      const prevW = activeWidth;
       setSelectedSessionId(session.session_id);
       setView("chat");
       if (!expanded) expand(viewWidth("chat"));
+      else animateToView(prevW, viewWidth("chat"));
     },
-    [expanded, expand, viewWidth],
+    [expanded, expand, viewWidth, activeWidth, animateToView],
   );
 
   const handleBack = useCallback(() => {
