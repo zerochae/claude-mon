@@ -16,6 +16,10 @@ export const userBubble = css({
 
 export const assistantWrap = css({
   px: "16px",
+  bg: "surfaceOverlay",
+  borderRadius: "8px",
+  mx: "4px",
+  py: "2px",
   "& p": {
     bg: "surfaceActive",
     borderRadius: "10px",
