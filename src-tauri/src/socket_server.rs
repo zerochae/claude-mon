@@ -220,20 +220,12 @@ async fn handle_connection(
 fn build_permission_output(response: &PermissionResponse) -> String {
     let output = if response.decision == "allow" {
         serde_json::json!({
-            "hookSpecificOutput": {
-                "hookEventName": "PermissionRequest",
-                "decision": { "behavior": "allow" }
-            }
+            "decision": "allow"
         })
     } else {
         serde_json::json!({
-            "hookSpecificOutput": {
-                "hookEventName": "PermissionRequest",
-                "decision": {
-                    "behavior": "deny",
-                    "message": response.reason.as_deref().unwrap_or("Denied by user via ClaudeMon")
-                }
-            }
+            "decision": "deny",
+            "reason": response.reason.as_deref().unwrap_or("Denied by user via ClaudeMon")
         })
     };
     output.to_string()

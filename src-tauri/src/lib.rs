@@ -289,6 +289,22 @@ pub fn run() {
 
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.set_shadow(false);
+                #[cfg(debug_assertions)]
+                window.open_devtools();
+
+                #[cfg(target_os = "macos")]
+                {
+                    use objc2::runtime::AnyObject;
+                    use objc2::msg_send;
+
+                    if let Ok(ns_window_ptr) = window.ns_window() {
+                        unsafe {
+                            let ns_win: &AnyObject = &*(ns_window_ptr as *const AnyObject);
+                            let _: () = msg_send![ns_win, setAcceptsMouseMovedEvents: true];
+                            let _: () = msg_send![ns_win, setMovable: false];
+                        }
+                    }
+                }
             }
 
             tauri::async_runtime::spawn(async move {

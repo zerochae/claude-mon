@@ -26,7 +26,8 @@
         "hiddenTitle": true,
         "titleBarStyle": "Transparent",
         "minWidth": 220,
-        "minHeight": 48
+        "minHeight": 48,
+        "acceptFirstMouse": true
       }
     ],
     "security": {

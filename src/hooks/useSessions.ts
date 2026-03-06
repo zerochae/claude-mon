@@ -33,13 +33,25 @@ export function useSessions() {
     };
   }, []);
 
+  const optimisticClear = (sessionId: string) => {
+    setSessions((prev) =>
+      prev.map((s) =>
+        s.session_id === sessionId
+          ? { ...s, phase: "processing", tool_use_id: null }
+          : s,
+      ),
+    );
+  };
+
   const approve = (sessionId: string, toolUseId: string) => {
     if (!isTauri) return Promise.resolve();
+    optimisticClear(sessionId);
     return approvePermission(sessionId, toolUseId).catch(() => undefined);
   };
 
   const deny = (sessionId: string, toolUseId: string, reason?: string) => {
     if (!isTauri) return Promise.resolve();
+    optimisticClear(sessionId);
     return denyPermission(sessionId, toolUseId, reason).catch(() => undefined);
   };
 
