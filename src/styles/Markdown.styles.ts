@@ -165,15 +165,10 @@ export const pStyle = css({
   color: "text",
   fontSize: "0.8rem",
   lineHeight: 1.6,
-  mt: "0.25rem",
-  mb: "0.25rem",
+  mt: "0.15rem",
+  mb: "0.15rem",
   overflowWrap: "break-word",
   wordBreak: "break-word",
-  bg: "bg4",
-  borderRadius: "10px",
-  padding: "0.35rem 0.6rem",
-  maxW: "80%",
-  w: "fit-content",
 });
 
 export const strongStyle = css({

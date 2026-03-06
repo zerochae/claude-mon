@@ -16,7 +16,13 @@ export const userBubble = css({
 
 export const assistantWrap = css({
   px: "16px",
-  "& p": { bg: "surfaceActive" },
+  "& p": {
+    bg: "surfaceActive",
+    borderRadius: "10px",
+    padding: "0.35rem 0.6rem",
+    maxW: "80%",
+    w: "fit-content",
+  },
 });
 
 export const toolWrap = css({ px: "16px" });
