@@ -1,6 +1,6 @@
 import { ProcessingSpinner, CompactingDots } from "@/components/Spinners";
 import {
-  phaseContent,
+  phaseText,
   wrapper,
   bubble,
   tailStyle,
@@ -50,33 +50,33 @@ export function Bubble({
     case "running_tool":
       content = (
         <ProcessingSpinner
-          className={phaseContent({ phase: "processing", size })}
+          className={phaseText({ phase: "processing", size })}
         />
       );
       break;
     case "compacting":
       content = (
         <CompactingDots
-          className={phaseContent({ phase: "compacting", size })}
+          className={phaseText({ phase: "compacting", size })}
         />
       );
       break;
     case "waiting_for_approval":
       content = (
-        <span className={phaseContent({ phase: "approval", size })}>
+        <span className={phaseText({ phase: "approval", size })}>
           {ui.bubble_waiting_for_approval}
         </span>
       );
       break;
     case "waiting_for_input":
       content = (
-        <span className={phaseContent({ phase: "input", size })}>
+        <span className={phaseText({ phase: "input", size })}>
           {ui.bubble_waiting_for_input}
         </span>
       );
       break;
     case "idle":
-      content = <span className={phaseContent({ phase: "idle", size })}></span>;
+      content = <span className={phaseText({ phase: "idle", size })}></span>;
       break;
     default:
       return null;

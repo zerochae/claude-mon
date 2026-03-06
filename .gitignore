@@ -11,3 +11,4 @@ src-tauri/target/
 .env
 .env.*
 .sisyphus/
+.omc/

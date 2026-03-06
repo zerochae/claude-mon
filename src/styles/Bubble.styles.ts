@@ -10,7 +10,7 @@ export const SB_DONE_PHASES = new Set([
   "waiting_for_input" as const,
 ]);
 
-export const phaseContent = cva({
+export const phaseText = cva({
   base: {
     fontFamily: "SpaceMonoNerd",
   },
@@ -79,7 +79,7 @@ export const wrapper = cva({
   },
   variants: {
     variant: {
-      bar: { marginTop: "-20px", marginLeft: "4px" },
+      bar: { marginBottom: "10px", marginLeft: "4px" },
       chat: { marginLeft: "6px", alignSelf: "flex-start" },
       stage: { pos: "relative" },
     },
