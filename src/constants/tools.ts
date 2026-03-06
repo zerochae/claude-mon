@@ -1,3 +1,5 @@
+import { ui } from "@/constants/glyph";
+
 export const TOOL_ICONS: Record<string, string> = {
   Bash: "",
   Read: "󰈙",
@@ -46,16 +48,16 @@ export const HIDDEN_TOOLS = new Set([
 ]);
 
 export function detectBashSubtype(content: string): string | null {
-  const m = content.match(/```bash\n\s*(git|gh)\s/);
+  const m = /```bash\n\s*(git|gh)\s/.exec(content);
   if (m) return m[1];
-  const inline = content.match(/^`(git|gh)\s/);
+  const inline = /^`(git|gh)\s/.exec(content);
   if (inline) return inline[1];
   return null;
 }
 
 const BASH_SUBTYPE_ICONS: Record<string, string> = {
-  git: "",
-  gh: "",
+  git: ui.git,
+  gh: ui.github,
 };
 
 const BASH_SUBTYPE_COLORS: Record<string, string> = {
@@ -73,7 +75,10 @@ export function getToolIcon(toolName: string | null, content?: string): string {
   return TOOL_ICONS[toolName] ?? "󰋗";
 }
 
-export function getToolColor(toolName: string | null, content?: string): string {
+export function getToolColor(
+  toolName: string | null,
+  content?: string,
+): string {
   if (!toolName) return "var(--colors-comment, #565c64)";
   if (toolName === "Bash" && content) {
     const sub = detectBashSubtype(content);
@@ -83,7 +88,10 @@ export function getToolColor(toolName: string | null, content?: string): string 
   return TOOL_COLORS[toolName] ?? "var(--colors-comment, #565c64)";
 }
 
-export function getToolLabel(toolName: string | null, content?: string): string {
+export function getToolLabel(
+  toolName: string | null,
+  content?: string,
+): string {
   if (toolName === "Bash" && content) {
     const sub = detectBashSubtype(content);
     if (sub === "git") return "git";

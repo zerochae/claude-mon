@@ -7,7 +7,7 @@ export const ui = {
   package: "",
   cursor: "",
   close: "",
-  git: "",
+  git: "",
   fileTree: "󰙅",
   abstract: "󱉫",
   summary: "󱉫",
