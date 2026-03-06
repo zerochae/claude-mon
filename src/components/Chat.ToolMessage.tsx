@@ -4,6 +4,7 @@ import { Markdown } from "@/components/Markdown";
 import { Glyph } from "@/components/Glyph";
 import { ChatMessage } from "@/services/tauri";
 import { getToolIcon, getToolColor, getToolLabel } from "@/constants/tools";
+import { ansiToHtml, hasAnsi } from "@/utils/ansi";
 
 const wrap = css({
   px: "12px",
@@ -40,6 +41,27 @@ const contentWrap = css({
   mt: "3px",
   pl: "0.5rem",
   borderLeft: "1px solid token(colors.hairline)",
+});
+
+const outputWrap = css({
+  mt: "4px",
+  borderTop: "1px solid token(colors.hairline)",
+  pt: "4px",
+});
+
+const ansiPre = css({
+  fontFamily: "'SpaceMonoNerd', 'JetBrainsMono Nerd Font Mono', 'FiraCode Nerd Font', monospace",
+  fontSize: "0.75rem",
+  lineHeight: 1.4,
+  whiteSpace: "pre",
+  m: 0,
+  p: "6px 8px",
+  color: "text",
+  bg: "rgba(0,0,0,0.2)",
+  borderRadius: "4px",
+  maxHeight: "300px",
+  overflowX: "auto",
+  overflowY: "auto",
 });
 
 export function ToolMessage({ message }: { message: ChatMessage }) {
@@ -84,6 +106,20 @@ export function ToolMessage({ message }: { message: ChatMessage }) {
       {expanded && (
         <div className={contentWrap}>
           <Markdown content={message.content} />
+          {message.tool_output && (
+            <div className={outputWrap}>
+              {hasAnsi(message.tool_output) ? (
+                <pre
+                  className={ansiPre}
+                  dangerouslySetInnerHTML={{
+                    __html: ansiToHtml(message.tool_output),
+                  }}
+                />
+              ) : (
+                <pre className={ansiPre}>{message.tool_output}</pre>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -9,6 +9,7 @@ pub struct ChatMessage {
     pub content: String,
     pub tool_name: Option<String>,
     pub tool_status: Option<String>,
+    pub tool_output: Option<String>,
     pub subagent_type: Option<String>,
     pub subagent_prompt: Option<String>,
     pub timestamp: u64,
@@ -55,7 +56,10 @@ struct ContentBlock {
     block_type: String,
     text: Option<String>,
     name: Option<String>,
+    id: Option<String>,
     input: Option<serde_json::Value>,
+    tool_use_id: Option<String>,
+    content: Option<serde_json::Value>,
 }
 
 fn find_transcript_path(cwd: &str, session_id: &str) -> Option<PathBuf> {
@@ -215,6 +219,7 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
     };
 
     let mut messages = Vec::new();
+    let mut tool_id_to_index: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
 
     for line in content.lines() {
         let line = line.trim();
@@ -237,36 +242,71 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
         match entry.entry_type.as_str() {
             "user" => {
                 if let Some(msg) = entry.message {
-                    let text = match &msg.content {
-                        serde_json::Value::String(s) => s.clone(),
+                    match &msg.content {
+                        serde_json::Value::String(s) => {
+                            if !s.is_empty() {
+                                messages.push(ChatMessage {
+                                    id: uuid,
+                                    role: "user".to_string(),
+                                    content: s.clone(),
+                                    tool_name: None,
+                                    tool_status: None,
+                                    tool_output: None,
+                                    subagent_type: None,
+                                    subagent_prompt: None,
+                                    timestamp,
+                                });
+                            }
+                        }
                         serde_json::Value::Array(arr) => {
-                            let mut parts = Vec::new();
+                            let mut text_parts = Vec::new();
                             for block in arr {
-                                if let Ok(b) =
-                                    serde_json::from_value::<ContentBlock>(block.clone())
-                                {
-                                    if b.block_type == "text" {
-                                        if let Some(t) = b.text {
-                                            parts.push(t);
+                                if let Ok(b) = serde_json::from_value::<ContentBlock>(block.clone()) {
+                                    match b.block_type.as_str() {
+                                        "text" => {
+                                            if let Some(t) = b.text {
+                                                text_parts.push(t);
+                                            }
                                         }
+                                        "tool_result" => {
+                                            if let Some(tid) = b.tool_use_id {
+                                                let output = match &b.content {
+                                                    Some(serde_json::Value::String(s)) => Some(s.clone()),
+                                                    Some(serde_json::Value::Array(arr)) => {
+                                                        let parts: Vec<String> = arr.iter()
+                                                            .filter_map(|v| v.get("text").and_then(|t| t.as_str()).map(|s| s.to_string()))
+                                                            .collect();
+                                                        if parts.is_empty() { None } else { Some(parts.join("\n")) }
+                                                    }
+                                                    _ => None,
+                                                };
+                                                if let Some(out) = output {
+                                                    if let Some(&idx) = tool_id_to_index.get(&tid) {
+                                                        messages[idx].tool_output = Some(out);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        _ => {}
                                     }
                                 }
                             }
-                            parts.join("\n")
+                            if !text_parts.is_empty() {
+                                let combined = text_parts.join("\n");
+                                messages.push(ChatMessage {
+                                    id: uuid,
+                                    role: "user".to_string(),
+                                    content: combined,
+                                    tool_name: None,
+                                    tool_status: None,
+                                    tool_output: None,
+                                    subagent_type: None,
+                                    subagent_prompt: None,
+                                    timestamp,
+                                });
+                            }
                         }
-                        _ => continue,
-                    };
-                    if !text.is_empty() {
-                        messages.push(ChatMessage {
-                            id: uuid,
-                            role: "user".to_string(),
-                            content: text,
-                            tool_name: None,
-                            tool_status: None,
-                            subagent_type: None,
-                            subagent_prompt: None,
-                            timestamp,
-                        });
+                        _ => {}
                     }
                 }
             }
@@ -274,7 +314,7 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                 if let Some(msg) = entry.message {
                     if let serde_json::Value::Array(arr) = &msg.content {
                         let mut text_parts = Vec::new();
-                        let mut tool_uses: Vec<(String, String, Option<String>, Option<String>)> = Vec::new();
+                        let mut tool_uses: Vec<(String, String, Option<String>, Option<String>, Option<String>)> = Vec::new();
 
                         for block in arr {
                             if let Ok(b) =
@@ -292,6 +332,7 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                                         let name =
                                             b.name.unwrap_or_else(|| "unknown".to_string());
                                         let content = format_tool_content(&name, &b.input);
+                                        let tool_id = b.id;
                                         let (agent_type, agent_prompt) = if name == "Agent" || name == "Task" {
                                             let at = b.input.as_ref()
                                                 .and_then(|v| v.get("subagent_type"))
@@ -305,7 +346,7 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                                         } else {
                                             (None, None)
                                         };
-                                        tool_uses.push((name, content, agent_type, agent_prompt));
+                                        tool_uses.push((name, content, agent_type, agent_prompt, tool_id));
                                     }
                                     _ => {}
                                 }
@@ -320,19 +361,25 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                                 content: combined,
                                 tool_name: None,
                                 tool_status: None,
+                                tool_output: None,
                                 subagent_type: None,
                                 subagent_prompt: None,
                                 timestamp,
                             });
                         }
 
-                        for (i, (name, input_str, agent_type, agent_prompt)) in tool_uses.into_iter().enumerate() {
+                        for (i, (name, input_str, agent_type, agent_prompt, tool_id)) in tool_uses.into_iter().enumerate() {
+                            let msg_idx = messages.len();
+                            if let Some(tid) = tool_id {
+                                tool_id_to_index.insert(tid, msg_idx);
+                            }
                             messages.push(ChatMessage {
                                 id: format!("{}-tool-{}", uuid, i),
                                 role: "tool".to_string(),
                                 content: input_str,
                                 tool_name: Some(name),
                                 tool_status: Some("done".to_string()),
+                                tool_output: None,
                                 subagent_type: agent_type,
                                 subagent_prompt: agent_prompt,
                                 timestamp,
