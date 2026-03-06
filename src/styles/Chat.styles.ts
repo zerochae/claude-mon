@@ -14,7 +14,10 @@ export const userBubble = css({
   maxW: "80%",
 });
 
-export const assistantWrap = css({ px: "16px" });
+export const assistantWrap = css({
+  px: "16px",
+  "& p": { bg: "surfaceActive" },
+});
 
 export const toolWrap = css({ px: "16px" });
 
