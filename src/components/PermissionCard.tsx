@@ -19,7 +19,10 @@ function formatBashCommand(raw: string): string {
     const leadingWs = /^\s*/;
     const minIndent = lines
       .filter((l) => l.trim())
-      .reduce((min, l) => Math.min(min, (leadingWs.exec(l)?.[0].length ?? 0)), Infinity);
+      .reduce(
+        (min, l) => Math.min(min, leadingWs.exec(l)?.[0].length ?? 0),
+        Infinity,
+      );
     const dedented = lines.map((l) => l.slice(minIndent)).join("\n");
     return `\n${dedented}`;
   });

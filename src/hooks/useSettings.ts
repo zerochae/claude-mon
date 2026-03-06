@@ -184,8 +184,25 @@ export function useSettings() {
 
   useEffect(() => {
     if (!loaded) return;
-    applyAppearance({ opacity, bgBlur, borderEnabled, borderRadius, fontSize, vibrancy, accessoryMode });
-  }, [loaded, opacity, bgBlur, borderEnabled, borderRadius, fontSize, vibrancy, accessoryMode]);
+    applyAppearance({
+      opacity,
+      bgBlur,
+      borderEnabled,
+      borderRadius,
+      fontSize,
+      vibrancy,
+      accessoryMode,
+    });
+  }, [
+    loaded,
+    opacity,
+    bgBlur,
+    borderEnabled,
+    borderRadius,
+    fontSize,
+    vibrancy,
+    accessoryMode,
+  ]);
 
   const updateSettings = useCallback(
     (patch: Partial<AppSettings>) => {

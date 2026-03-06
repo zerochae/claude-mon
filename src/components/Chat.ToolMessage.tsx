@@ -65,7 +65,11 @@ const ansiPre = css({
   overflowY: "auto",
 });
 
-export const ToolMessage = memo(function ToolMessage({ message }: { message: ChatMessage }) {
+export const ToolMessage = memo(function ToolMessage({
+  message,
+}: {
+  message: ChatMessage;
+}) {
   const defaultOpen = message.tool_name !== "Read";
   const [expanded, setExpanded] = useState(defaultOpen);
   const isRunning = message.tool_status === "running";

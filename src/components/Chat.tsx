@@ -8,7 +8,11 @@ import { MessageGroup } from "@/components/Chat.MessageGroup";
 import { ThinkingIndicator } from "@/components/Chat.ThinkingIndicator";
 import { useChat } from "@/hooks/useChat";
 import { PermissionCard } from "@/components/PermissionCard";
-import { getSessionStats, type SessionStats, type SessionState } from "@/services/tauri";
+import {
+  getSessionStats,
+  type SessionStats,
+  type SessionState,
+} from "@/services/tauri";
 import {
   outerContainer,
   chatHeader,
@@ -32,7 +36,18 @@ export const Chat = memo(function Chat({
   onApprove,
   onDeny,
 }: ChatProps) {
-  const { session_id: sessionId, cwd, phase, color_index: colorIndex, project_name: projectName, last_activity: lastActivity, subagent_count: subagentCount, tool_name: toolName, tool_input: toolInput, tool_use_id: toolUseId } = session;
+  const {
+    session_id: sessionId,
+    cwd,
+    phase,
+    color_index: colorIndex,
+    project_name: projectName,
+    last_activity: lastActivity,
+    subagent_count: subagentCount,
+    tool_name: toolName,
+    tool_input: toolInput,
+    tool_use_id: toolUseId,
+  } = session;
   const {
     input,
     setInput,
@@ -158,11 +173,7 @@ export const Chat = memo(function Chat({
           onDeny={() => onDeny?.(sessionId, toolUseId)}
         />
       )}
-      <div
-        ref={scrollRef}
-        className={scrollArea}
-        onScroll={handleScroll}
-      >
+      <div ref={scrollRef} className={scrollArea} onScroll={handleScroll}>
         {loading ? (
           <div style={{ display: "flex", flex: 1, minHeight: "100%" }}>
             <Loading />

@@ -27,7 +27,11 @@ interface DetailProps {
   onDeny: (sessionId: string, toolUseId: string) => void;
 }
 
-export const Detail = memo(function Detail({ session, onApprove, onDeny }: DetailProps) {
+export const Detail = memo(function Detail({
+  session,
+  onApprove,
+  onDeny,
+}: DetailProps) {
   const color = getClawdColor(session.color_index);
   const phaseLabel = PHASE_LABELS[session.phase];
 
