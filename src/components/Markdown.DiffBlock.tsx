@@ -21,6 +21,8 @@ const lineStyle = css({
   display: "block",
   px: "0.4rem",
   minHeight: "1.3em",
+  minWidth: "fit-content",
+  whiteSpace: "pre",
 });
 
 const addBg = css({ bg: "rgba(80, 160, 80, 0.12)" });
@@ -62,8 +64,8 @@ export function DiffBlock({ code, lang }: { code: string; lang: string }) {
 
   return (
     <div className={shikiWrapClass}>
-      <pre style={{ margin: 0, padding: 0, background: "transparent", overflow: "visible" }}>
-        <code style={{ fontFamily: MONO }}>
+      <pre style={{ margin: 0, padding: 0, background: "transparent", overflowX: "auto" }}>
+        <code style={{ fontFamily: MONO, display: "block", minWidth: "fit-content" }}>
           {lines.map((line, i) => {
             const bgClass =
               line.type === "add" ? addBg : line.type === "del" ? delBg : "";

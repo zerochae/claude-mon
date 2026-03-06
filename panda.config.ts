@@ -176,7 +176,7 @@ export default defineConfig({
       background: "transparent",
       overflow: "hidden",
       fontFamily:
-        "-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif",
+        "'SpaceMonoNerd', ui-monospace, SFMono-Regular, Menlo, monospace",
       WebkitFontSmoothing: "antialiased",
       userSelect: "none",
     },

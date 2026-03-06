@@ -115,7 +115,7 @@ const detailToggle = css({
 
 const detailBox = css({
   fontSize: "10px",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  fontFamily: "inherit",
   color: "textMuted",
   maxHeight: "120px",
   overflowY: "auto",

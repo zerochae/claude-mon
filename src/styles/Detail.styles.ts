@@ -61,7 +61,7 @@ export const infoValue = css({
 
 export const toolBadge = css({
   fontSize: "11px",
-  fontFamily: "monospace",
+  fontFamily: "inherit",
   bg: "surfaceOverlay",
   padding: "2px 6px",
   borderRadius: "4px",
@@ -70,7 +70,7 @@ export const toolBadge = css({
 export const pidValue = css({
   color: "gray",
   fontSize: "11px",
-  fontFamily: "monospace",
+  fontFamily: "inherit",
 });
 
 export const approvalSection = css({
@@ -86,7 +86,7 @@ export const toolInputBox = css({
   padding: "8px 10px",
   color: "gray",
   fontSize: "11px",
-  fontFamily: "monospace",
+  fontFamily: "inherit",
   wordBreak: "break-all",
   maxH: "80px",
   overflowY: "auto",

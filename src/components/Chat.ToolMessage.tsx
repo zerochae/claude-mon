@@ -14,16 +14,26 @@ const wrap = css({
 const toolHeader = css({
   display: "flex",
   alignItems: "center",
-  gap: "5px",
+  gap: "2px",
   cursor: "pointer",
   padding: "3px 4px",
   borderRadius: "4px",
   fontSize: "0.78rem",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  lineHeight: 1,
+  fontFamily: "inherit",
   color: "textMuted",
   transition: "color 120ms ease, background 120ms ease",
   _hover: { color: "text", bg: "surfaceHover" },
   _active: { transform: "scale(0.97)" },
+});
+
+const iconWrap = css({
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  w: "16px",
+  h: "16px",
+  flexShrink: 0,
 });
 
 const contentWrap = css({
@@ -58,13 +68,14 @@ export function ToolMessage({ message }: { message: ChatMessage }) {
         style={{ color: iconColor }}
       >
         <span
+          className={iconWrap}
           style={
             isRunning
               ? { animation: "bubble-blink 1.5s ease-in-out infinite" }
               : undefined
           }
         >
-          <Glyph size={16} color={iconColor}>
+          <Glyph size={14} color={iconColor}>
             {icon}
           </Glyph>
         </span>

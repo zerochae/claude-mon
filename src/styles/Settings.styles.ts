@@ -170,7 +170,7 @@ export const colorInput = css({
 export const hexInput = css({
   width: "58px",
   fontSize: "10px",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  fontFamily: "inherit",
   color: "text",
   background: "transparent",
   border: "1px solid var(--colors-comment, #565c64)",

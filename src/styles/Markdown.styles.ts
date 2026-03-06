@@ -171,7 +171,14 @@ export const pStyle = css({
   wordBreak: "break-word",
 });
 
-export const strongStyle = css({ color: "strong", fontWeight: 800 });
+export const strongStyle = css({
+  color: "strong",
+  fontWeight: 800,
+  bg: "rgba(255, 255, 255, 0.06)",
+  px: "0.2rem",
+  py: "0.05rem",
+  borderRadius: "3px",
+});
 export const emStyle = css({ color: "em", fontStyle: "italic" });
 export const delStyle = css({ color: "del", textDecoration: "line-through" });
 

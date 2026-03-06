@@ -28,7 +28,7 @@ export const toolButton = css({
   padding: "2px 4px",
   borderRadius: "4px",
   fontSize: "0.78rem",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  fontFamily: "inherit",
   color: "textMuted",
   transition: MOTION.transition.color,
   _hover: { color: "text", bg: "surfaceHover" },
@@ -110,7 +110,7 @@ export const subagentBubble = css({
   borderRadius: "10px",
   padding: "3px 10px 3px 4px",
   fontSize: "0.75rem",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  fontFamily: "inherit",
   color: "comment",
 });
 
@@ -172,7 +172,7 @@ export const chatMiniWrap = css({
 export const chatHeaderLabel = css({
   fontSize: "0.72rem",
   color: "textMuted",
-  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+  fontFamily: "inherit",
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
