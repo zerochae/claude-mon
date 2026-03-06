@@ -1,10 +1,5 @@
 import { ProcessingSpinner, CompactingDots } from "@/components/Spinners";
-import {
-  phaseText,
-  wrapper,
-  bubble,
-  tailStyle,
-} from "@/styles/Bubble.styles";
+import { phaseText, wrapper, bubble, tailStyle } from "@/styles/Bubble.styles";
 import { ui } from "@/constants/glyph";
 import { useBubble } from "@/hooks/useBubble";
 
@@ -56,9 +51,7 @@ export function Bubble({
       break;
     case "compacting":
       content = (
-        <CompactingDots
-          className={phaseText({ phase: "compacting", size })}
-        />
+        <CompactingDots className={phaseText({ phase: "compacting", size })} />
       );
       break;
     case "waiting_for_approval":

@@ -68,9 +68,17 @@ export function Chat({
     void getSessionStats(sessionId, cwd).then(setStats);
   }, [sessionId, cwd, groups.length]);
 
-  const modelLabel = stats?.model?.replace("claude-", "").replace(/-/g, " ") ?? null;
+  const modelLabel =
+    stats?.model?.replace("claude-", "").replace(/-/g, " ") ?? null;
   const tokenPct = stats
-    ? Math.min(100, Math.round(((stats.total_input_tokens + stats.total_cache_write_tokens) / stats.context_window) * 100))
+    ? Math.min(
+        100,
+        Math.round(
+          ((stats.total_input_tokens + stats.total_cache_write_tokens) /
+            stats.context_window) *
+            100,
+        ),
+      )
     : null;
 
   return (
@@ -121,13 +129,23 @@ export function Chat({
           padding: "3px 12px",
           fontSize: "9px",
           color: "var(--colors-textMuted, #848992)",
-          borderBottom: "0.5px solid var(--colors-hairline, rgba(255,255,255,0.06))",
+          borderBottom:
+            "0.5px solid var(--colors-hairline, rgba(255,255,255,0.06))",
           flexShrink: 0,
         }}
       >
         {modelLabel && <span style={{ opacity: 0.7 }}>{modelLabel}</span>}
         {tokenPct !== null && (
-          <span style={{ color: tokenPct > 80 ? "var(--colors-red, #E06C75)" : tokenPct > 50 ? "var(--colors-yellow, #e5c07b)" : "var(--colors-green, #98c379)" }}>
+          <span
+            style={{
+              color:
+                tokenPct > 80
+                  ? "var(--colors-red, #E06C75)"
+                  : tokenPct > 50
+                    ? "var(--colors-yellow, #e5c07b)"
+                    : "var(--colors-green, #98c379)",
+            }}
+          >
             {tokenPct}%
           </span>
         )}
