@@ -8,7 +8,7 @@ import { MessageGroup } from "@/components/Chat.MessageGroup";
 import { ThinkingIndicator } from "@/components/Chat.ThinkingIndicator";
 import { useChat } from "@/hooks/useChat";
 import { PermissionCard } from "@/components/PermissionCard";
-import { getSessionStats, type SessionStats } from "@/services/tauri";
+import { getSessionStats, type SessionStats, type SessionState } from "@/services/tauri";
 import {
   outerContainer,
   chatHeader,
@@ -22,34 +22,17 @@ import {
 } from "@/styles/Chat.styles";
 
 interface ChatProps {
-  sessionId: string;
-  cwd: string;
-  phase: string;
-  colorIndex: number;
-  projectName: string;
-  lastActivity: number;
-  subagentCount: number;
-  toolName: string | null;
-  toolInput: Record<string, unknown> | null;
-  toolUseId: string | null;
+  session: SessionState;
   onApprove?: (sessionId: string, toolUseId: string) => void;
   onDeny?: (sessionId: string, toolUseId: string) => void;
 }
 
 export const Chat = memo(function Chat({
-  sessionId,
-  cwd,
-  phase,
-  colorIndex,
-  projectName,
-  lastActivity,
-  subagentCount,
-  toolName,
-  toolInput,
-  toolUseId,
+  session,
   onApprove,
   onDeny,
 }: ChatProps) {
+  const { session_id: sessionId, cwd, phase, color_index: colorIndex, project_name: projectName, last_activity: lastActivity, subagent_count: subagentCount, tool_name: toolName, tool_input: toolInput, tool_use_id: toolUseId } = session;
   const {
     input,
     setInput,

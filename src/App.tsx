@@ -3,8 +3,9 @@ import { useSessions } from "@/hooks/useSessions";
 import type { SessionState } from "@/services/tauri";
 import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
-import { useNavigation } from "@/hooks/useNavigation";
-import { Header } from "@/components/Header";
+import { useNavigation, type View } from "@/hooks/useNavigation";
+import { ExpandedHeader } from "@/components/Header";
+import { Bar } from "@/components/Bar";
 import { Stage } from "@/components/Stage";
 import { Detail } from "@/components/Detail";
 import { Chat } from "@/components/Chat";
@@ -82,20 +83,60 @@ export default function App() {
     [deny],
   );
 
+  const viewContent: Record<View, () => React.JSX.Element | null> = {
+    settings: () => (
+      <Settings
+        settings={settings}
+        onUpdate={updateSettings}
+        onResetColors={resetColorOverrides}
+      />
+    ),
+    stage: () => (
+      <Stage
+        sessions={sessions}
+        onSelectSession={handleSelectSession}
+        onApprove={handleApprove}
+        onDeny={handleDeny}
+      />
+    ),
+    chat: () =>
+      selectedSession ? (
+        <Chat
+          session={selectedSession}
+          onApprove={handleApprove}
+          onDeny={handleDeny}
+        />
+      ) : null,
+    detail: () =>
+      selectedSession ? (
+        <Detail
+          session={selectedSession}
+          onApprove={handleApprove}
+          onDeny={handleDeny}
+        />
+      ) : null,
+  };
+
+  const resolvedView = view === "chat" && !selectedSession ? "stage" : view;
+
   return (
     <div className="widget-container">
-      <Header
-        onGearClick={handleGearClick}
-        onToggle={handleToggle}
-        onCollapse={collapse}
-        onBack={handleBack}
-        onSelectSession={handleSelectSession}
-        expanded={expanded}
-        settingsActive={view === "settings"}
-        showBack={view !== "stage"}
-        sessions={sessions}
-        barHeight={settings.barHeight}
-      />
+      {expanded ? (
+        <ExpandedHeader
+          onGearClick={handleGearClick}
+          onCollapse={collapse}
+          onBack={handleBack}
+          settingsActive={view === "settings"}
+          showBack={view !== "stage"}
+        />
+      ) : (
+        <Bar
+          sessions={sessions}
+          barHeight={settings.barHeight}
+          onToggle={handleToggle}
+          onSelectSession={handleSelectSession}
+        />
+      )}
       {barPermissions.length > 0 ? (
         <div
           style={{
@@ -129,41 +170,7 @@ export default function App() {
             flexDirection: "column",
           }}
         >
-          {view === "settings" ? (
-            <Settings
-              settings={settings}
-              onUpdate={updateSettings}
-              onResetColors={resetColorOverrides}
-            />
-          ) : view === "stage" || !selectedSession ? (
-            <Stage
-              sessions={sessions}
-              onSelectSession={handleSelectSession}
-              onApprove={handleApprove}
-              onDeny={handleDeny}
-            />
-          ) : view === "chat" ? (
-            <Chat
-              sessionId={selectedSession.session_id}
-              cwd={selectedSession.cwd}
-              phase={selectedSession.phase}
-              colorIndex={selectedSession.color_index}
-              projectName={selectedSession.project_name}
-              lastActivity={selectedSession.last_activity}
-              subagentCount={selectedSession.subagent_count}
-              toolName={selectedSession.tool_name}
-              toolInput={selectedSession.tool_input}
-              toolUseId={selectedSession.tool_use_id}
-              onApprove={handleApprove}
-              onDeny={handleDeny}
-            />
-          ) : (
-            <Detail
-              session={selectedSession}
-              onApprove={handleApprove}
-              onDeny={handleDeny}
-            />
-          )}
+          {viewContent[resolvedView]()}
         </div>
       ) : null}
     </div>
