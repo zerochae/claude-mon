@@ -172,6 +172,8 @@ export const pStyle = css({
   bg: "bg4",
   borderRadius: "10px",
   padding: "0.35rem 0.6rem",
+  maxW: "80%",
+  w: "fit-content",
 });
 
 export const strongStyle = css({
