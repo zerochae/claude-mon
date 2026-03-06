@@ -8,7 +8,7 @@ export function useChat(sessionId: string, cwd: string, phase: string) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { messages, loading, isActive } = useChatMessages(
+  const { messages, loading, isActive, hasMore, loadMore } = useChatMessages(
     sessionId,
     cwd,
     phase,
@@ -49,5 +49,7 @@ export function useChat(sessionId: string, cwd: string, phase: string) {
     canSend,
     hasInput,
     handleSend,
+    hasMore,
+    loadMore,
   };
 }

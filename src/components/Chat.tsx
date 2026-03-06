@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useRef } from "react";
+import { memo, useState, useEffect, useRef, useCallback } from "react";
 import { Clawd } from "@/components/Clawd";
 import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
 import { Bubble } from "@/components/Bubble";
@@ -44,6 +44,8 @@ export const Chat = memo(function Chat({
     canSend,
     hasInput,
     handleSend,
+    hasMore,
+    loadMore,
   } = useChat(sessionId, cwd, phase);
 
   const [stats, setStats] = useState<SessionStats | null>(null);
@@ -145,13 +147,39 @@ export const Chat = memo(function Chat({
           onDeny={() => onDeny?.(sessionId, toolUseId)}
         />
       )}
-      <div ref={scrollRef} className={scrollArea}>
+      <div
+        ref={scrollRef}
+        className={scrollArea}
+        onScroll={useCallback(() => {
+          const el = scrollRef.current;
+          if (el && el.scrollTop < 40 && hasMore) {
+            const prevHeight = el.scrollHeight;
+            loadMore();
+            requestAnimationFrame(() => {
+              el.scrollTop = el.scrollHeight - prevHeight;
+            });
+          }
+        }, [hasMore, loadMore])}
+      >
         {loading ? (
           <div style={{ display: "flex", flex: 1, minHeight: "100%" }}>
             <Loading />
           </div>
         ) : (
           <>
+            {hasMore && (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "6px",
+                  fontSize: "10px",
+                  color: "var(--colors-textMuted, #848992)",
+                  opacity: 0.6,
+                }}
+              >
+                ↑ scroll for more
+              </div>
+            )}
             {groups.map((group) => (
               <MessageGroup
                 key={group[0].id}

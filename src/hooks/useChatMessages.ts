@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, useCallback, useTransition } from "react";
 import { type ChatMessage, getChatMessages } from "@/services/tauri";
 
-const MAX_MESSAGES = 50;
+const PAGE_SIZE = 50;
 
 export function useChatMessages(sessionId: string, cwd: string, phase: string) {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [staleCount, setStaleCount] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [, startTransition] = useTransition();
   const prevCountRef = useRef(0);
   const prevSessionIdRef = useRef(sessionId);
@@ -14,17 +15,17 @@ export function useChatMessages(sessionId: string, cwd: string, phase: string) {
   const loadMessages = useCallback(() => {
     getChatMessages(sessionId, cwd)
       .then((raw) => {
-        const msgs = raw.length > MAX_MESSAGES ? raw.slice(-MAX_MESSAGES) : raw;
         startTransition(() => {
           if (prevSessionIdRef.current !== sessionId) {
             prevSessionIdRef.current = sessionId;
             prevCountRef.current = 0;
             setStaleCount(0);
-            setMessages(msgs);
+            setVisibleCount(PAGE_SIZE);
+            setAllMessages(raw);
             setLoading(false);
             return;
           }
-          setMessages(msgs);
+          setAllMessages(raw);
           setLoading(false);
           setStaleCount((prev) =>
             raw.length === prevCountRef.current ? prev + 1 : 0,
@@ -41,11 +42,22 @@ export function useChatMessages(sessionId: string, cwd: string, phase: string) {
     return () => clearInterval(interval);
   }, [loadMessages]);
 
+  const messages =
+    allMessages.length > visibleCount
+      ? allMessages.slice(-visibleCount)
+      : allMessages;
+
+  const hasMore = allMessages.length > visibleCount;
+
+  const loadMore = useCallback(() => {
+    setVisibleCount((prev) => prev + PAGE_SIZE);
+  }, []);
+
   const isActive =
     (phase === "processing" ||
       phase === "running_tool" ||
       phase === "compacting") &&
     staleCount < 3;
 
-  return { messages, loading, isActive };
+  return { messages, loading, isActive, hasMore, loadMore };
 }
