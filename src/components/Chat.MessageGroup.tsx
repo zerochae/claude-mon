@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ChatMessage } from "@/services/tauri";
 import { UserMessage } from "@/components/Chat.UserMessage";
 import { AssistantMessage } from "@/components/Chat.AssistantMessage";
@@ -11,7 +12,7 @@ interface MessageGroupProps {
   sessionColorIndex: number;
 }
 
-export function MessageGroup({
+export const MessageGroup = memo(function MessageGroup({
   messages,
   sessionColorIndex,
 }: MessageGroupProps) {
@@ -41,4 +42,4 @@ export function MessageGroup({
       })}
     </div>
   );
-}
+});

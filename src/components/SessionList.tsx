@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { SessionState } from "@/services/tauri";
 import { getClawdColor } from "@/constants/colors";
 import { PHASE_LABELS } from "@/constants/phases";
@@ -32,11 +32,19 @@ export const SessionList = memo(function SessionList({
   onDeny,
   onHover,
 }: SessionListProps) {
-  const activeSessions = sessions.filter((s) => s.phase !== "ended");
-  const waitingSessions = sessions.filter(
-    (s) =>
-      s.phase === "waiting_for_input" || s.phase === "waiting_for_approval",
+  const activeSessions = useMemo(
+    () => sessions.filter((s) => s.phase !== "ended"),
+    [sessions],
   );
+  const waitingSessions = useMemo(
+    () =>
+      sessions.filter(
+        (s) =>
+          s.phase === "waiting_for_input" || s.phase === "waiting_for_approval",
+      ),
+    [sessions],
+  );
+  const sortedSessions = useMemo(() => sortByPriority(sessions), [sessions]);
 
   return (
     <div className={bottomPanel}>
@@ -46,7 +54,7 @@ export const SessionList = memo(function SessionList({
         <span>{waitingSessions.length} waiting</span>
       </div>
       <div className={sessionListScroll}>
-        {sortByPriority(sessions).map((session) => {
+        {sortedSessions.map((session) => {
           const color = getClawdColor(session.color_index);
           const isUrgent = session.phase === "waiting_for_approval";
           const phaseLabel = PHASE_LABELS[session.phase];

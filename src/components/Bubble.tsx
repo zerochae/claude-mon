@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ProcessingSpinner, CompactingDots } from "@/components/Spinners";
 import { phaseText, wrapper, bubble, tailStyle } from "@/styles/Bubble.styles";
 import { ui } from "@/constants/glyph";
@@ -20,7 +21,7 @@ interface BubbleProps {
   disableStale?: boolean;
 }
 
-export function Bubble({
+export const Bubble = memo(function Bubble({
   variant,
   phase,
   lastActivity,
@@ -90,4 +91,4 @@ export function Bubble({
       </div>
     </div>
   );
-}
+});

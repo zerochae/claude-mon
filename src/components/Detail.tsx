@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { SessionState } from "@/services/tauri";
 import { getClawdColor } from "@/constants/colors";
 import { Clawd } from "@/components/Clawd";
@@ -26,7 +27,7 @@ interface DetailProps {
   onDeny: (sessionId: string, toolUseId: string) => void;
 }
 
-export function Detail({ session, onApprove, onDeny }: DetailProps) {
+export const Detail = memo(function Detail({ session, onApprove, onDeny }: DetailProps) {
   const color = getClawdColor(session.color_index);
   const phaseLabel = PHASE_LABELS[session.phase];
 
@@ -88,4 +89,4 @@ export function Detail({ session, onApprove, onDeny }: DetailProps) {
       )}
     </div>
   );
-}
+});

@@ -88,10 +88,14 @@ export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
 
       ctx.globalAlpha = 1;
 
-      frameRef.current = requestAnimationFrame(draw);
+      if (isAnimating) {
+        frameRef.current = requestAnimationFrame(draw);
+      }
     }
 
     draw();
+
+    if (!isAnimating) return;
 
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);

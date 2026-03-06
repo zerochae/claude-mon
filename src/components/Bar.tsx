@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Clawd } from "@/components/Clawd";
 import { SessionState } from "@/services/tauri";
@@ -28,7 +29,7 @@ interface BarProps {
   onSelectSession?: (session: SessionState) => void;
 }
 
-export function Bar({
+export const Bar = memo(function Bar({
   sessions,
   barHeight,
   onToggle,
@@ -181,4 +182,4 @@ export function Bar({
       )}
     </div>
   );
-}
+});

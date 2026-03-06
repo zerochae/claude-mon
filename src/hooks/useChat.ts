@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { sendMessage } from "@/services/tauri";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { groupMessages } from "@/utils/chat.utils";
@@ -25,7 +25,7 @@ export function useChat(sessionId: string, cwd: string, phase: string) {
 
   const canSend = phase === "waiting_for_input" && !sending;
 
-  const handleSend = () => {
+  const handleSend = useCallback(() => {
     if (!input.trim() || !canSend) return;
     const msg = input.trim();
     setInput("");
@@ -34,7 +34,7 @@ export function useChat(sessionId: string, cwd: string, phase: string) {
     sendMessage(sessionId, msg)
       .catch((err: unknown) => setError(String(err)))
       .finally(() => setSending(false));
-  };
+  }, [input, canSend, sessionId]);
 
   const hasInput = !!input.trim();
 
