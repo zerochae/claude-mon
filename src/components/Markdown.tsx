@@ -114,8 +114,8 @@ const components: Components = {
                   </span>
                 )}
                 {isDiff
-                  ? `${ext?.name ?? displayLang} (diff)`
-                  : (ext?.name ?? displayLang)}
+                  ? `${(ext?.name ?? displayLang).toLowerCase()} (diff)`
+                  : (ext?.name ?? displayLang).toLowerCase()}
               </div>
             );
           })()}
