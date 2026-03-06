@@ -174,8 +174,7 @@ export function PermissionCard({
                   <span style={{ color: "var(--colors-blue, #61AFEF)" }}>
                     {k}
                   </span>
-                  :{" "}
-                  {typeof v === "string" ? v : JSON.stringify(v, null, 2)}
+                  : {typeof v === "string" ? v : JSON.stringify(v, null, 2)}
                 </div>
               ))}
             </div>
@@ -184,7 +183,12 @@ export function PermissionCard({
       )}
 
       <div className={actions}>
-        <Button variant="outline" size="sm" onClick={onDeny} style={{ flex: 1 }}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onDeny}
+          style={{ flex: 1 }}
+        >
           Deny
         </Button>
         <Button

@@ -15,12 +15,7 @@ const container = css({
 export function PermissionActions({ onAllow, onDeny }: PermissionActionsProps) {
   return (
     <div className={container}>
-      <Button
-        variant="outline"
-        size="md"
-        onClick={onDeny}
-        style={{ flex: 1 }}
-      >
+      <Button variant="outline" size="md" onClick={onDeny} style={{ flex: 1 }}>
         Deny
       </Button>
       <Button

@@ -64,8 +64,21 @@ export function DiffBlock({ code, lang }: { code: string; lang: string }) {
 
   return (
     <div className={shikiWrapClass}>
-      <pre style={{ margin: 0, padding: 0, background: "transparent", overflowX: "auto" }}>
-        <code style={{ fontFamily: MONO, display: "block", minWidth: "fit-content" }}>
+      <pre
+        style={{
+          margin: 0,
+          padding: 0,
+          background: "transparent",
+          overflowX: "auto",
+        }}
+      >
+        <code
+          style={{
+            fontFamily: MONO,
+            display: "block",
+            minWidth: "fit-content",
+          }}
+        >
           {lines.map((line, i) => {
             const bgClass =
               line.type === "add" ? addBg : line.type === "del" ? delBg : "";
@@ -81,7 +94,7 @@ export function DiffBlock({ code, lang }: { code: string; lang: string }) {
             return (
               <span key={i} className={`${lineStyle} ${bgClass}`}>
                 <span className={`${marker} ${mkClass}`}>{mkChar}</span>
-                {hlLines?.[i] != null ? (
+                {hlLines?.[i] !== undefined ? (
                   <span dangerouslySetInnerHTML={{ __html: hlLines[i] }} />
                 ) : (
                   <span style={{ color: "var(--colors-text, #abb2bf)" }}>

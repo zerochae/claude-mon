@@ -225,7 +225,9 @@ export async function highlightLines(
     ? lang
     : "plaintext";
   const { tokens } = highlighter.codeToTokens(code, {
-    lang: resolvedLang as Parameters<typeof highlighter.codeToTokens>[1]["lang"],
+    lang: resolvedLang as Parameters<
+      typeof highlighter.codeToTokens
+    >[1]["lang"],
     theme: "onedark-css-vars",
   });
   return tokens.map((lineTokens) =>

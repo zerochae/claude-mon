@@ -111,7 +111,9 @@ const components: Components = {
                     {ext.icon}
                   </span>
                 )}
-                {isDiff ? `${ext?.name ?? displayLang} (diff)` : (ext?.name ?? displayLang)}
+                {isDiff
+                  ? `${ext?.name ?? displayLang} (diff)`
+                  : (ext?.name ?? displayLang)}
               </div>
             );
           })()}

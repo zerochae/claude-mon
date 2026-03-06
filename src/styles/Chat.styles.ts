@@ -205,7 +205,6 @@ export const inputBar = css({
   flexShrink: 0,
 });
 
-
 export const chatInput = css({
   flex: 1,
   bg: "surfaceOverlay",
