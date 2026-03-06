@@ -88,6 +88,13 @@ export function getToolColor(
   return TOOL_COLORS[toolName] ?? "var(--colors-comment, #565c64)";
 }
 
+function extractFilename(content: string): string | null {
+  const m = /`([^`]+)`/.exec(content);
+  if (!m) return null;
+  const parts = m[1].split("/");
+  return parts[parts.length - 1];
+}
+
 export function getToolLabel(
   toolName: string | null,
   content?: string,
@@ -96,6 +103,10 @@ export function getToolLabel(
     const sub = detectBashSubtype(content);
     if (sub === "git") return "git";
     if (sub === "gh") return "gh";
+  }
+  if (toolName === "Read" && content) {
+    const name = extractFilename(content);
+    if (name) return name;
   }
   return toolName ?? "Unknown";
 }
