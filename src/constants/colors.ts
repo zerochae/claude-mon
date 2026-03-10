@@ -53,7 +53,7 @@ export function invalidateColorCache() {
 }
 
 export function getClawdColor(colorIndex: number): string {
-  if (!colorCache) colorCache = new Map();
+  colorCache ??= new Map();
   const varName = MASCOT_COLOR_VARS[colorIndex % COLOR_COUNT];
   const cached = colorCache.get(varName);
   if (cached) return cached;

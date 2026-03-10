@@ -120,6 +120,9 @@ export default function App() {
       selectedSession ? (
         <Chat
           session={selectedSession}
+          otherPermissions={pendingPermissions.filter(
+            (s) => s.session_id !== selectedSession.session_id,
+          )}
           onApprove={handleApprove}
           onDeny={handleDeny}
         />

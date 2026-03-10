@@ -44,11 +44,10 @@ export const miniBarWrap = css({
 
 export const sleepingWrap = css({
   display: "flex",
-  alignItems: "flex-end",
+  alignItems: "center",
   gap: "4px",
   flex: 1,
   justifyContent: "center",
-  pb: "2px",
 });
 
 export const zzzRow = css({

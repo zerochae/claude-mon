@@ -263,8 +263,8 @@ export async function highlight(code: string, lang: string): Promise<string> {
   });
 
   if (cache.size >= MAX_CACHE) {
-    const firstKey = cache.keys().next().value!;
-    cache.delete(firstKey);
+    const { value: firstKey } = cache.keys().next();
+    if (typeof firstKey === "string") cache.delete(firstKey);
   }
   cache.set(key, html);
   return html;

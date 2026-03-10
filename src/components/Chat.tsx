@@ -27,12 +27,17 @@ import {
 
 interface ChatProps {
   session: SessionState;
+  otherPermissions?: (SessionState & {
+    tool_use_id: string;
+    tool_name: string;
+  })[];
   onApprove?: (sessionId: string, toolUseId: string) => void;
   onDeny?: (sessionId: string, toolUseId: string) => void;
 }
 
 export const Chat = memo(function Chat({
   session,
+  otherPermissions = [],
   onApprove,
   onDeny,
 }: ChatProps) {
@@ -169,6 +174,11 @@ export const Chat = memo(function Chat({
         <PermissionCard
           toolName={toolName}
           toolInput={toolInput}
+          projectName={projectName}
+          cwd={cwd}
+          colorIndex={colorIndex}
+          phase={phase}
+          hideIdentity
           onAllow={() => onApprove?.(sessionId, toolUseId)}
           onDeny={() => onDeny?.(sessionId, toolUseId)}
         />
@@ -214,6 +224,30 @@ export const Chat = memo(function Chat({
           }}
         >
           {error}
+        </div>
+      )}
+      {otherPermissions.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            padding: "4px 6px",
+          }}
+        >
+          {otherPermissions.map((s) => (
+            <PermissionCard
+              key={s.session_id}
+              toolName={s.tool_name}
+              toolInput={s.tool_input}
+              projectName={s.project_name}
+              cwd={s.cwd}
+              colorIndex={s.color_index}
+              phase={s.phase}
+              onAllow={() => onApprove?.(s.session_id, s.tool_use_id)}
+              onDeny={() => onDeny?.(s.session_id, s.tool_use_id)}
+            />
+          ))}
         </div>
       )}
       <div className={inputBar}>

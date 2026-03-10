@@ -16,6 +16,7 @@ interface PermissionCardProps {
   cwd?: string;
   colorIndex?: number;
   phase?: string;
+  hideIdentity?: boolean;
   onAllow: () => void;
   onDeny: () => void;
 }
@@ -44,7 +45,7 @@ function simpleDiff(oldLines: string[], newLines: string[]): string[] {
   const n = oldLines.length;
   const m = newLines.length;
   const dp: number[][] = Array.from({ length: n + 1 }, () =>
-    Array(m + 1).fill(0),
+    Array<number>(m + 1).fill(0),
   );
   for (let i = 1; i <= n; i++)
     for (let j = 1; j <= m; j++)
@@ -70,7 +71,10 @@ function simpleDiff(oldLines: string[], newLines: string[]): string[] {
       i--;
     }
   }
-  while (stack.length) result.push(stack.pop()!);
+  while (stack.length) {
+    const line = stack.pop();
+    if (line !== undefined) result.push(line);
+  }
   return result;
 }
 
@@ -186,6 +190,7 @@ export const PermissionCard = memo(function PermissionCard({
   cwd,
   colorIndex = 0,
   phase = "idle",
+  hideIdentity = false,
   onAllow,
   onDeny,
 }: PermissionCardProps) {
@@ -201,24 +206,29 @@ export const PermissionCard = memo(function PermissionCard({
 
   return (
     <div className={card}>
-      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-        <Clawd
-          color={getClawdColor(colorIndex)}
-          phase={phase}
-          size={16}
-        />
-        {projectName && (
-          <span
-            style={{
-              fontSize: "10px",
-              color: "var(--colors-text-muted)",
-              fontWeight: 500,
-            }}
-          >
-            {projectName}
-          </span>
-        )}
-        {displayPath && (
+      {!hideIdentity && (
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <Clawd color={getClawdColor(colorIndex)} phase={phase} size={16} />
+          {projectName && (
+            <span
+              style={{
+                fontSize: "10px",
+                color: "var(--colors-text-muted)",
+                fontWeight: 500,
+              }}
+            >
+              {projectName}
+            </span>
+          )}
+        </div>
+      )}
+      <div className={header}>
+        <Glyph size={13} color={iconColor}>
+          {icon}
+        </Glyph>
+        <span className={toolLabel}>{toolName ?? "Unknown"}</span>
+        <span className={badge}>PERMISSION</span>
+        {filePath && displayPath && (
           <span
             style={{
               marginLeft: "auto",
@@ -232,25 +242,24 @@ export const PermissionCard = memo(function PermissionCard({
             <Glyph
               size={10}
               color={
-                extGlyphs[
-                  (filePath?.split(".").pop() ?? "") as keyof typeof extGlyphs
-                ]?.color ?? "var(--colors-text-muted)"
+                (
+                  extGlyphs[
+                    filePath.split(".").pop() as keyof typeof extGlyphs
+                  ] as { color: string } | undefined
+                )?.color ?? "var(--colors-text-muted)"
               }
             >
-              {extGlyphs[
-                (filePath?.split(".").pop() ?? "") as keyof typeof extGlyphs
-              ]?.icon ?? "\uf15b"}
+              {(
+                extGlyphs[
+                  filePath.split(".").pop() as keyof typeof extGlyphs
+                ] as { icon: string } | undefined
+              )?.icon ?? "\uf15b"}
             </Glyph>
-            <span style={{ lineHeight: 1, color: "var(--colors-text-muted)" }}>{displayPath}</span>
+            <span style={{ lineHeight: 1, color: "var(--colors-text-muted)" }}>
+              {displayPath}
+            </span>
           </span>
         )}
-      </div>
-      <div className={header}>
-        <Glyph size={13} color={iconColor}>
-          {icon}
-        </Glyph>
-        <span className={toolLabel}>{toolName ?? "Unknown"}</span>
-        <span className={badge}>PERMISSION</span>
       </div>
 
       {description && (

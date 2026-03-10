@@ -166,11 +166,15 @@ export const Bar = memo(function Bar({
         </div>
       ) : (
         <div className={sleepingWrap}>
-          <div style={{ opacity: 0.5 }}>
+          <div>
             <Clawd
-              color="var(--colors-text, #abb2bf)"
+              color={
+                getComputedStyle(document.documentElement)
+                  .getPropertyValue("--colors-primary")
+                  .trim() || "#d19a66"
+              }
               phase="idle"
-              size={BASE_CLAWD_SIZE}
+              size={BASE_CLAWD_SIZE - 4}
             />
           </div>
           <div className={zzzRow}>
