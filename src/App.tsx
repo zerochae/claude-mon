@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback, useRef, useState } from "react";
+import { useEffect, useMemo, useCallback, useRef, useState, type CSSProperties } from "react";
 import { useSessions } from "@/hooks/useSessions";
 import type { SessionState } from "@/services/tauri";
 import { useSettings } from "@/hooks/useSettings";
@@ -12,6 +12,21 @@ import { Chat } from "@/components/Chat";
 import { Settings } from "@/components/Settings";
 import { PermissionCard } from "@/components/PermissionCard";
 import { MOTION } from "@/constants/motion";
+
+const permWrapStyle: CSSProperties = {
+  padding: "4px 6px 6px",
+  background: "var(--colors-bg)",
+  display: "flex",
+  flexDirection: "column",
+  gap: "4px",
+};
+
+const chatPermWrapStyle: CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "4px",
+  padding: "4px 6px",
+};
 
 export default function App() {
   const { sessions, approve, deny } = useSessions();
@@ -45,8 +60,9 @@ export default function App() {
       (id) => !currentIds.has(id),
     );
     if (removed.length > 0) {
+      const removedSet = new Set(removed);
       setPendingPermissions((prev) =>
-        prev.filter((s) => !removed.includes(s.session_id)),
+        prev.filter((s) => !removedSet.has(s.session_id)),
       );
       for (const id of removed) pendingIdsRef.current.delete(id);
     }
@@ -220,16 +236,7 @@ export default function App() {
         />
       )}
       {barPermissions.length > 0 ? (
-        <div
-          ref={permWrapRef}
-          style={{
-            padding: "4px 6px 6px",
-            background: "var(--colors-bg)",
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-          }}
-        >
+        <div ref={permWrapRef} style={permWrapStyle}>
           {barPermissions.map((s) => (
             <PermissionCard
               key={s.session_id}
@@ -261,15 +268,7 @@ export default function App() {
         </div>
       ) : null}
       {chatOtherPermissions.length > 0 && (
-        <div
-          ref={chatPermRef}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-            padding: "4px 6px",
-          }}
-        >
+        <div ref={chatPermRef} style={chatPermWrapStyle}>
           {chatOtherPermissions.map((s) => (
             <PermissionCard
               key={s.session_id}

@@ -21,6 +21,7 @@ import {
   chatMiniRow,
   chatMiniWrap,
   scrollArea,
+  statsBar,
   inputBar,
   chatInput,
 } from "@/styles/Chat.styles";
@@ -154,19 +155,7 @@ export const Chat = memo(function Chat({
         </div>
         <span className={chatHeaderLabel}>{projectName}</span>
       </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "6px",
-          padding: "3px 12px",
-          fontSize: "9px",
-          color: "var(--colors-textMuted, #848992)",
-          borderBottom:
-            "0.5px solid var(--colors-hairline, rgba(255,255,255,0.06))",
-          flexShrink: 0,
-        }}
-      >
+      <div className={statsBar}>
         {modelLabel && <span style={{ opacity: 0.7 }}>{modelLabel}</span>}
         {tokenPct !== null && (
           <span

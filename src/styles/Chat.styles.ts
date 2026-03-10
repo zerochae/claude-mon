@@ -217,6 +217,17 @@ export const scrollArea = css({
   animation: "fade-in 150ms cubic-bezier(0.2, 0, 0, 1)",
 });
 
+export const statsBar = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+  padding: "3px 12px",
+  fontSize: "9px",
+  color: "textMuted",
+  borderBottom: "0.5px solid token(colors.hairline)",
+  flexShrink: 0,
+});
+
 export const inputBar = css({
   display: "flex",
   alignItems: "center",

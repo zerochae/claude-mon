@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useState, type CSSProperties } from "react";
 import { css } from "@styled-system/css";
 import { Markdown } from "@/components/Markdown";
 import { Glyph } from "@/components/Glyph";
@@ -183,6 +183,11 @@ export const ToolMessage = memo(function ToolMessage({
 
 const NERD = "'SpaceMonoNerd'";
 
+const readLabelStyle: CSSProperties = { fontSize: "0.72rem", opacity: 0.6 };
+const readFilenameStyle: CSSProperties = { color: "var(--colors-text, #abb2bf)" };
+const arrowStyle: CSSProperties = { fontSize: "8px", opacity: 0.5, marginLeft: "2px" };
+const readExtStyle: CSSProperties = { fontFamily: NERD, fontSize: "0.85rem", marginRight: "4px" };
+
 const extMap = extensions as Record<
   string,
   { icon: string; color: string; name: string } | undefined
@@ -216,14 +221,14 @@ function ReadLabel({
       <span className={iconWrap} style={anim}>
         <Glyph size={14} color={color}>{ui.eye}</Glyph>
       </span>
-      <span style={{ fontSize: "0.72rem", opacity: 0.6 }}>Read: </span>
+      <span style={readLabelStyle}>Read: </span>
       {ext && (
-        <span style={{ fontFamily: NERD, fontSize: "0.85rem", color: ext.color, marginRight: "4px" }}>
+        <span style={{ ...readExtStyle, color: ext.color }}>
           {ext.icon}
         </span>
       )}
-      {filename && <span style={{ color: "var(--colors-text, #abb2bf)" }}>{filename}</span>}
-      <span style={{ fontSize: "8px", opacity: 0.5, marginLeft: "2px" }}>
+      {filename && <span style={readFilenameStyle}>{filename}</span>}
+      <span style={arrowStyle}>
         {expanded ? "▼" : "▶"}
       </span>
     </>
