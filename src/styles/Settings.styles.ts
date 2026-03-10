@@ -231,6 +231,7 @@ export const selectStyle = css({
 });
 
 export const toggleTrack = css({
+  appearance: "none",
   width: "28px",
   height: "16px",
   borderRadius: "8px",
@@ -238,6 +239,12 @@ export const toggleTrack = css({
   position: "relative",
   transition: "background 120ms ease",
   flexShrink: 0,
+  border: "none",
+  padding: 0,
+  margin: 0,
+  outline: "none",
+  font: "inherit",
+  lineHeight: 1,
 });
 
 export const toggleThumb = css({

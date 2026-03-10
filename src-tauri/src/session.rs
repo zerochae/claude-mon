@@ -135,6 +135,15 @@ impl SessionManager {
             "notification" => {
                 session.phase = "notification".to_string();
             }
+            "subagent_started" => {
+                session.subagent_count = session.subagent_count.saturating_add(1);
+            }
+            "subagent_stopped" => {
+                session.subagent_count = session.subagent_count.saturating_sub(1);
+                if session.subagent_count == 0 {
+                    session.phase = "waiting_for_input".to_string();
+                }
+            }
             _ => {}
         }
 

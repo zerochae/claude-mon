@@ -53,13 +53,6 @@ export function useNavigation(
     }
   }, [view, expanded, activeWidth, animateToView, viewWidths.stage, viewWidth]);
 
-  const handleOpenDetail = useCallback(() => {
-    if (!selectedSession) return;
-    const prevW = activeWidth;
-    setView("detail");
-    if (expanded) animateToView(prevW, viewWidth("detail"));
-  }, [selectedSession, expanded, activeWidth, animateToView, viewWidth]);
-
   const handleGearClick = useCallback(() => {
     const nextView: View = view === "settings" ? "stage" : "settings";
     const nextW = viewWidth(nextView);
@@ -77,7 +70,6 @@ export function useNavigation(
     selectedSession,
     handleSelectSession,
     handleBack,
-    handleOpenDetail,
     handleGearClick,
   };
 }

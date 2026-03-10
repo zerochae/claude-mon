@@ -32,26 +32,27 @@ export const SessionList = memo(function SessionList({
   onDeny,
   onHover,
 }: SessionListProps) {
-  const activeSessions = useMemo(
-    () => sessions.filter((s) => s.phase !== "ended"),
-    [sessions],
-  );
-  const waitingSessions = useMemo(
-    () =>
-      sessions.filter(
-        (s) =>
-          s.phase === "waiting_for_input" || s.phase === "waiting_for_approval",
-      ),
-    [sessions],
-  );
-  const sortedSessions = useMemo(() => sortByPriority(sessions), [sessions]);
+  const { activeCount, waitingCount, sortedSessions } = useMemo(() => {
+    let active = 0;
+    let waiting = 0;
+    for (const s of sessions) {
+      if (s.phase !== "ended") active++;
+      if (s.phase === "waiting_for_input" || s.phase === "waiting_for_approval")
+        waiting++;
+    }
+    return {
+      activeCount: active,
+      waitingCount: waiting,
+      sortedSessions: sortByPriority(sessions),
+    };
+  }, [sessions]);
 
   return (
     <div className={bottomPanel}>
       <div className={statusBar}>
-        <span>{activeSessions.length} active</span>
+        <span>{activeCount} active</span>
         <span>&middot;</span>
-        <span>{waitingSessions.length} waiting</span>
+        <span>{waitingCount} waiting</span>
       </div>
       <div className={sessionListScroll}>
         {sortedSessions.map((session) => {

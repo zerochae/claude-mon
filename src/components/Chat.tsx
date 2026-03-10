@@ -75,13 +75,13 @@ export const Chat = memo(function Chat({
   }, [scrollRef, hasMore, loadMore]);
 
   const [stats, setStats] = useState<SessionStats | null>(null);
-  const prevGroupsLenRef = useRef(0);
+  const prevGroupsLenRef = useRef(-1);
   useEffect(() => {
     const len = groups.length;
-    if (len === prevGroupsLenRef.current && stats !== null) return;
+    if (len === prevGroupsLenRef.current) return;
     prevGroupsLenRef.current = len;
     void getSessionStats(sessionId, cwd).then(setStats);
-  }, [sessionId, cwd, groups.length, stats]);
+  }, [sessionId, cwd, groups.length]);
 
   const modelLabel =
     stats?.model?.replace("claude-", "").replace(/-/g, " ") ?? null;

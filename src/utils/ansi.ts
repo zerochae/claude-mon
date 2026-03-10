@@ -63,7 +63,9 @@ function parseSgr(codes: number[]): string | null {
     } else if (c >= 30 && c <= 37) {
       styles.push(`color:${ansi256(c - 30)}`);
     } else if (c === 38 && codes[i + 1] === 2 && i + 4 < codes.length) {
-      styles.push(`color:rgb(${codes[i + 2]},${codes[i + 3]},${codes[i + 4]})`);
+      styles.push(
+        `color:rgb(${clampByte(codes[i + 2])},${clampByte(codes[i + 3])},${clampByte(codes[i + 4])})`,
+      );
       i += 4;
     } else if (c === 38 && codes[i + 1] === 5 && i + 2 < codes.length) {
       styles.push(`color:${ansi256(codes[i + 2])}`);
@@ -72,7 +74,7 @@ function parseSgr(codes: number[]): string | null {
       styles.push(`background:${ansi256(c - 40)}`);
     } else if (c === 48 && codes[i + 1] === 2 && i + 4 < codes.length) {
       styles.push(
-        `background:rgb(${codes[i + 2]},${codes[i + 3]},${codes[i + 4]})`,
+        `background:rgb(${clampByte(codes[i + 2])},${clampByte(codes[i + 3])},${clampByte(codes[i + 4])})`,
       );
       i += 4;
     } else if (c === 48 && codes[i + 1] === 5 && i + 2 < codes.length) {
@@ -129,9 +131,15 @@ function escapeHtml(ch: string): string {
       return "&gt;";
     case '"':
       return "&quot;";
+    case "'":
+      return "&#39;";
     default:
       return ch;
   }
+}
+
+function clampByte(n: number): number {
+  return Math.max(0, Math.min(255, Math.trunc(n) || 0));
 }
 
 export function hasAnsi(s: string): boolean {

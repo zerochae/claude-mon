@@ -12,6 +12,7 @@ export interface WindowExpansionConfig {
   dock: DockPosition;
   dockMargin: number;
   barExtraHeight?: number;
+  ready?: boolean;
 }
 
 export function useWindowExpansion(
@@ -25,6 +26,7 @@ export function useWindowExpansion(
     dock,
     dockMargin,
     barExtraHeight = 0,
+    ready = true,
   } = config;
   const [expanded, setExpanded] = useState(false);
   const [showContent, setShowContent] = useState(false);
@@ -35,7 +37,7 @@ export function useWindowExpansion(
   const activeWidth = expanded ? currentWidth : barWidth;
 
   useEffect(() => {
-    if (animatingRef.current) return;
+    if (!ready || animatingRef.current) return;
     resizeAnchored(
       activeWidth,
       expanded ? EXPANDED_HEIGHT : barHeight + barExtraHeight,
@@ -44,6 +46,7 @@ export function useWindowExpansion(
       dockMargin,
     ).catch(() => undefined);
   }, [
+    ready,
     activeWidth,
     barHeight,
     barExtraHeight,

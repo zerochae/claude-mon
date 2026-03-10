@@ -7,7 +7,10 @@ interface ToggleProps {
 
 export function Toggle({ value, onChange }: ToggleProps) {
   return (
-    <div
+    <button
+      type="button"
+      role="switch"
+      aria-checked={value}
       className={toggleTrack}
       style={{
         background: value
@@ -17,6 +20,6 @@ export function Toggle({ value, onChange }: ToggleProps) {
       onClick={() => onChange(!value)}
     >
       <div className={toggleThumb} style={{ left: value ? "14px" : "2px" }} />
-    </div>
+    </button>
   );
 }

@@ -38,7 +38,10 @@ export function useChatMessages(sessionId: string, cwd: string, phase: string) {
 
   useEffect(() => {
     loadMessages();
-    const interval = setInterval(loadMessages, 3000);
+    const interval = setInterval(() => {
+      if (document.visibilityState === "hidden") return;
+      loadMessages();
+    }, 3000);
     return () => clearInterval(interval);
   }, [loadMessages]);
 

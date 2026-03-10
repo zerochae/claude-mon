@@ -107,7 +107,7 @@ export const Bar = memo(function Bar({
                   ...(isSpawning
                     ? {
                         animation:
-                          "clawd-drop 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+                          "crab-drop 400ms cubic-bezier(0.34, 1.56, 0.64, 1)",
                       }
                     : {}),
                 }}

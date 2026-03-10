@@ -9,6 +9,7 @@ export const userBubbleWrap = css({
 
 export const userBubble = css({
   bg: "bg4",
+  color: "text",
   borderRadius: "12px 12px 4px 12px",
   padding: "0.4rem 0.65rem",
   maxW: "80%",

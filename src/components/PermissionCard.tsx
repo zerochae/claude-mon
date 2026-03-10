@@ -3,6 +3,7 @@ import { css } from "@styled-system/css";
 import { Button } from "@/components/Button";
 import { Glyph } from "@/components/Glyph";
 import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
+import { DiffBlock } from "@/components/Markdown.DiffBlock";
 import { getToolIcon, getToolColor } from "@/constants/tools";
 
 interface PermissionCardProps {
@@ -32,35 +33,42 @@ function formatBashCommand(raw: string): string {
   return result.trim();
 }
 
+type SummaryResult = { code: string; lang: string; diff?: boolean } | null;
+
+const EXT_LANG: Record<string, string> = {
+  ts: "typescript",
+  tsx: "tsx",
+  js: "javascript",
+  jsx: "jsx",
+  rs: "rust",
+  py: "python",
+  css: "css",
+  html: "html",
+  json: "json",
+  toml: "toml",
+  yaml: "yaml",
+  yml: "yaml",
+  md: "markdown",
+};
+
 function extractSummary(
   toolName: string | null,
   toolInput: Record<string, unknown> | null,
-): { code: string; lang: string } | null {
+): SummaryResult {
   if (!toolInput) return null;
   if (toolName === "Bash" && typeof toolInput.command === "string")
     return { code: formatBashCommand(toolInput.command), lang: "bash" };
   if (toolName === "Edit" && typeof toolInput.file_path === "string") {
     const ext = toolInput.file_path.split(".").pop() ?? "";
-    const langMap: Record<string, string> = {
-      ts: "typescript",
-      tsx: "tsx",
-      js: "javascript",
-      jsx: "jsx",
-      rs: "rust",
-      py: "python",
-      css: "css",
-      html: "html",
-      json: "json",
-      toml: "toml",
-      yaml: "yaml",
-      yml: "yaml",
-      md: "markdown",
-    };
-    const lang = langMap[ext] ?? "plaintext";
-    const parts = [toolInput.file_path];
-    if (typeof toolInput.new_string === "string")
-      parts.push(toolInput.new_string);
-    return { code: parts.join("\n"), lang };
+    const lang = EXT_LANG[ext] ?? "plaintext";
+    const oldStr =
+      typeof toolInput.old_string === "string" ? toolInput.old_string : "";
+    const newStr =
+      typeof toolInput.new_string === "string" ? toolInput.new_string : "";
+    const diffLines: string[] = [];
+    for (const line of oldStr.split("\n")) diffLines.push(`- ${line}`);
+    for (const line of newStr.split("\n")) diffLines.push(`+ ${line}`);
+    return { code: diffLines.join("\n"), lang, diff: true };
   }
   if (
     (toolName === "Read" || toolName === "Write") &&
@@ -121,14 +129,6 @@ const summaryBox = css({
   "& code": { fontSize: "11px !important" },
 });
 
-const detailBox = css({
-  fontSize: "10px",
-  fontFamily: "inherit",
-  color: "textMuted",
-  overflowY: "auto",
-  lineHeight: 1.5,
-});
-
 const actions = css({
   display: "flex",
   gap: "6px",
@@ -143,17 +143,7 @@ export const PermissionCard = memo(function PermissionCard({
   const icon = getToolIcon(toolName);
   const iconColor = getToolColor(toolName);
   const summary = extractSummary(toolName, toolInput);
-  const hiddenKeys = new Set([
-    "command",
-    "file_path",
-    "pattern",
-    "url",
-    "description",
-  ]);
   const description = toolInput?.description as string | undefined;
-  const extraEntries = toolInput
-    ? Object.entries(toolInput).filter(([k]) => !hiddenKeys.has(k))
-    : [];
 
   return (
     <div className={card}>
@@ -179,18 +169,11 @@ export const PermissionCard = memo(function PermissionCard({
 
       {summary && (
         <div className={summaryBox}>
-          <ShikiBlock code={summary.code} lang={summary.lang} />
-        </div>
-      )}
-
-      {extraEntries.length > 0 && (
-        <div className={detailBox}>
-          {extraEntries.map(([k, v]) => (
-            <div key={k}>
-              <span style={{ color: "var(--colors-blue, #61AFEF)" }}>{k}</span>:{" "}
-              {typeof v === "string" ? v : JSON.stringify(v, null, 2)}
-            </div>
-          ))}
+          {summary.diff ? (
+            <DiffBlock code={summary.code} lang={summary.lang} />
+          ) : (
+            <ShikiBlock code={summary.code} lang={summary.lang} />
+          )}
         </div>
       )}
 

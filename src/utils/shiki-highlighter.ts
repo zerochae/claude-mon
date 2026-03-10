@@ -214,6 +214,7 @@ function getHighlighter(): Promise<Highlighter> {
 
 void getHighlighter();
 
+const MAX_CACHE = 200;
 const cache = new Map<string, string>();
 
 export async function highlightLines(
@@ -261,6 +262,10 @@ export async function highlight(code: string, lang: string): Promise<string> {
     theme: "onedark-css-vars",
   });
 
+  if (cache.size >= MAX_CACHE) {
+    const firstKey = cache.keys().next().value!;
+    cache.delete(firstKey);
+  }
   cache.set(key, html);
   return html;
 }

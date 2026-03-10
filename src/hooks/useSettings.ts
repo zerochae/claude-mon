@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { getTheme, injectTheme, type ThemeName } from "@styled-system/themes";
 import { setVibrancy } from "@/services/tauri";
+import { invalidateColorCache } from "@/constants/colors";
 
 export type { ThemeName };
 
@@ -171,12 +172,13 @@ export function useSettings() {
 
   useEffect(() => {
     if (!loaded) return;
-    void applyTheme(settings.theme);
+    void applyTheme(settings.theme).then(invalidateColorCache);
   }, [loaded, settings.theme, applyTheme]);
 
   useEffect(() => {
     if (!loaded) return;
     applyColorOverrides(settings.colorOverrides);
+    invalidateColorCache();
   }, [loaded, settings.colorOverrides]);
 
   const { opacity, bgBlur, fontSize, vibrancy, accessoryMode } = settings;

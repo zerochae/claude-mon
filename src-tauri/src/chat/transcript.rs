@@ -5,6 +5,14 @@ use std::path::PathBuf;
 use super::format::format_tool_content;
 use super::types::{ChatMessage, ContentBlock, JsonlEntry, SessionStats};
 
+fn is_system_message(s: &str) -> bool {
+    let trimmed = s.trim();
+    trimmed.starts_with("<task-notification>")
+        || trimmed.starts_with("<system-reminder>")
+        || trimmed.starts_with("<local-command")
+        || trimmed.starts_with("<command-name>")
+}
+
 fn find_transcript_path(cwd: &str, session_id: &str) -> Option<PathBuf> {
     let home = dirs::home_dir()?;
     let projects_dir = home.join(".claude").join("projects");
@@ -84,7 +92,7 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                 if let Some(msg) = entry.message {
                     match &msg.content {
                         serde_json::Value::String(s) => {
-                            if !s.is_empty() {
+                            if !s.is_empty() && !is_system_message(s) {
                                 messages.push(ChatMessage {
                                     id: uuid,
                                     role: "user".to_string(),
@@ -104,8 +112,10 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
                                 if let Ok(b) = serde_json::from_value::<ContentBlock>(block.clone()) {
                                     match b.block_type.as_str() {
                                         "text" => {
-                                            if let Some(t) = b.text {
-                                                text_parts.push(t);
+                                            if let Some(t) = &b.text {
+                                                if !is_system_message(t) {
+                                                    text_parts.push(t.clone());
+                                                }
                                             }
                                         }
                                         "tool_result" => {

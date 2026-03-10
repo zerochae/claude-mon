@@ -46,10 +46,21 @@ const FALLBACKS: Record<string, string> = {
 
 export const COLOR_COUNT = MASCOT_COLOR_VARS.length;
 
+let colorCache: Map<string, string> | null = null;
+
+export function invalidateColorCache() {
+  colorCache = null;
+}
+
 export function getClawdColor(colorIndex: number): string {
+  if (!colorCache) colorCache = new Map();
   const varName = MASCOT_COLOR_VARS[colorIndex % COLOR_COUNT];
+  const cached = colorCache.get(varName);
+  if (cached) return cached;
   const computed = getComputedStyle(document.documentElement)
     .getPropertyValue(varName)
     .trim();
-  return computed || FALLBACKS[varName];
+  const result = computed || FALLBACKS[varName];
+  colorCache.set(varName, result);
+  return result;
 }

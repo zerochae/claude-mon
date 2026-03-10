@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from "react";
+import { useEffect, useMemo, useCallback, useRef, useState } from "react";
 import { useSessions } from "@/hooks/useSessions";
 import type { SessionState } from "@/services/tauri";
 import { useSettings } from "@/hooks/useSettings";
@@ -15,8 +15,12 @@ import { MOTION } from "@/constants/motion";
 
 export default function App() {
   const { sessions, approve, deny } = useSessions();
-  const { settings, updateSettings, resetColorOverrides } = useSettings();
+  const { settings, updateSettings, resetColorOverrides, loaded } =
+    useSettings();
   const vw = settings.viewWidths;
+
+  const permWrapRef = useRef<HTMLDivElement>(null);
+  const [permHeight, setPermHeight] = useState(0);
 
   const pendingPermissions = useMemo(
     () =>
@@ -45,8 +49,8 @@ export default function App() {
     anchor: settings.anchor,
     dock: settings.dock,
     dockMargin: settings.dockMargin,
-    barExtraHeight:
-      pendingPermissions.length > 0 ? pendingPermissions.length * 220 : 0,
+    barExtraHeight: permHeight,
+    ready: loaded,
   });
 
   const {
@@ -69,6 +73,19 @@ export default function App() {
   }, [expanded, currentViewWidth, setActiveWidth]);
 
   const barPermissions = !expanded ? pendingPermissions : [];
+
+  useEffect(() => {
+    const el = permWrapRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setPermHeight(Math.ceil(entry.contentRect.height));
+    });
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      setPermHeight(0);
+    };
+  }, [barPermissions.length]);
 
   const handleToggle = useCallback(
     () => toggleExpand(viewWidth(view)),
@@ -139,6 +156,7 @@ export default function App() {
       )}
       {barPermissions.length > 0 ? (
         <div
+          ref={permWrapRef}
           style={{
             padding: "4px 6px 6px",
             background: "var(--colors-bg)",

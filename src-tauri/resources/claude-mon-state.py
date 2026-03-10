@@ -176,9 +176,12 @@ def main():
     elif event == "Stop":
         state["status"] = "waiting_for_input"
 
+    elif event == "SubagentStart":
+        state["status"] = "subagent_started"
+        state["tool"] = data.get("tool_name")
+
     elif event == "SubagentStop":
-        # SubagentStop fires when a subagent completes - usually means back to waiting
-        state["status"] = "waiting_for_input"
+        state["status"] = "subagent_stopped"
 
     elif event == "SessionStart":
         # New session starts waiting for user input
