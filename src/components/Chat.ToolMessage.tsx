@@ -5,6 +5,9 @@ import { Glyph } from "@/components/Glyph";
 import { ChatMessage } from "@/services/tauri";
 import { getToolIcon, getToolColor, getToolLabel } from "@/constants/tools";
 import { ansiToHtml, hasAnsi } from "@/utils/ansi";
+import { highlightGitOutput } from "@/utils/gitHighlight";
+import { GitDiffBlock } from "@/components/Chat.GitDiffBlock";
+import { detectBashSubtype } from "@/constants/tools";
 
 const wrap = css({
   px: "12px",
@@ -120,16 +123,42 @@ export const ToolMessage = memo(function ToolMessage({
           <Markdown content={message.content} />
           {message.tool_output && (
             <div className={outputWrap}>
-              {hasAnsi(message.tool_output) ? (
-                <pre
-                  className={ansiPre}
-                  dangerouslySetInnerHTML={{
-                    __html: ansiToHtml(message.tool_output),
-                  }}
-                />
-              ) : (
-                <pre className={ansiPre}>{message.tool_output}</pre>
-              )}
+              {(() => {
+                if (hasAnsi(message.tool_output)) {
+                  return (
+                    <pre
+                      className={ansiPre}
+                      dangerouslySetInnerHTML={{
+                        __html: ansiToHtml(message.tool_output),
+                      }}
+                    />
+                  );
+                }
+                const isGitBash =
+                  message.tool_name === "Bash" &&
+                  detectBashSubtype(message.content) === "git";
+                if (
+                  isGitBash &&
+                  message.tool_output.includes("diff --git")
+                ) {
+                  return <GitDiffBlock output={message.tool_output} />;
+                }
+                const gitHtml = highlightGitOutput(
+                  message.content,
+                  message.tool_output,
+                );
+                if (gitHtml) {
+                  return (
+                    <pre
+                      className={ansiPre}
+                      dangerouslySetInnerHTML={{ __html: gitHtml }}
+                    />
+                  );
+                }
+                return (
+                  <pre className={ansiPre}>{message.tool_output}</pre>
+                );
+              })()}
             </div>
           )}
         </div>
