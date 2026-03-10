@@ -3,11 +3,17 @@ import { css } from "@styled-system/css";
 import { Markdown } from "@/components/Markdown";
 import { Glyph } from "@/components/Glyph";
 import { ChatMessage } from "@/services/tauri";
-import { getToolIcon, getToolColor, getToolLabel } from "@/constants/tools";
+import {
+  getToolIcon,
+  getToolColor,
+  getToolLabel,
+  extractFilename,
+  detectBashSubtype
+} from "@/constants/tools";
+import { ui, extensions } from "@/constants/glyph";
 import { ansiToHtml, hasAnsi } from "@/utils/ansi";
 import { highlightGitOutput } from "@/utils/gitHighlight";
 import { GitDiffBlock } from "@/components/Chat.GitDiffBlock";
-import { detectBashSubtype } from "@/constants/tools";
 
 const wrap = css({
   px: "12px",
@@ -101,22 +107,30 @@ export const ToolMessage = memo(function ToolMessage({
         }
         style={{ color: iconColor }}
       >
-        <span
-          className={iconWrap}
-          style={
-            isRunning
-              ? { animation: "bubble-blink 1.5s ease-in-out infinite" }
-              : undefined
-          }
-        >
-          <Glyph size={14} color={iconColor}>
-            {icon}
-          </Glyph>
-        </span>
-        <span>{label}</span>
-        <span style={{ fontSize: "8px", opacity: 0.5, marginLeft: "2px" }}>
-          {expanded ? "▼" : "▶"}
-        </span>
+        {message.tool_name === "Read" ? (
+          <ReadLabel content={message.content} color={iconColor} isRunning={isRunning} expanded={expanded} />
+        ) : (
+          <>
+            <span
+              className={iconWrap}
+              style={
+                isRunning
+                  ? { animation: "bubble-blink 1.5s ease-in-out infinite" }
+                  : undefined
+              }
+            >
+              <Glyph size={14} color={iconColor}>
+                {icon}
+              </Glyph>
+            </span>
+            <span>{label}</span>
+          </>
+        )}
+        {message.tool_name !== "Read" && (
+          <span style={{ fontSize: "8px", opacity: 0.5, marginLeft: "2px" }}>
+            {expanded ? "▼" : "▶"}
+          </span>
+        )}
       </div>
       {expanded && !isAgent && (
         <div className={contentWrap}>
@@ -166,3 +180,52 @@ export const ToolMessage = memo(function ToolMessage({
     </div>
   );
 });
+
+const NERD = "'SpaceMonoNerd'";
+
+const extMap = extensions as Record<
+  string,
+  { icon: string; color: string; name: string } | undefined
+>;
+
+function getExtInfo(filename: string) {
+  const dotIdx = filename.lastIndexOf(".");
+  if (dotIdx < 0) return extMap[filename];
+  return extMap[filename.slice(dotIdx + 1)];
+}
+
+function ReadLabel({
+  content,
+  color,
+  isRunning,
+  expanded,
+}: {
+  content: string;
+  color: string;
+  isRunning: boolean;
+  expanded: boolean;
+}) {
+  const filename = extractFilename(content);
+  const ext = filename ? getExtInfo(filename) : undefined;
+  const anim = isRunning
+    ? { animation: "bubble-blink 1.5s ease-in-out infinite" }
+    : undefined;
+
+  return (
+    <>
+      <span className={iconWrap} style={anim}>
+        <Glyph size={14} color={color}>{ui.eye}</Glyph>
+      </span>
+      <span style={{ fontSize: "0.72rem", opacity: 0.6 }}>Read: </span>
+      {ext && (
+        <span style={{ fontFamily: NERD, fontSize: "0.85rem", color: ext.color, marginRight: "4px" }}>
+          {ext.icon}
+        </span>
+      )}
+      {filename && <span style={{ color: "var(--colors-text, #abb2bf)" }}>{filename}</span>}
+      <span style={{ fontSize: "8px", opacity: 0.5, marginLeft: "2px" }}>
+        {expanded ? "▼" : "▶"}
+      </span>
+    </>
+  );
+}

@@ -88,7 +88,7 @@ export function getToolColor(
   return TOOL_COLORS[toolName] ?? "var(--colors-comment, #565c64)";
 }
 
-function extractFilename(content: string): string | null {
+export function extractFilename(content: string): string | null {
   const m = /`([^`]+)`/.exec(content);
   if (!m) return null;
   const parts = m[1].split("/");
