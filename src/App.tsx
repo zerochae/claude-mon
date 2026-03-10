@@ -21,6 +21,8 @@ export default function App() {
 
   const permWrapRef = useRef<HTMLDivElement>(null);
   const [permHeight, setPermHeight] = useState(0);
+  const chatPermRef = useRef<HTMLDivElement>(null);
+  const [chatPermHeight, setChatPermHeight] = useState(0);
 
   const pendingPermissions = useMemo(
     () =>
@@ -49,7 +51,7 @@ export default function App() {
     anchor: settings.anchor,
     dock: settings.dock,
     dockMargin: settings.dockMargin,
-    barExtraHeight: permHeight,
+    barExtraHeight: permHeight + chatPermHeight,
     ready: loaded,
   });
 
@@ -59,6 +61,7 @@ export default function App() {
     selectedSession,
     handleSelectSession,
     handleBack,
+    handleOpenDetail,
     handleGearClick,
   } = useNavigation(sessions, vw, {
     expanded,
@@ -73,6 +76,12 @@ export default function App() {
   }, [expanded, currentViewWidth, setActiveWidth]);
 
   const barPermissions = !expanded ? pendingPermissions : [];
+  const chatOtherPermissions =
+    expanded && view === "chat" && selectedSession
+      ? pendingPermissions.filter(
+          (s) => s.session_id !== selectedSession.session_id,
+        )
+      : [];
 
   useEffect(() => {
     const el = permWrapRef.current;
@@ -86,6 +95,19 @@ export default function App() {
       setPermHeight(0);
     };
   }, [barPermissions.length]);
+
+  useEffect(() => {
+    const el = chatPermRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setChatPermHeight(Math.ceil(entry.contentRect.height));
+    });
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      setChatPermHeight(0);
+    };
+  }, [chatOtherPermissions.length]);
 
   const handleToggle = useCallback(
     () => toggleExpand(viewWidth(view)),
@@ -120,11 +142,9 @@ export default function App() {
       selectedSession ? (
         <Chat
           session={selectedSession}
-          otherPermissions={pendingPermissions.filter(
-            (s) => s.session_id !== selectedSession.session_id,
-          )}
           onApprove={handleApprove}
           onDeny={handleDeny}
+          onOpenDetail={handleOpenDetail}
         />
       ) : null,
     detail: () =>
@@ -198,6 +218,31 @@ export default function App() {
           {viewContent[resolvedView]()}
         </div>
       ) : null}
+      {chatOtherPermissions.length > 0 && (
+        <div
+          ref={chatPermRef}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+            padding: "4px 6px",
+          }}
+        >
+          {chatOtherPermissions.map((s) => (
+            <PermissionCard
+              key={s.session_id}
+              toolName={s.tool_name}
+              toolInput={s.tool_input}
+              projectName={s.project_name}
+              cwd={s.cwd}
+              colorIndex={s.color_index}
+              phase={s.phase}
+              onAllow={() => void approve(s.session_id, s.tool_use_id)}
+              onDeny={() => void deny(s.session_id, s.tool_use_id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

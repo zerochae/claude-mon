@@ -41,7 +41,7 @@ export function useWindowExpansion(
     if (!ready || animating) return;
     resizeAnchored(
       activeWidth,
-      expanded ? EXPANDED_HEIGHT : barHeight + barExtraHeight,
+      expanded ? EXPANDED_HEIGHT + barExtraHeight : barHeight + barExtraHeight,
       anchor,
       dock,
       dockMargin,

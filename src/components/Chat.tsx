@@ -27,19 +27,16 @@ import {
 
 interface ChatProps {
   session: SessionState;
-  otherPermissions?: (SessionState & {
-    tool_use_id: string;
-    tool_name: string;
-  })[];
   onApprove?: (sessionId: string, toolUseId: string) => void;
   onDeny?: (sessionId: string, toolUseId: string) => void;
+  onOpenDetail?: () => void;
 }
 
 export const Chat = memo(function Chat({
   session,
-  otherPermissions = [],
   onApprove,
   onDeny,
+  onOpenDetail,
 }: ChatProps) {
   const {
     session_id: sessionId,
@@ -105,7 +102,12 @@ export const Chat = memo(function Chat({
     <div className={outerContainer}>
       <div className={chatHeader}>
         <div className={chatHeaderLeft}>
-          <Clawd color={getClawdColor(colorIndex)} phase={phase} size={24} />
+          <Clawd
+            color={getClawdColor(colorIndex)}
+            phase={phase}
+            size={24}
+            onClick={onOpenDetail}
+          />
           <Bubble variant="chat" phase={phase} lastActivity={lastActivity} />
           {subagentCount > 0 ? (
             <div className={chatMiniRow}>
@@ -224,30 +226,6 @@ export const Chat = memo(function Chat({
           }}
         >
           {error}
-        </div>
-      )}
-      {otherPermissions.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "4px",
-            padding: "4px 6px",
-          }}
-        >
-          {otherPermissions.map((s) => (
-            <PermissionCard
-              key={s.session_id}
-              toolName={s.tool_name}
-              toolInput={s.tool_input}
-              projectName={s.project_name}
-              cwd={s.cwd}
-              colorIndex={s.color_index}
-              phase={s.phase}
-              onAllow={() => onApprove?.(s.session_id, s.tool_use_id)}
-              onDeny={() => onDeny?.(s.session_id, s.tool_use_id)}
-            />
-          ))}
         </div>
       )}
       <div className={inputBar}>

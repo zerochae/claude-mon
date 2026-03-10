@@ -53,6 +53,13 @@ export function useNavigation(
     }
   }, [view, expanded, activeWidth, animateToView, viewWidths.stage, viewWidth]);
 
+  const handleOpenDetail = useCallback(() => {
+    if (view !== "chat" || !expanded) return;
+    const prevW = activeWidth;
+    setView("detail");
+    animateToView(prevW, viewWidth("detail"));
+  }, [view, expanded, activeWidth, animateToView, viewWidth]);
+
   const handleGearClick = useCallback(() => {
     const nextView: View = view === "settings" ? "stage" : "settings";
     const nextW = viewWidth(nextView);
@@ -70,6 +77,7 @@ export function useNavigation(
     selectedSession,
     handleSelectSession,
     handleBack,
+    handleOpenDetail,
     handleGearClick,
   };
 }
