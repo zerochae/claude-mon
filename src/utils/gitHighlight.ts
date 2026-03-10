@@ -39,7 +39,7 @@ export function highlightGitLog(raw: string): string {
     .map((line) => {
       const commitMatch = /^(commit )?([0-9a-f]{7,40})(.*)$/.exec(line);
       if (commitMatch && (commitMatch[1] || line === commitMatch[2] + commitMatch[3])) {
-        const prefix = commitMatch[1] ?? "";
+        const prefix = commitMatch[1] || "";
         return span(C.dim, prefix) + span(C.hash, commitMatch[2]) + esc(commitMatch[3]);
       }
       if (/^(Author|Date|Merge):/.test(line)) return span(C.dim, line);

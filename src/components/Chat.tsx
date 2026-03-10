@@ -85,6 +85,17 @@ export const Chat = memo(function Chat({
     void getSessionStats(sessionId, cwd).then(setStats);
   }, [sessionId, cwd, groups.length]);
 
+  const isWaiting = phase === "waiting_for_approval" && !!toolUseId;
+  const [showPerm, setShowPerm] = useState(false);
+  useEffect(() => {
+    if (!isWaiting) {
+      const id = requestAnimationFrame(() => setShowPerm(false));
+      return () => cancelAnimationFrame(id);
+    }
+    const t = setTimeout(() => setShowPerm(true), 300);
+    return () => clearTimeout(t);
+  }, [isWaiting]);
+
   const modelLabel =
     stats?.model?.replace("claude-", "").replace(/-/g, " ") ?? null;
   const tokenPct = stats
@@ -172,7 +183,7 @@ export const Chat = memo(function Chat({
           </span>
         )}
       </div>
-      {phase === "waiting_for_approval" && toolUseId && (
+      {showPerm && toolUseId && (
         <PermissionCard
           toolName={toolName}
           toolInput={toolInput}
