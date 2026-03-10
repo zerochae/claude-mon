@@ -3,7 +3,7 @@ import { Button } from "@/components/Button";
 import { Glyph } from "@/components/Glyph";
 import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
 import { DiffBlock } from "@/components/Markdown.DiffBlock";
-import { getToolIcon, getToolColor } from "@/constants/tools";
+import { getToolIcon, getToolColor, parseMcpToolName } from "@/constants/tools";
 import { getClawdColor } from "@/constants/colors";
 import { extensions as extGlyphs } from "@/constants/glyph";
 import { Clawd } from "@/components/Clawd";
@@ -69,7 +69,7 @@ export const PermissionCard = memo(function PermissionCard({
         <Glyph size={13} color={iconColor}>
           {icon}
         </Glyph>
-        <span className={toolLabel}>{toolName ?? "Unknown"}</span>
+        <span className={toolLabel}>{toolName ? parseMcpToolName(toolName) : "Unknown"}</span>
         <span className={badge}>PERMISSION</span>
         {filePath && displayPath && (
           <span

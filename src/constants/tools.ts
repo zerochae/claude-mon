@@ -95,6 +95,18 @@ export function extractFilename(content: string): string | null {
   return parts[parts.length - 1];
 }
 
+export function parseMcpToolName(toolName: string): string {
+  if (!toolName.startsWith("mcp__")) return toolName;
+  const rest = toolName.slice(5);
+  const sepIdx = rest.indexOf("__");
+  if (sepIdx < 0) return toolName;
+  let server = rest.slice(0, sepIdx);
+  const tool = rest.slice(sepIdx + 2);
+  const pluginMatch = /^plugin_(.+)_t$/.exec(server);
+  if (pluginMatch) server = pluginMatch[1];
+  return `${server}: ${tool}`;
+}
+
 export function getToolLabel(
   toolName: string | null,
   content?: string,
@@ -111,5 +123,6 @@ export function getToolLabel(
   if ((toolName === "Agent" || toolName === "Task") && content) {
     return content || toolName;
   }
+  if (toolName?.startsWith("mcp__")) return parseMcpToolName(toolName);
   return toolName ?? "Unknown";
 }
