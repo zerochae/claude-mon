@@ -24,7 +24,7 @@ export default function App() {
   const chatPermRef = useRef<HTMLDivElement>(null);
   const [chatPermHeight, setChatPermHeight] = useState(0);
 
-  const pendingPermissions = useMemo(
+  const rawPending = useMemo(
     () =>
       sessions.filter(
         (s): s is SessionState & { tool_use_id: string; tool_name: string } =>
@@ -35,6 +35,48 @@ export default function App() {
       ),
     [sessions],
   );
+
+  const [pendingPermissions, setPendingPermissions] = useState(rawPending);
+  const pendingIdsRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    const currentIds = new Set(rawPending.map((s) => s.session_id));
+    const removed = [...pendingIdsRef.current].filter(
+      (id) => !currentIds.has(id),
+    );
+    if (removed.length > 0) {
+      setPendingPermissions((prev) =>
+        prev.filter((s) => !removed.includes(s.session_id)),
+      );
+      for (const id of removed) pendingIdsRef.current.delete(id);
+    }
+
+    const added = rawPending.filter(
+      (s) => !pendingIdsRef.current.has(s.session_id),
+    );
+    if (added.length > 0) {
+      const timer = setTimeout(() => {
+        const stillPending = added.filter((s) =>
+          sessions.some(
+            (cur) =>
+              cur.session_id === s.session_id &&
+              cur.phase === "waiting_for_approval",
+          ),
+        );
+        if (stillPending.length > 0) {
+          for (const s of stillPending) pendingIdsRef.current.add(s.session_id);
+          setPendingPermissions((prev) => {
+            const ids = new Set(prev.map((p) => p.session_id));
+            return [
+              ...prev,
+              ...stillPending.filter((s) => !ids.has(s.session_id)),
+            ];
+          });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [rawPending, sessions]);
 
   const {
     expanded,
