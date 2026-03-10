@@ -229,8 +229,14 @@ export const ulStyle = css({
   ml: "0.6rem",
   fontSize: "0.8rem",
   color: "text",
-  listStyleType: "disc",
+  listStyleType: "none",
   mt: "0.15rem",
+  "& > li::before": {
+    content: '"\\f14fb"',
+    fontFamily: NERD,
+    fontSize: "0.65rem",
+    marginRight: "0.4rem",
+  },
 });
 
 export const olStyle = css({
