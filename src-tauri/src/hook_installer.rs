@@ -76,6 +76,7 @@ fn update_settings(settings_path: &PathBuf) {
         ("PermissionRequest", with_matcher_timeout),
         ("Notification", with_matcher),
         ("Stop", without_matcher.clone()),
+        ("SubagentStart", without_matcher.clone()),
         ("SubagentStop", without_matcher.clone()),
         ("SessionStart", without_matcher.clone()),
         ("SessionEnd", without_matcher),

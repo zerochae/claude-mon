@@ -93,9 +93,10 @@ export const subagentWrap = css({
 });
 
 export const subagentClickable = css({
-  display: "inline-flex",
+  display: "flex",
   alignItems: "center",
   gap: "6px",
+  w: "100%",
   bg: "transparent",
   border: "none",
   cursor: "pointer",
@@ -103,6 +104,7 @@ export const subagentClickable = css({
   borderRadius: "8px",
   transition: "background 120ms ease",
   _hover: { bg: "surfaceHover" },
+  _active: { bg: "surfaceHover", transform: "none" },
 });
 
 export const subagentPromptWrap = css({
@@ -126,11 +128,17 @@ export const subagentBubble = css({
   fontSize: "0.75rem",
   fontFamily: "inherit",
   color: "comment",
+  overflow: "hidden",
+  minWidth: 0,
+  flex: 1,
 });
 
 export const subagentName = css({
   color: "text",
   fontWeight: 500,
+  whiteSpace: "nowrap",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
 });
 
 export const subagentDesc = css({

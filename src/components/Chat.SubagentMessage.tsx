@@ -9,7 +9,6 @@ import {
   subagentClickable,
   subagentBubble,
   subagentName,
-  subagentDesc,
   subagentPromptWrap,
 } from "@/styles/Chat.styles";
 
@@ -45,10 +44,10 @@ export function SubagentMessage({
           size={16}
         />
         <div className={subagentBubble}>
-          <span className={subagentName}>{shortName || "agent"}</span>
-          {message.content && (
-            <span className={subagentDesc}>{message.content}</span>
-          )}
+          <span className={subagentName}>
+            {shortName || "agent"}
+            {message.content && `: ${message.content}`}
+          </span>
         </div>
       </Button>
       {showPrompt && message.subagent_prompt && (

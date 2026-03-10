@@ -108,5 +108,8 @@ export function getToolLabel(
     const name = extractFilename(content);
     if (name) return name;
   }
+  if ((toolName === "Agent" || toolName === "Task") && content) {
+    return content || toolName;
+  }
   return toolName ?? "Unknown";
 }

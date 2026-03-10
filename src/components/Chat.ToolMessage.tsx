@@ -70,6 +70,7 @@ export const ToolMessage = memo(function ToolMessage({
 }: {
   message: ChatMessage;
 }) {
+  const isAgent = message.tool_name === "Agent" || message.tool_name === "Task";
   const defaultOpen = message.tool_name !== "Read";
   const [expanded, setExpanded] = useState(defaultOpen);
   const isRunning = message.tool_status === "running";
@@ -114,7 +115,7 @@ export const ToolMessage = memo(function ToolMessage({
           {expanded ? "▼" : "▶"}
         </span>
       </div>
-      {expanded && (
+      {expanded && !isAgent && (
         <div className={contentWrap}>
           <Markdown content={message.content} />
           {message.tool_output && (
