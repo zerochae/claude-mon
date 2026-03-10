@@ -170,6 +170,10 @@ export default function App() {
               key={s.session_id}
               toolName={s.tool_name}
               toolInput={s.tool_input}
+              projectName={s.project_name}
+              cwd={s.cwd}
+              colorIndex={s.color_index}
+              phase={s.phase}
               onAllow={() => void approve(s.session_id, s.tool_use_id)}
               onDeny={() => void deny(s.session_id, s.tool_use_id)}
             />

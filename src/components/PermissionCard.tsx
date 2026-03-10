@@ -5,10 +5,17 @@ import { Glyph } from "@/components/Glyph";
 import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
 import { DiffBlock } from "@/components/Markdown.DiffBlock";
 import { getToolIcon, getToolColor } from "@/constants/tools";
+import { getClawdColor } from "@/constants/colors";
+import { extensions as extGlyphs } from "@/constants/glyph";
+import { Clawd } from "@/components/Clawd";
 
 interface PermissionCardProps {
   toolName: string | null;
   toolInput: Record<string, unknown> | null;
+  projectName?: string;
+  cwd?: string;
+  colorIndex?: number;
+  phase?: string;
   onAllow: () => void;
   onDeny: () => void;
 }
@@ -31,6 +38,40 @@ function formatBashCommand(raw: string): string {
   result = result.replace(/\s*&&\s*/g, "\n");
 
   return result.trim();
+}
+
+function simpleDiff(oldLines: string[], newLines: string[]): string[] {
+  const n = oldLines.length;
+  const m = newLines.length;
+  const dp: number[][] = Array.from({ length: n + 1 }, () =>
+    Array(m + 1).fill(0),
+  );
+  for (let i = 1; i <= n; i++)
+    for (let j = 1; j <= m; j++)
+      dp[i][j] =
+        oldLines[i - 1] === newLines[j - 1]
+          ? dp[i - 1][j - 1] + 1
+          : Math.max(dp[i - 1][j], dp[i][j - 1]);
+
+  const result: string[] = [];
+  let i = n,
+    j = m;
+  const stack: string[] = [];
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && oldLines[i - 1] === newLines[j - 1]) {
+      stack.push(`  ${oldLines[i - 1]}`);
+      i--;
+      j--;
+    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+      stack.push(`+ ${newLines[j - 1]}`);
+      j--;
+    } else {
+      stack.push(`- ${oldLines[i - 1]}`);
+      i--;
+    }
+  }
+  while (stack.length) result.push(stack.pop()!);
+  return result;
 }
 
 type SummaryResult = { code: string; lang: string; diff?: boolean } | null;
@@ -65,15 +106,19 @@ function extractSummary(
       typeof toolInput.old_string === "string" ? toolInput.old_string : "";
     const newStr =
       typeof toolInput.new_string === "string" ? toolInput.new_string : "";
-    const diffLines: string[] = [];
-    for (const line of oldStr.split("\n")) diffLines.push(`- ${line}`);
-    for (const line of newStr.split("\n")) diffLines.push(`+ ${line}`);
+    const oldLines = oldStr.split("\n");
+    const newLines = newStr.split("\n");
+    const diffLines = simpleDiff(oldLines, newLines);
     return { code: diffLines.join("\n"), lang, diff: true };
   }
-  if (
-    (toolName === "Read" || toolName === "Write") &&
-    typeof toolInput.file_path === "string"
-  )
+  if (toolName === "Write" && typeof toolInput.file_path === "string") {
+    const ext = toolInput.file_path.split(".").pop() ?? "";
+    const lang = EXT_LANG[ext] ?? "plaintext";
+    const content =
+      typeof toolInput.content === "string" ? toolInput.content : "";
+    return { code: content || toolInput.file_path, lang };
+  }
+  if (toolName === "Read" && typeof toolInput.file_path === "string")
     return { code: toolInput.file_path, lang: "plaintext" };
   if (toolName === "Glob" && typeof toolInput.pattern === "string")
     return { code: toolInput.pattern, lang: "plaintext" };
@@ -137,6 +182,10 @@ const actions = css({
 export const PermissionCard = memo(function PermissionCard({
   toolName,
   toolInput,
+  projectName,
+  cwd,
+  colorIndex = 0,
+  phase = "idle",
   onAllow,
   onDeny,
 }: PermissionCardProps) {
@@ -144,9 +193,58 @@ export const PermissionCard = memo(function PermissionCard({
   const iconColor = getToolColor(toolName);
   const summary = extractSummary(toolName, toolInput);
   const description = toolInput?.description as string | undefined;
+  const filePath = toolInput?.file_path as string | undefined;
+  const displayPath =
+    filePath && cwd && filePath.startsWith(cwd)
+      ? filePath.slice(cwd.endsWith("/") ? cwd.length : cwd.length + 1)
+      : filePath;
 
   return (
     <div className={card}>
+      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <Clawd
+          color={getClawdColor(colorIndex)}
+          phase={phase}
+          size={16}
+        />
+        {projectName && (
+          <span
+            style={{
+              fontSize: "10px",
+              color: "var(--colors-text-muted)",
+              fontWeight: 500,
+            }}
+          >
+            {projectName}
+          </span>
+        )}
+        {displayPath && (
+          <span
+            style={{
+              marginLeft: "auto",
+              display: "flex",
+              alignItems: "center",
+              gap: "3px",
+              fontSize: "10px",
+              fontWeight: 400,
+            }}
+          >
+            <Glyph
+              size={10}
+              color={
+                extGlyphs[
+                  (filePath?.split(".").pop() ?? "") as keyof typeof extGlyphs
+                ]?.color ?? "var(--colors-text-muted)"
+              }
+            >
+              {extGlyphs[
+                (filePath?.split(".").pop() ?? "") as keyof typeof extGlyphs
+              ]?.icon ?? "\uf15b"}
+            </Glyph>
+            <span style={{ lineHeight: 1, color: "var(--colors-text-muted)" }}>{displayPath}</span>
+          </span>
+        )}
+      </div>
       <div className={header}>
         <Glyph size={13} color={iconColor}>
           {icon}

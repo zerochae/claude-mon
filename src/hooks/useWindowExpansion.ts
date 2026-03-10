@@ -31,13 +31,14 @@ export function useWindowExpansion(
   const [expanded, setExpanded] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [currentWidth, setCurrentWidth] = useState(defaultExpandedWidth);
+  const [animating, setAnimating] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const animatingRef = useRef(false);
 
   const activeWidth = expanded ? currentWidth : barWidth;
 
   useEffect(() => {
-    if (!ready || animatingRef.current) return;
+    if (!ready || animating) return;
     resizeAnchored(
       activeWidth,
       expanded ? EXPANDED_HEIGHT : barHeight + barExtraHeight,
@@ -47,6 +48,7 @@ export function useWindowExpansion(
     ).catch(() => undefined);
   }, [
     ready,
+    animating,
     activeWidth,
     barHeight,
     barExtraHeight,
@@ -62,6 +64,7 @@ export function useWindowExpansion(
       setCurrentWidth(targetW);
       setExpanded(true);
       animatingRef.current = true;
+      setAnimating(true);
       void animateWindowSize(
         barWidth,
         targetW,
@@ -73,6 +76,7 @@ export function useWindowExpansion(
         ANIM_MS,
         () => {
           animatingRef.current = false;
+          setAnimating(false);
         },
       );
       timerRef.current = setTimeout(() => setShowContent(true), 30);
@@ -86,6 +90,7 @@ export function useWindowExpansion(
     timerRef.current = setTimeout(() => {
       setExpanded(false);
       animatingRef.current = true;
+      setAnimating(true);
       void animateWindowSize(
         activeWidth,
         barWidth,
@@ -97,6 +102,7 @@ export function useWindowExpansion(
         ANIM_MS,
         () => {
           animatingRef.current = false;
+          setAnimating(false);
         },
       );
     }, ANIM_MS);
@@ -115,6 +121,7 @@ export function useWindowExpansion(
       if (fromW === toW) return;
       setCurrentWidth(toW);
       animatingRef.current = true;
+      setAnimating(true);
       void animateWindowSize(
         fromW,
         toW,
@@ -126,6 +133,7 @@ export function useWindowExpansion(
         ANIM_MS,
         () => {
           animatingRef.current = false;
+          setAnimating(false);
         },
       );
     },
