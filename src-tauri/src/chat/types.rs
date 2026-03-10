@@ -21,6 +21,7 @@ pub struct SessionStats {
     pub total_cache_read_tokens: u64,
     pub total_cache_write_tokens: u64,
     pub context_window: u64,
+    pub current_context_tokens: u64,
     pub message_count: u32,
 }
 

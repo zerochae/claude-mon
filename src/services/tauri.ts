@@ -69,6 +69,7 @@ export interface SessionStats {
   total_cache_read_tokens: number;
   total_cache_write_tokens: number;
   context_window: number;
+  current_context_tokens: number;
   message_count: number;
 }
 

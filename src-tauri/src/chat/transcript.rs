@@ -265,6 +265,7 @@ pub fn parse_session_stats(cwd: &str, session_id: &str) -> SessionStats {
         total_cache_read_tokens: 0,
         total_cache_write_tokens: 0,
         context_window: 200_000,
+        current_context_tokens: 0,
         message_count: 0,
     };
 
@@ -295,10 +296,14 @@ pub fn parse_session_stats(cwd: &str, session_id: &str) -> SessionStats {
                     stats.model = Some(model.clone());
                 }
                 if let Some(usage) = &msg.usage {
-                    stats.total_input_tokens += usage.input_tokens.unwrap_or(0);
+                    let input = usage.input_tokens.unwrap_or(0);
+                    let cache_read = usage.cache_read_input_tokens.unwrap_or(0);
+                    let cache_write = usage.cache_creation_input_tokens.unwrap_or(0);
+                    stats.total_input_tokens += input;
                     stats.total_output_tokens += usage.output_tokens.unwrap_or(0);
-                    stats.total_cache_read_tokens += usage.cache_read_input_tokens.unwrap_or(0);
-                    stats.total_cache_write_tokens += usage.cache_creation_input_tokens.unwrap_or(0);
+                    stats.total_cache_read_tokens += cache_read;
+                    stats.total_cache_write_tokens += cache_write;
+                    stats.current_context_tokens = input + cache_read + cache_write;
                 }
                 stats.message_count += 1;
             }

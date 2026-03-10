@@ -13,6 +13,8 @@ import {
   type SessionStats,
   type SessionState,
 } from "@/services/tauri";
+import { ui } from "@/constants/glyph";
+import { Glyph } from "@/components/Glyph";
 import {
   outerContainer,
   chatHeader,
@@ -21,7 +23,6 @@ import {
   chatMiniRow,
   chatMiniWrap,
   scrollArea,
-  statsBar,
   inputBar,
   chatInput,
 } from "@/styles/Chat.styles";
@@ -98,14 +99,14 @@ export const Chat = memo(function Chat({
   }, [isWaiting]);
 
   const modelLabel =
-    stats?.model?.replace("claude-", "").replace(/-/g, " ") ?? null;
+    stats?.model
+      ?.replace("claude-", "")
+      .replace(/^(\w+)-(\d+)-(\d+)(-\d+)?$/, "$1 $2-$3") ?? null;
   const tokenPct = stats
     ? Math.min(
         100,
         Math.round(
-          ((stats.total_input_tokens + stats.total_cache_write_tokens) /
-            stats.context_window) *
-            100,
+          (stats.current_context_tokens / stats.context_window) * 100,
         ),
       )
     : null;
@@ -153,24 +154,46 @@ export const Chat = memo(function Chat({
             </div>
           ) : null}
         </div>
-        <span className={chatHeaderLabel}>{projectName}</span>
-      </div>
-      <div className={statsBar}>
-        {modelLabel && <span style={{ opacity: 0.7 }}>{modelLabel}</span>}
-        {tokenPct !== null && (
-          <span
-            style={{
-              color:
-                tokenPct > 80
-                  ? "var(--colors-red, #E06C75)"
-                  : tokenPct > 50
-                    ? "var(--colors-yellow, #e5c07b)"
-                    : "var(--colors-green, #98c379)",
-            }}
-          >
-            {tokenPct}%
-          </span>
-        )}
+        <span className={chatHeaderLabel}>
+          <Glyph size={16} color="var(--colors-red)">{ui.folder_close}</Glyph>
+          {projectName}
+          {modelLabel && (
+            <>
+              <span style={{ opacity: 0.3, margin: "0 4px" }}> </span>
+              <Glyph size={16} color="var(--colors-blue)">{ui.agent}</Glyph>
+              {modelLabel}
+            </>
+          )}
+          {tokenPct !== null && (
+            <>
+              <span style={{ opacity: 0.3, margin: "0 4px" }}> </span>
+              <Glyph
+                size={16}
+                color={
+                  tokenPct > 80
+                    ? "var(--colors-red, #E06C75)"
+                    : tokenPct > 50
+                      ? "var(--colors-yellow, #e5c07b)"
+                      : "var(--colors-green, #98c379)"
+                }
+              >
+                {ui.token}
+              </Glyph>
+              <span
+                style={{
+                  color:
+                    tokenPct > 80
+                      ? "var(--colors-red, #E06C75)"
+                      : tokenPct > 50
+                        ? "var(--colors-yellow, #e5c07b)"
+                        : "var(--colors-green, #98c379)",
+                }}
+              >
+                {tokenPct}%
+              </span>
+            </>
+          )}
+        </span>
       </div>
       {showPerm && toolUseId && (
         <PermissionCard

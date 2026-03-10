@@ -68,6 +68,9 @@ export const ui = {
   bubble_waiting_for_input: "",
   oct_square_fill: "",
   eye: "",
+  project: "",
+  agent: "󰚩",
+  token: "󰍛",
 };
 
 export const extensions = {
