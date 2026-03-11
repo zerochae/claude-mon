@@ -45,6 +45,8 @@ export function useClawdBar(sessions: SessionState[], barHeight: number) {
   const [runQueue, setRunQueue] = useState<string[]>([]);
   const [runningId, setRunningId] = useState<string | null>(null);
   const [fadingIds, setFadingIds] = useState<Set<string>>(new Set());
+  const fadingIdsRef = useRef(fadingIds);
+  useEffect(() => { fadingIdsRef.current = fadingIds; }, [fadingIds]);
   const [spawningIds, setSpawningIds] = useState<Set<string>>(new Set());
   const [overflowIds, setOverflowIds] = useState<Set<string>>(new Set());
   const homeIdsRef = useRef<string[]>(homeIdsCache);
@@ -102,14 +104,27 @@ export function useClawdBar(sessions: SessionState[], barHeight: number) {
       }
 
       const ids = new Set(sessions.map((s) => s.session_id));
+      const disappeared: string[] = [];
       for (const id of Object.keys(next)) {
-        if (!ids.has(id)) {
-          Reflect.deleteProperty(next, id);
+        if (!ids.has(id) && !fadingIdsRef.current.has(id)) {
+          disappeared.push(id);
           if (homeSet.has(id)) {
             syncHomeIds(homeIdsRef.current.filter((h) => h !== id));
           }
-          dirty = true;
         }
+      }
+      if (disappeared.length > 0) {
+        for (const id of disappeared) {
+          next[id] = { x: w - PAD_R, facingRight: true };
+        }
+        queueMicrotask(() =>
+          setFadingIds((f) => {
+            const n = new Set(f);
+            for (const id of disappeared) n.add(id);
+            return n;
+          }),
+        );
+        dirty = true;
       }
 
       return dirty ? next : prev;
