@@ -1,7 +1,7 @@
 import { css } from "@styled-system/css";
 
 export const BASE_BAR_HEIGHT = 48;
-export const BASE_CLAWD_SIZE = 22;
+export const BASE_CLAWD_SIZE = 26;
 
 export const collapsedBar = css({
   display: "flex",
@@ -58,10 +58,10 @@ export const zzzRow = css({
 });
 
 export const zzz = css({
-  color: "comment",
+  color: "white",
   fontWeight: 700,
   fontStyle: "italic",
-  opacity: 0.6,
+  opacity: 0.9,
   animation: "zzz-float 2.5s ease-in-out infinite",
   lineHeight: 1,
 });

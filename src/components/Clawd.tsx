@@ -18,7 +18,9 @@ const LEG_OFFSETS = [
   [0, 0, 0, 0],
 ];
 
+
 const canvasStyle = css({ imageRendering: "pixelated" });
+
 
 export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,7 +44,9 @@ export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
     }
 
     const isAnimating = phase === "processing" || phase === "compacting";
+    const isResting = phase === "idle" || phase === "waiting_for_input";
     const animSpeed = phase === "compacting" ? 250 : 150;
+    const needsLoop = isAnimating || isResting;
 
     function rect(x: number, y: number, rw: number, rh: number) {
       ctx?.fillRect(xOff + x * scale, y * scale, rw * scale, rh * scale);
@@ -62,9 +66,17 @@ export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
       const alpha = phase === "ended" ? 0.3 : 1.0;
       ctx.globalAlpha = alpha;
 
+      let squish = 0;
+      if (isResting) {
+        const t = (now % 2500) / 2500;
+        squish = Math.sin(t * Math.PI * 2) * 5;
+      }
+
+      const sx = squish * -0.4;
+
       ctx.fillStyle = color;
-      rect(0, 13, 6, 13);
-      rect(60, 13, 6, 13);
+      rect(0 - sx, 13 - squish, 6, 13 + squish);
+      rect(60 + sx, 13 - squish, 6, 13 + squish);
 
       const legXs = [6, 18, 42, 54];
       const baseLegH = 13;
@@ -78,24 +90,23 @@ export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
       }
 
       ctx.fillStyle = color;
-      rect(6, 0, 54, 39);
+      rect(6 - sx, 0 - squish, 54 + sx * 2, 39 + squish);
 
       const eyeH = phase === "idle" ? 2.5 : 6.5;
       const eyeY = phase === "idle" ? 13 + (6.5 - eyeH) : 13;
       ctx.fillStyle = "#000";
-      rect(12, eyeY, 6, eyeH);
-      rect(48, eyeY, 6, eyeH);
-
+      rect(12, eyeY - squish * 0.3, 6, eyeH);
+      rect(48, eyeY - squish * 0.3, 6, eyeH);
       ctx.globalAlpha = 1;
 
-      if (isAnimating) {
+      if (needsLoop) {
         frameRef.current = requestAnimationFrame(draw);
       }
     }
 
     draw();
 
-    if (!isAnimating) return;
+    if (!needsLoop) return;
 
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);

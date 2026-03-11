@@ -165,7 +165,7 @@ export const Bar = memo(function Bar({
           })}
         </div>
       ) : (
-        <div className={sleepingWrap}>
+        <div className={sleepingWrap} style={{ transform: `scale(${unitScale})`, transformOrigin: "center bottom" }}>
           <div>
             <Clawd
               color={
@@ -174,7 +174,7 @@ export const Bar = memo(function Bar({
                   .trim() || "#d19a66"
               }
               phase="idle"
-              size={BASE_CLAWD_SIZE - 4}
+              size={BASE_CLAWD_SIZE}
             />
           </div>
           <div className={zzzRow}>
