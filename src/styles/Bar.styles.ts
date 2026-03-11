@@ -1,7 +1,7 @@
 import { css } from "@styled-system/css";
 
 export const BASE_BAR_HEIGHT = 48;
-export const BASE_CLAWD_SIZE = 26;
+export const BASE_CLAWD_SIZE = 24;
 
 export const collapsedBar = css({
   display: "flex",

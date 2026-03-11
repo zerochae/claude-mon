@@ -95,6 +95,12 @@ const keyframes = defineKeyframes({
     from: { opacity: "0", transform: "scale(0.96)" },
     to: { opacity: "1", transform: "scale(1)" },
   },
+  "bubble-bounce": {
+    "0%": { transform: "scale(0.8)", opacity: "0.5" },
+    "40%": { transform: "scale(1.15)", opacity: "1" },
+    "70%": { transform: "scale(0.95)" },
+    "100%": { transform: "scale(1)" },
+  },
   "scale-out": {
     from: { opacity: "1", transform: "scale(1)" },
     to: { opacity: "0", transform: "scale(0.92)" },
@@ -108,8 +114,8 @@ const keyframes = defineKeyframes({
     "100%": { transform: "translateY(-100%)" },
   },
   "crab-drop": {
-    from: { opacity: "0", transform: "translateY(-24px) scale(0.85)" },
-    to: { opacity: "1", transform: "translateY(0) scale(0.85)" },
+    from: { opacity: "0", transform: "translateY(-24px)" },
+    to: { opacity: "1", transform: "translateY(0)" },
   },
   shake: {
     "0%, 100%": { transform: "translateX(0)" },

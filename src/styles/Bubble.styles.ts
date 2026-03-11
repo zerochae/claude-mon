@@ -69,7 +69,6 @@ const bubbleBase = {
   bg: "bg3",
   border: "0.5px solid token(colors.hairline)",
   whiteSpace: "nowrap",
-  animation: "scale-in 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
 } as const;
 
 export const wrapper = cva({
@@ -114,6 +113,7 @@ export const bubble = cva({
         w: "20px",
         h: "18px",
         shadow: "0 1px 2px rgba(0, 0, 0, 0.2)",
+        animation: "scale-in 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
         _after: {
           content: '""',
           pos: "absolute",

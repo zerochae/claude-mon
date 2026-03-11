@@ -19,6 +19,7 @@ interface BubbleProps {
   lastActivity: number;
   dismissed?: boolean;
   disableStale?: boolean;
+  scale?: number;
 }
 
 export const Bubble = memo(function Bubble({
@@ -27,6 +28,7 @@ export const Bubble = memo(function Bubble({
   lastActivity,
   dismissed,
   disableStale,
+  scale,
 }: BubbleProps) {
   const { isStage, visible, fading, fadeOutMs, effectivePhase } = useBubble({
     variant,
@@ -76,20 +78,28 @@ export const Bubble = memo(function Bubble({
       return null;
   }
 
+  const isBounce = !fading && (effectivePhase === "idle" || effectivePhase === "waiting_for_input");
+
   return (
-    <div className={wrapper({ variant })}>
+    <div
+      className={wrapper({ variant })}
+      style={scale && scale < 1 ? { transform: `scale(${scale})`, transformOrigin: "left bottom" , marginBottom: `${Math.round(10 * scale)}px` } : undefined}
+    >
       <div
-        className={bubble({ variant })}
-        style={
-          fading
-            ? { animation: `scale-out ${fadeOutMs}ms ease forwards` }
-            : effectivePhase === "idle" || effectivePhase === "waiting_for_input"
-              ? { animation: "scale-in 400ms cubic-bezier(0.34, 1.56, 0.64, 1)" }
-              : undefined
-        }
+        key={isBounce ? `bounce-${effectivePhase}` : "bubble"}
+        style={isBounce ? { animation: "bubble-bounce 2s ease-in-out" } : undefined}
       >
-        {content}
-        {isStage && <div className={tailStyle} />}
+        <div
+          className={bubble({ variant })}
+          style={
+            fading
+              ? { animation: `scale-out ${fadeOutMs}ms ease forwards` }
+              : undefined
+          }
+        >
+          {content}
+          {isStage && <div className={tailStyle} />}
+        </div>
       </div>
     </div>
   );

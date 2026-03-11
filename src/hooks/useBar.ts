@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { SessionState } from "@/services/tauri";
 import { useClawdBar } from "@/hooks/useClawdBar";
 import { filterActive, activeKey } from "@/utils/session.utils";
-import { BASE_BAR_HEIGHT } from "@/styles/Bar.styles";
+
 
 export function useBar(sessions: SessionState[], barHeight: number) {
   const [activeSessions, setActiveSessions] = useState(() =>
@@ -32,7 +32,6 @@ export function useBar(sessions: SessionState[], barHeight: number) {
 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const hasSessions = activeSessions.length > 0;
-  const unitScale = barHeight / BASE_BAR_HEIGHT;
 
   return {
     activeSessions,
@@ -45,6 +44,5 @@ export function useBar(sessions: SessionState[], barHeight: number) {
     hoveredId,
     setHoveredId,
     hasSessions,
-    unitScale,
   };
 }

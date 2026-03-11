@@ -8,6 +8,7 @@ import { Bubble } from "@/components/Bubble";
 import { useBar } from "@/hooks/useBar";
 import {
   BASE_CLAWD_SIZE,
+  BASE_BAR_HEIGHT,
   MINI_BAR_CLAWD_SIZE,
   collapsedBar,
   clawdList,
@@ -46,8 +47,11 @@ export const Bar = memo(function Bar({
     hoveredId,
     setHoveredId,
     hasSessions,
-    unitScale,
   } = useBar(sessions, barHeight);
+
+  const scale = barHeight / BASE_BAR_HEIGHT;
+  const clawdSize = Math.round(BASE_CLAWD_SIZE * scale);
+  const miniSize = Math.round(MINI_BAR_CLAWD_SIZE * scale);
 
   return (
     <div
@@ -95,8 +99,8 @@ export const Bar = memo(function Bar({
                   opacity: isFading || isOverflow ? 0 : 1,
                   transform:
                     hoveredId === s.session_id
-                      ? `scale(${unitScale * 1.25})`
-                      : `scale(${unitScale})`,
+                      ? "scale(1.25)"
+                      : undefined,
                   filter:
                     hoveredId === s.session_id
                       ? `drop-shadow(0 0 6px ${getClawdColor(s.color_index)}66)`
@@ -120,13 +124,14 @@ export const Bar = memo(function Bar({
                   <Clawd
                     color={getClawdColor(s.color_index)}
                     phase={isRunning ? "processing" : s.phase}
-                    size={BASE_CLAWD_SIZE}
+                    size={clawdSize}
                   />
                 </div>
                 <Bubble
                   variant="bar"
                   phase={s.phase}
                   lastActivity={s.last_activity}
+                  scale={scale}
                 />
                 {s.subagent_count > 0 && (
                   <div className={miniBarRow}>
@@ -152,7 +157,7 @@ export const Bar = memo(function Bar({
                                 (s.color_index + i + 3) % COLOR_COUNT,
                               )}
                               phase={miniPhases[i % miniPhases.length]}
-                              size={MINI_BAR_CLAWD_SIZE}
+                              size={miniSize}
                             />
                           </div>
                         );
@@ -165,7 +170,7 @@ export const Bar = memo(function Bar({
           })}
         </div>
       ) : (
-        <div className={sleepingWrap} style={{ transform: `scale(${unitScale})`, transformOrigin: "center bottom" }}>
+        <div className={sleepingWrap}>
           <div>
             <Clawd
               color={
@@ -174,7 +179,7 @@ export const Bar = memo(function Bar({
                   .trim() || "#d19a66"
               }
               phase="idle"
-              size={BASE_CLAWD_SIZE}
+              size={clawdSize}
             />
           </div>
           <div className={zzzRow}>
