@@ -23,6 +23,8 @@ export const BAR_VISIBLE_PHASES = new Set<SessionPhase>([
   "waiting_for_input",
 ]);
 
+export const BAR_STALE_SEC = 600;
+
 export const STALE_THRESHOLD_SEC = 30;
 
 export const PHASE_LABELS: Record<SessionPhase, string> = {

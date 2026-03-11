@@ -1,13 +1,20 @@
 import { SessionState } from "@/services/tauri";
-import { BAR_VISIBLE_PHASES, STALE_THRESHOLD_SEC } from "@/constants/phases";
+import { BAR_VISIBLE_PHASES, BAR_STALE_SEC, ACTIVE_PHASES } from "@/constants/phases";
+
+function getBarStaleSec(): number {
+  const v = getComputedStyle(document.documentElement).getPropertyValue("--bar-stale-sec").trim();
+  return v ? Number(v) : BAR_STALE_SEC;
+}
 
 export function filterActive(sessions: SessionState[]) {
   const now = Math.floor(Date.now() / 1000);
+  const staleSec = getBarStaleSec();
   return sessions.filter(
     (s) =>
-      s.phase !== "ended" &&
-      (BAR_VISIBLE_PHASES.has(s.phase) ||
-        now - s.last_activity < STALE_THRESHOLD_SEC),
+      BAR_VISIBLE_PHASES.has(s.phase) &&
+      (ACTIVE_PHASES.has(s.phase) ||
+        s.phase === "waiting_for_approval" ||
+        now - s.last_activity < staleSec),
   );
 }
 

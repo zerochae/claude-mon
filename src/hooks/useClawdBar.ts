@@ -104,27 +104,14 @@ export function useClawdBar(sessions: SessionState[], barHeight: number) {
       }
 
       const ids = new Set(sessions.map((s) => s.session_id));
-      const disappeared: string[] = [];
       for (const id of Object.keys(next)) {
         if (!ids.has(id) && !fadingIdsRef.current.has(id)) {
-          disappeared.push(id);
+          Reflect.deleteProperty(next, id);
           if (homeSet.has(id)) {
             syncHomeIds(homeIdsRef.current.filter((h) => h !== id));
           }
+          dirty = true;
         }
-      }
-      if (disappeared.length > 0) {
-        for (const id of disappeared) {
-          next[id] = { x: w - PAD_R, facingRight: true };
-        }
-        queueMicrotask(() =>
-          setFadingIds((f) => {
-            const n = new Set(f);
-            for (const id of disappeared) n.add(id);
-            return n;
-          }),
-        );
-        dirty = true;
       }
 
       return dirty ? next : prev;

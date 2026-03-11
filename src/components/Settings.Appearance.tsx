@@ -83,6 +83,13 @@ export function SettingsAppearance({
             suffix="px"
           />
         </div>
+        <div className={rowStyle}>
+          <span className={rowLabel}>Clawd Animation</span>
+          <Toggle
+            value={settings.clawdAnimation}
+            onChange={(v) => onUpdate({ clawdAnimation: v })}
+          />
+        </div>
       </div>
     </div>
   );

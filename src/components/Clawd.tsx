@@ -55,8 +55,9 @@ export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
     function draw() {
       if (!ctx) return;
       const now = Date.now();
+      const animEnabled = getComputedStyle(document.documentElement).getPropertyValue("--clawd-animate").trim() !== "0";
 
-      if (isAnimating && now - lastLegTickRef.current >= animSpeed) {
+      if (isAnimating && animEnabled && now - lastLegTickRef.current >= animSpeed) {
         legPhaseRef.current = (legPhaseRef.current + 1) % 4;
         lastLegTickRef.current = now;
       }
@@ -67,7 +68,7 @@ export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
       ctx.globalAlpha = alpha;
 
       let squish = 0;
-      if (isResting) {
+      if (isResting && animEnabled) {
         const t = (now % 2500) / 2500;
         squish = Math.sin(t * Math.PI * 2) * 5;
       }
@@ -90,13 +91,13 @@ export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
       }
 
       ctx.fillStyle = color;
-      rect(6 - sx, 0 - squish, 54 + sx * 2, 39 + squish);
+      rect(6 - sx, 0 - squish * 0.4, 54 + sx * 2, 39 + squish * 0.4);
 
       const eyeH = phase === "idle" ? 2.5 : 6.5;
       const eyeY = phase === "idle" ? 13 + (6.5 - eyeH) : 13;
       ctx.fillStyle = "#000";
-      rect(12, eyeY - squish * 0.3, 6, eyeH);
-      rect(48, eyeY - squish * 0.3, 6, eyeH);
+      rect(12, eyeY - squish * 0.15, 6, eyeH);
+      rect(48, eyeY - squish * 0.15, 6, eyeH);
       ctx.globalAlpha = 1;
 
       if (needsLoop) {

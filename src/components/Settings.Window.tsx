@@ -51,6 +51,28 @@ export function SettingsWindow({ settings, onUpdate }: SettingsWindowProps) {
           />
         </div>
         <div className={rowStyle}>
+          <span className={rowLabel}>Bar Idle Timeout</span>
+          <ScrollInput
+            value={Math.round(settings.barStaleSec / 60)}
+            onChange={(v) => onUpdate({ barStaleSec: v * 60 })}
+            min={1}
+            max={30}
+            step={1}
+            suffix="min"
+          />
+        </div>
+        <div className={rowStyle}>
+          <span className={rowLabel}>Bubble Done Timeout</span>
+          <ScrollInput
+            value={Math.round(settings.bubbleDoneSec / 60)}
+            onChange={(v) => onUpdate({ bubbleDoneSec: v * 60 })}
+            min={1}
+            max={30}
+            step={1}
+            suffix="min"
+          />
+        </div>
+        <div className={rowStyle}>
           <span className={rowLabel}>Anchor</span>
           <div className={anchorGroup}>
             {ANCHOR_OPTIONS.map(({ value, label }) => (

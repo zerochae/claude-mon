@@ -7,6 +7,11 @@ import {
   SB_DONE_PHASES,
 } from "@/styles/Bubble.styles";
 
+function getBubbleDoneSec(): number {
+  const v = getComputedStyle(document.documentElement).getPropertyValue("--bubble-done-sec").trim();
+  return v ? Number(v) : 60;
+}
+
 type BubbleVariant = "bar" | "chat" | "stage";
 
 interface UseBubbleParams {
@@ -32,7 +37,7 @@ export function useBubble({
     lastActivity,
     donePhasesSet,
     activePhasesSet: ACTIVE_PHASES,
-    doneVisibleSec: isStage ? DONE_VISIBLE_SEC : undefined,
+    doneVisibleSec: isStage ? DONE_VISIBLE_SEC : getBubbleDoneSec(),
     fadeOutMs: FADE_OUT_MS,
     staleThresholdSec: isStage ? STALE_THRESHOLD_SEC : undefined,
     disableStale: isStage

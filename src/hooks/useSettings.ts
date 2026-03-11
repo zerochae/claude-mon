@@ -30,6 +30,9 @@ export interface AppSettings {
   dock: DockPosition;
   dockMargin: number;
   accessoryMode: boolean;
+  clawdAnimation: boolean;
+  barStaleSec: number;
+  bubbleDoneSec: number;
 }
 
 export const DEFAULT_VIEW_WIDTHS: ViewWidths = {
@@ -53,6 +56,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   dock: "none",
   dockMargin: 0,
   accessoryMode: true,
+  clawdAnimation: true,
+  barStaleSec: 600,
+  bubbleDoneSec: 60,
 };
 
 const COLOR_VAR_MAP: Record<string, string> = {
@@ -87,6 +93,9 @@ interface AppearanceParams {
   fontSize: number;
   vibrancy: string;
   accessoryMode: boolean;
+  clawdAnimation: boolean;
+  barStaleSec: number;
+  bubbleDoneSec: number;
 }
 
 function applyAppearance(p: AppearanceParams) {
@@ -113,6 +122,18 @@ function applyAppearance(p: AppearanceParams) {
   document.documentElement.style.setProperty(
     "--app-font-size",
     `${p.fontSize}px`,
+  );
+  document.documentElement.style.setProperty(
+    "--clawd-animate",
+    p.clawdAnimation ? "1" : "0",
+  );
+  document.documentElement.style.setProperty(
+    "--bar-stale-sec",
+    String(p.barStaleSec),
+  );
+  document.documentElement.style.setProperty(
+    "--bubble-done-sec",
+    String(p.bubbleDoneSec),
   );
 
   setVibrancy(p.vibrancy).catch(() => undefined);
@@ -181,7 +202,7 @@ export function useSettings() {
     invalidateColorCache();
   }, [loaded, settings.colorOverrides]);
 
-  const { opacity, bgBlur, fontSize, vibrancy, accessoryMode } = settings;
+  const { opacity, bgBlur, fontSize, vibrancy, accessoryMode, clawdAnimation, barStaleSec, bubbleDoneSec } = settings;
   const { enabled: borderEnabled, radius: borderRadius } = settings.border;
 
   useEffect(() => {
@@ -194,6 +215,9 @@ export function useSettings() {
       fontSize,
       vibrancy,
       accessoryMode,
+      clawdAnimation,
+      barStaleSec,
+      bubbleDoneSec,
     });
   }, [
     loaded,
@@ -204,6 +228,9 @@ export function useSettings() {
     fontSize,
     vibrancy,
     accessoryMode,
+    clawdAnimation,
+    barStaleSec,
+    bubbleDoneSec,
   ]);
 
   const updateSettings = useCallback(
