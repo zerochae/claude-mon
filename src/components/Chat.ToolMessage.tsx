@@ -8,7 +8,7 @@ import {
   getToolColor,
   getToolLabel,
   extractFilename,
-  detectBashSubtype
+  detectBashSubtype,
 } from "@/constants/tools";
 import { ui, extensions } from "@/constants/glyph";
 import { ansiToHtml, hasAnsi } from "@/utils/ansi";
@@ -108,7 +108,12 @@ export const ToolMessage = memo(function ToolMessage({
         style={{ color: iconColor }}
       >
         {message.tool_name === "Read" ? (
-          <ReadLabel content={message.content} color={iconColor} isRunning={isRunning} expanded={expanded} />
+          <ReadLabel
+            content={message.content}
+            color={iconColor}
+            isRunning={isRunning}
+            expanded={expanded}
+          />
         ) : (
           <>
             <span
@@ -151,10 +156,7 @@ export const ToolMessage = memo(function ToolMessage({
                 const isGitBash =
                   message.tool_name === "Bash" &&
                   detectBashSubtype(message.content) === "git";
-                if (
-                  isGitBash &&
-                  message.tool_output.includes("diff --git")
-                ) {
+                if (isGitBash && message.tool_output.includes("diff --git")) {
                   return <GitDiffBlock output={message.tool_output} />;
                 }
                 const gitHtml = highlightGitOutput(
@@ -169,9 +171,7 @@ export const ToolMessage = memo(function ToolMessage({
                     />
                   );
                 }
-                return (
-                  <pre className={ansiPre}>{message.tool_output}</pre>
-                );
+                return <pre className={ansiPre}>{message.tool_output}</pre>;
               })()}
             </div>
           )}
@@ -184,9 +184,19 @@ export const ToolMessage = memo(function ToolMessage({
 const NERD = "'SpaceMonoNerd'";
 
 const readLabelStyle: CSSProperties = { fontSize: "0.72rem", opacity: 0.6 };
-const readFilenameStyle: CSSProperties = { color: "var(--colors-text, #abb2bf)" };
-const arrowStyle: CSSProperties = { fontSize: "8px", opacity: 0.5, marginLeft: "2px" };
-const readExtStyle: CSSProperties = { fontFamily: NERD, fontSize: "0.85rem", marginRight: "4px" };
+const readFilenameStyle: CSSProperties = {
+  color: "var(--colors-text, #abb2bf)",
+};
+const arrowStyle: CSSProperties = {
+  fontSize: "8px",
+  opacity: 0.5,
+  marginLeft: "2px",
+};
+const readExtStyle: CSSProperties = {
+  fontFamily: NERD,
+  fontSize: "0.85rem",
+  marginRight: "4px",
+};
 
 const extMap = extensions as Record<
   string,
@@ -219,18 +229,16 @@ function ReadLabel({
   return (
     <>
       <span className={iconWrap} style={anim}>
-        <Glyph size={14} color={color}>{ui.eye}</Glyph>
+        <Glyph size={14} color={color}>
+          {ui.eye}
+        </Glyph>
       </span>
       <span style={readLabelStyle}>Read: </span>
       {ext && (
-        <span style={{ ...readExtStyle, color: ext.color }}>
-          {ext.icon}
-        </span>
+        <span style={{ ...readExtStyle, color: ext.color }}>{ext.icon}</span>
       )}
       {filename && <span style={readFilenameStyle}>{filename}</span>}
-      <span style={arrowStyle}>
-        {expanded ? "▼" : "▶"}
-      </span>
+      <span style={arrowStyle}>{expanded ? "▼" : "▶"}</span>
     </>
   );
 }

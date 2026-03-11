@@ -69,7 +69,9 @@ export const PermissionCard = memo(function PermissionCard({
         <Glyph size={13} color={iconColor}>
           {icon}
         </Glyph>
-        <span className={toolLabel}>{toolName ? parseMcpToolName(toolName) : "Unknown"}</span>
+        <span className={toolLabel}>
+          {toolName ? parseMcpToolName(toolName) : "Unknown"}
+        </span>
         <span className={badge}>PERMISSION</span>
         {filePath && displayPath && (
           <span

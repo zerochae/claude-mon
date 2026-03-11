@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useCallback, useRef, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { useSessions } from "@/hooks/useSessions";
 import type { SessionState } from "@/services/tauri";
 import { useSettings } from "@/hooks/useSettings";

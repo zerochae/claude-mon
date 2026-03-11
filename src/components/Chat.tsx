@@ -105,9 +105,7 @@ export const Chat = memo(function Chat({
   const tokenPct = stats
     ? Math.min(
         100,
-        Math.round(
-          (stats.current_context_tokens / stats.context_window) * 100,
-        ),
+        Math.round((stats.current_context_tokens / stats.context_window) * 100),
       )
     : null;
 
@@ -155,12 +153,16 @@ export const Chat = memo(function Chat({
           ) : null}
         </div>
         <span className={chatHeaderLabel}>
-          <Glyph size={16} color="var(--colors-red)">{ui.folder_close}</Glyph>
+          <Glyph size={16} color="var(--colors-red)">
+            {ui.folder_close}
+          </Glyph>
           {projectName}
           {modelLabel && (
             <>
               <span style={{ opacity: 0.3, margin: "0 4px" }}> </span>
-              <Glyph size={16} color="var(--colors-blue)">{ui.agent}</Glyph>
+              <Glyph size={16} color="var(--colors-blue)">
+                {ui.agent}
+              </Glyph>
               {modelLabel}
             </>
           )}

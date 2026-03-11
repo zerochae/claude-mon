@@ -17,8 +17,7 @@ function parseGitDiff(raw: string): GitDiffFile[] {
     const lines = section.split("\n");
     const headerMatch = /^a\/(.+?) b\//.exec(lines[0]);
     const filePath = headerMatch?.[1] ?? "";
-    const ext =
-      filePath.split(".").pop()?.toLowerCase() ?? "";
+    const ext = filePath.split(".").pop()?.toLowerCase() ?? "";
 
     const diffLines: string[] = [];
     let inHunk = false;
