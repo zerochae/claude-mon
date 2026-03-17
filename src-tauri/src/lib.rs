@@ -5,6 +5,7 @@ mod session;
 mod settings;
 mod socket_server;
 mod tmux;
+mod usage;
 mod window;
 
 use std::sync::Arc;
@@ -84,6 +85,7 @@ pub fn run() {
             commands::send_message,
             commands::get_chat_messages,
             commands::get_session_stats,
+            commands::get_claude_usage,
             settings::load_settings,
             settings::save_settings,
             window::set_vibrancy,

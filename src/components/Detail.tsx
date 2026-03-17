@@ -1,10 +1,10 @@
-import { memo } from "react";
-import { SessionState } from "@/services/tauri";
+import { memo, useEffect, useState } from "react";
+import { SessionState, getSessionStats, type SessionStats } from "@/services/tauri";
 import { getClawdColor } from "@/constants/colors";
 import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
 import { PermissionActions } from "@/components/PermissionActions";
-import { PHASE_LABELS } from "@/constants/phases";
+import { useClaudeUsage, formatResetCountdown } from "@/hooks/useClaudeUsage";
 import {
   container,
   clawdCenter,
@@ -16,9 +16,15 @@ import {
   infoLabel,
   infoValue,
   toolBadge,
-  pidValue,
   approvalSection,
   toolInputBox,
+  usageSection,
+  usageRow,
+  usageLabel,
+  usageBar,
+  usageFill,
+  usageText,
+  usageMuted,
 } from "@/styles/Detail.styles";
 
 interface DetailProps {
@@ -27,13 +33,69 @@ interface DetailProps {
   onDeny: (sessionId: string, toolUseId: string) => void;
 }
 
+function formatTokens(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return String(n);
+}
+
+function UsageBarRow({
+  label,
+  pct,
+  resetIso,
+}: {
+  label: string;
+  pct: number;
+  resetIso: string | null;
+}) {
+  const clamped = Math.min(100, Math.max(0, pct));
+  const resetStr = formatResetCountdown(resetIso);
+  return (
+    <div className={usageRow}>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <span className={usageLabel}>{label}</span>
+        <span className={usageText}>{Math.round(clamped)}% used</span>
+      </div>
+      <div className={usageBar}>
+        <div
+          className={usageFill}
+          style={{
+            width: `${clamped}%`,
+            background:
+              clamped >= 80
+                ? "var(--colors-red)"
+                : clamped >= 50
+                  ? "var(--colors-yellow)"
+                  : "var(--colors-green)",
+          }}
+        />
+      </div>
+      {resetStr && (
+        <span className={usageMuted}>Resets in {resetStr}</span>
+      )}
+    </div>
+  );
+}
+
 export const Detail = memo(function Detail({
   session,
   onApprove,
   onDeny,
 }: DetailProps) {
   const color = getClawdColor(session.color_index);
-  const phaseLabel = PHASE_LABELS[session.phase];
+  const { usage } = useClaudeUsage();
+  const [stats, setStats] = useState<SessionStats | null>(null);
+
+  useEffect(() => {
+    getSessionStats(session.session_id, session.cwd)
+      .then(setStats)
+      .catch(() => undefined);
+  }, [session.session_id, session.cwd, session.last_activity]);
+
+  const contextPct =
+    stats && stats.context_window > 0
+      ? (stats.current_context_tokens / stats.context_window) * 100
+      : null;
 
   return (
     <div className={container}>
@@ -52,10 +114,14 @@ export const Detail = memo(function Detail({
       </div>
 
       <div className={infoCard}>
-        <div className={infoRow}>
-          <span className={infoLabel}>Status</span>
-          <span className={infoValue}>{phaseLabel}</span>
-        </div>
+        {stats?.model && (
+          <div className={infoRow}>
+            <span className={infoLabel}>Model</span>
+            <span className={infoValue}>
+              {stats.model.replace("claude-", "")}
+            </span>
+          </div>
+        )}
         {session.tool_name && (
           <div className={infoRow}>
             <span className={infoLabel}>Tool</span>
@@ -64,13 +130,111 @@ export const Detail = memo(function Detail({
             </span>
           </div>
         )}
-        {session.pid && (
+        {usage?.subscriptionType && (
           <div className={infoRow}>
-            <span className={infoLabel}>PID</span>
-            <span className={pidValue}>{session.pid}</span>
+            <span className={infoLabel}>Plan</span>
+            <span className={infoValue}>
+              Claude {usage.subscriptionType}
+            </span>
+          </div>
+        )}
+        {stats && stats.message_count > 0 && (
+          <div className={infoRow}>
+            <span className={infoLabel}>Messages</span>
+            <span className={infoValue}>{stats.message_count}</span>
+          </div>
+        )}
+        {stats && stats.total_input_tokens > 0 && (
+          <div className={infoRow}>
+            <span className={infoLabel}>Tokens</span>
+            <span className={infoValue}>
+              {formatTokens(stats.total_input_tokens)} in
+              {" / "}
+              {formatTokens(stats.total_output_tokens)} out
+            </span>
+          </div>
+        )}
+        {stats && stats.total_cache_read_tokens > 0 && (
+          <div className={infoRow}>
+            <span className={infoLabel}>Cache</span>
+            <span className={infoValue}>
+              {formatTokens(stats.total_cache_read_tokens)} read
+              {stats.total_cache_write_tokens > 0 &&
+                ` / ${formatTokens(stats.total_cache_write_tokens)} write`}
+            </span>
           </div>
         )}
       </div>
+
+      {contextPct !== null && (
+        <div className={usageSection}>
+          <UsageBarRow label="Context Window" pct={contextPct} resetIso={null} />
+        </div>
+      )}
+
+      {usage && (
+        <div className={usageSection}>
+          {usage.fiveHour?.utilization !== undefined &&
+            usage.fiveHour.utilization !== null && (
+              <UsageBarRow
+                label="Session (5h)"
+                pct={usage.fiveHour.utilization}
+                resetIso={usage.fiveHour.resetsAt}
+              />
+            )}
+          {usage.sevenDay?.utilization !== undefined &&
+            usage.sevenDay.utilization !== null && (
+              <UsageBarRow
+                label="Weekly (7d)"
+                pct={usage.sevenDay.utilization}
+                resetIso={usage.sevenDay.resetsAt}
+              />
+            )}
+          {usage.sevenDaySonnet?.utilization !== undefined &&
+            usage.sevenDaySonnet.utilization !== null &&
+            usage.sevenDaySonnet.utilization > 0 && (
+              <UsageBarRow
+                label="Sonnet"
+                pct={usage.sevenDaySonnet.utilization}
+                resetIso={usage.sevenDaySonnet.resetsAt}
+              />
+            )}
+          {usage.sevenDayOpus?.utilization !== undefined &&
+            usage.sevenDayOpus.utilization !== null &&
+            usage.sevenDayOpus.utilization > 0 && (
+              <UsageBarRow
+                label="Opus"
+                pct={usage.sevenDayOpus.utilization}
+                resetIso={usage.sevenDayOpus.resetsAt}
+              />
+            )}
+          {usage.extraUsage?.isEnabled && (
+            <div className={usageRow}>
+              <div
+                style={{ display: "flex", justifyContent: "space-between" }}
+              >
+                <span className={usageLabel}>Extra Usage</span>
+                <span className={usageText}>
+                  ${((usage.extraUsage.usedCredits ?? 0) / 100).toFixed(2)}
+                  {usage.extraUsage.monthlyLimit !== null &&
+                    ` / $${(usage.extraUsage.monthlyLimit / 100).toFixed(2)}`}
+                </span>
+              </div>
+              {usage.extraUsage.utilization !== null && (
+                <div className={usageBar}>
+                  <div
+                    className={usageFill}
+                    style={{
+                      width: `${Math.min(100, usage.extraUsage.utilization)}%`,
+                      background: "var(--colors-orange)",
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {session.phase === "waiting_for_approval" && session.tool_use_id && (
         <div className={approvalSection}>

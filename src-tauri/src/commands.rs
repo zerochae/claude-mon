@@ -4,6 +4,7 @@ use crate::chat;
 use crate::session::SessionState;
 use crate::socket_server;
 use crate::tmux::{find_tmux_bin, find_tmux_target};
+use crate::usage;
 use crate::AppState;
 
 #[tauri::command]
@@ -108,4 +109,9 @@ pub async fn get_session_stats(
     cwd: String,
 ) -> Result<chat::SessionStats, String> {
     Ok(chat::parse_session_stats(&cwd, &session_id))
+}
+
+#[tauri::command]
+pub async fn get_claude_usage() -> Result<usage::ClaudeUsage, String> {
+    usage::fetch_usage().await
 }

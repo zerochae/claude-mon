@@ -92,3 +92,50 @@ export const toolInputBox = css({
   maxH: "80px",
   overflowY: "auto",
 });
+
+export const usageSection = css({
+  bg: "surfaceHover",
+  border: "0.5px solid token(colors.hairline)",
+  borderRadius: "8px",
+  padding: "10px 12px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
+  shadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+});
+
+export const usageRow = css({
+  display: "flex",
+  flexDirection: "column",
+  gap: "3px",
+});
+
+export const usageLabel = css({
+  color: "textMuted",
+  fontSize: "10px",
+  fontWeight: 500,
+});
+
+export const usageBar = css({
+  height: "4px",
+  borderRadius: "2px",
+  bg: "surfaceOverlay",
+  overflow: "hidden",
+});
+
+export const usageFill = css({
+  height: "100%",
+  borderRadius: "2px",
+  transition: "width 300ms ease",
+});
+
+export const usageText = css({
+  color: "text",
+  fontSize: "10px",
+  fontWeight: 500,
+});
+
+export const usageMuted = css({
+  color: "textMuted",
+  fontSize: "9px",
+});

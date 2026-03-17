@@ -80,6 +80,33 @@ export function getSessionStats(
   return invoke<SessionStats>("get_session_stats", { sessionId, cwd });
 }
 
+export interface UsageWindow {
+  utilization: number | null;
+  resetsAt: string | null;
+}
+
+export interface ExtraUsage {
+  isEnabled: boolean | null;
+  monthlyLimit: number | null;
+  usedCredits: number | null;
+  utilization: number | null;
+  currency: string | null;
+}
+
+export interface ClaudeUsage {
+  fiveHour: UsageWindow | null;
+  sevenDay: UsageWindow | null;
+  sevenDaySonnet: UsageWindow | null;
+  sevenDayOpus: UsageWindow | null;
+  extraUsage: ExtraUsage | null;
+  subscriptionType: string | null;
+  rateLimitTier: string | null;
+}
+
+export function getClaudeUsage(): Promise<ClaudeUsage> {
+  return invoke<ClaudeUsage>("get_claude_usage");
+}
+
 export function setVibrancy(effect: string): Promise<undefined> {
   return invoke<undefined>("set_vibrancy", { effect });
 }
