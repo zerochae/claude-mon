@@ -69,6 +69,74 @@ export async function resizeAnchored(
   await win.setSize(new LogicalSize(newWidth, newHeight));
 }
 
+export interface MonitorBounds {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  scale: number;
+}
+
+export async function getCurrentMonitorBounds(): Promise<MonitorBounds | null> {
+  const win = getCurrentWindow();
+  const monitor = await currentMonitor();
+  if (!monitor) return null;
+  const scale = await win.scaleFactor();
+  return {
+    x: monitor.position.x,
+    y: monitor.position.y,
+    w: monitor.size.width,
+    h: monitor.size.height,
+    scale,
+  };
+}
+
+export function watchDisplayChange(
+  onChange: (bounds: MonitorBounds) => void,
+): () => void {
+  const win = getCurrentWindow();
+  const unlisteners: Promise<() => void>[] = [];
+  let lastBounds: MonitorBounds | null = null;
+  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+
+  const check = async () => {
+    const bounds = await getCurrentMonitorBounds();
+    if (!bounds) return;
+    if (
+      lastBounds &&
+      (lastBounds.x !== bounds.x ||
+        lastBounds.y !== bounds.y ||
+        lastBounds.w !== bounds.w ||
+        lastBounds.h !== bounds.h ||
+        lastBounds.scale !== bounds.scale)
+    ) {
+      onChange(bounds);
+    }
+    lastBounds = bounds;
+  };
+
+  const debouncedCheck = () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(check, 200);
+  };
+
+  unlisteners.push(win.onMoved(debouncedCheck));
+  unlisteners.push(
+    win.onScaleChanged(() => {
+      void check();
+    }),
+  );
+
+  void check();
+
+  return () => {
+    clearTimeout(debounceTimer);
+    for (const p of unlisteners) {
+      p.then((fn) => fn()).catch(() => undefined);
+    }
+  };
+}
+
 export function easeOutCubic(t: number) {
   return 1 - (1 - t) ** 3;
 }

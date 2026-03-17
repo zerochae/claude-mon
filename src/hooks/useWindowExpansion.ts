@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { resizeAnchored, animateWindowSize } from "@/utils/windowManager";
 import { type WindowAnchor, type DockPosition } from "@/hooks/useSettings";
+import { useDisplayWatch } from "@/hooks/useDisplayWatch";
 
 const EXPANDED_HEIGHT = 460;
 const ANIM_MS = 250;
@@ -36,6 +37,18 @@ export function useWindowExpansion(
   const animatingRef = useRef(false);
 
   const activeWidth = expanded ? currentWidth : barWidth;
+  const currentHeight = expanded
+    ? EXPANDED_HEIGHT + barExtraHeight
+    : barHeight + barExtraHeight;
+
+  useDisplayWatch({
+    width: activeWidth,
+    height: currentHeight,
+    anchor,
+    dock,
+    dockMargin,
+    enabled: ready && !animating,
+  });
 
   useEffect(() => {
     if (!ready || animating) return;
