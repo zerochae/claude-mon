@@ -82,6 +82,8 @@ export const PermissionCard = memo(function PermissionCard({
               gap: "3px",
               fontSize: "10px",
               fontWeight: 400,
+              overflow: "hidden",
+              minWidth: 0,
             }}
           >
             <Glyph
@@ -100,7 +102,7 @@ export const PermissionCard = memo(function PermissionCard({
                 ] as { icon: string } | undefined
               )?.icon ?? "\uf15b"}
             </Glyph>
-            <span style={{ lineHeight: 1, color: "var(--colors-text-muted)" }}>
+            <span style={{ lineHeight: 1, color: "var(--colors-text-muted)", whiteSpace: "nowrap" }}>
               {displayPath}
             </span>
           </span>
