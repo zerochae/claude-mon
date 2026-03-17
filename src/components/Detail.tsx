@@ -3,7 +3,7 @@ import { SessionState, getSessionStats, type SessionStats } from "@/services/tau
 import { getClawdColor } from "@/constants/colors";
 import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
-import { PermissionActions } from "@/components/PermissionActions";
+import { PermissionCard } from "@/components/PermissionCard";
 import { useClaudeUsage, formatResetCountdown } from "@/hooks/useClaudeUsage";
 import {
   container,
@@ -15,9 +15,6 @@ import {
   infoRow,
   infoLabel,
   infoValue,
-  toolBadge,
-  approvalSection,
-  toolInputBox,
   usageSection,
   usageRow,
   usageLabel,
@@ -105,7 +102,7 @@ export const Detail = memo(function Detail({
           phase={session.phase}
           lastActivity={session.last_activity}
         />
-        <Clawd color={color} phase={session.phase} size={64} />
+        <Clawd color={color} phase={session.phase} size={48} />
       </div>
 
       <div className={projectInfo}>
@@ -119,14 +116,6 @@ export const Detail = memo(function Detail({
             <span className={infoLabel}>Model</span>
             <span className={infoValue}>
               {stats.model.replace("claude-", "")}
-            </span>
-          </div>
-        )}
-        {session.tool_name && (
-          <div className={infoRow}>
-            <span className={infoLabel}>Tool</span>
-            <span className={toolBadge} style={{ color }}>
-              {session.tool_name}
             </span>
           </div>
         )}
@@ -236,14 +225,16 @@ export const Detail = memo(function Detail({
         </div>
       )}
 
-      {session.phase === "waiting_for_approval" && session.tool_use_id && (
-        <div className={approvalSection}>
-          {session.tool_input && (
-            <div className={toolInputBox}>
-              {JSON.stringify(session.tool_input, null, 2)}
-            </div>
-          )}
-          <PermissionActions
+      {session.phase === "waiting_for_approval" &&
+        session.tool_use_id &&
+        session.tool_name && (
+          <PermissionCard
+            toolName={session.tool_name}
+            toolInput={session.tool_input}
+            projectName={session.project_name}
+            cwd={session.cwd}
+            colorIndex={session.color_index}
+            phase={session.phase}
             onAllow={() => {
               if (session.tool_use_id)
                 onApprove(session.session_id, session.tool_use_id);
@@ -253,8 +244,7 @@ export const Detail = memo(function Detail({
                 onDeny(session.session_id, session.tool_use_id);
             }}
           />
-        </div>
-      )}
+        )}
     </div>
   );
 });

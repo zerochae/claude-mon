@@ -7,6 +7,7 @@ export const container = css({
   padding: "12px 16px",
   gap: "12px",
   overflowY: "auto",
+  height: "100%",
   animation: "view-enter 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
 });
 
