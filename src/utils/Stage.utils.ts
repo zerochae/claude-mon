@@ -1,12 +1,12 @@
 import {
   CLAWD_SIZE,
-  LABEL_HEIGHT,
-  SLOT_W,
-  PAD_X,
-  PAD_Y_TOP,
-  PAD_Y_BOTTOM,
   HITBOX_X,
   HITBOX_Y,
+  LABEL_HEIGHT,
+  PAD_X,
+  PAD_Y_BOTTOM,
+  PAD_Y_TOP,
+  SLOT_W,
 } from "@/styles/Stage.styles";
 
 export interface ClawdPos2D {

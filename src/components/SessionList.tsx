@@ -1,21 +1,22 @@
 import { memo, useMemo } from "react";
-import { SessionState } from "@/services/tauri";
+
+import { Button } from "@/components/Button";
 import { getClawdColor } from "@/constants/colors";
 import { PHASE_LABELS } from "@/constants/phases";
-import { sortByPriority } from "@/utils/session.utils";
-import { Button } from "@/components/Button";
+import { SessionState } from "@/services/tauri";
 import {
-  bottomPanel,
-  statusBar,
-  sessionListScroll,
-  sessionItem,
-  priorityDot,
-  sessionContent,
-  sessionName,
-  sessionPhase,
   actionButtons,
   approvalRow,
+  bottomPanel,
+  priorityDot,
+  sessionContent,
+  sessionItem,
+  sessionListScroll,
+  sessionName,
+  sessionPhase,
+  statusBar,
 } from "@/styles/SessionList.styles";
+import { sortByPriority } from "@/utils/session.utils";
 
 interface SessionListProps {
   sessions: SessionState[];

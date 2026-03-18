@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 import prettier from "eslint-config-prettier";
 
 export default [
@@ -27,8 +28,11 @@ export default [
   {
     plugins: {
       "react-refresh": reactRefresh,
+      "simple-import-sort": simpleImportSort,
     },
     rules: {
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
@@ -55,7 +59,6 @@ export default [
       eqeqeq: ["error", "always"],
       "no-var": "error",
       "prefer-const": "error",
-      "no-duplicate-imports": "error",
     },
   },
 

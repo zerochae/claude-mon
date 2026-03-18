@@ -1,19 +1,20 @@
-import { memo } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Clawd } from "@/components/Clawd";
-import { SessionState } from "@/services/tauri";
-import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
-import { CLAWD_BAR_WANDER_MS, CLAWD_BAR_RUN_MS } from "@/hooks/useClawdBar";
+import { memo } from "react";
+
 import { Bubble } from "@/components/Bubble";
-import { useBar } from "@/hooks/useBar";
+import { Clawd } from "@/components/Clawd";
 import { SleepingZzz } from "@/components/SleepingZzz";
+import { COLOR_COUNT, getClawdColor } from "@/constants/colors";
+import { useBar } from "@/hooks/useBar";
+import { CLAWD_BAR_RUN_MS, CLAWD_BAR_WANDER_MS } from "@/hooks/useClawdBar";
+import { SessionState } from "@/services/tauri";
 import {
-  BASE_CLAWD_SIZE,
   BASE_BAR_HEIGHT,
-  MINI_BAR_CLAWD_SIZE,
-  collapsedBar,
-  clawdList,
+  BASE_CLAWD_SIZE,
   clawdItem,
+  clawdList,
+  collapsedBar,
+  MINI_BAR_CLAWD_SIZE,
   miniBarRow,
   miniBarWrap,
   sleepingWrap,
@@ -94,9 +95,7 @@ export const Bar = memo(function Bar({
                         : 1,
                   opacity: isFading || isOverflow ? 0 : 1,
                   transform:
-                    hoveredId === s.session_id
-                      ? "scale(1.25)"
-                      : undefined,
+                    hoveredId === s.session_id ? "scale(1.25)" : undefined,
                   filter:
                     hoveredId === s.session_id
                       ? `drop-shadow(0 0 6px ${getClawdColor(s.color_index)}66)`

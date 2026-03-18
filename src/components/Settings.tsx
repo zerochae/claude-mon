@@ -1,8 +1,8 @@
-import type { AppSettings } from "@/hooks/useSettings";
-import { SettingsTheme } from "@/components/Settings.Theme";
-import { SettingsColor } from "@/components/Settings.Color";
 import { SettingsAppearance } from "@/components/Settings.Appearance";
+import { SettingsColor } from "@/components/Settings.Color";
+import { SettingsTheme } from "@/components/Settings.Theme";
 import { SettingsWindow } from "@/components/Settings.Window";
+import type { AppSettings } from "@/hooks/useSettings";
 import { columnsContainer } from "@/styles/Settings.styles";
 
 interface SettingsProps {

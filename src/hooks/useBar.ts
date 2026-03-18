@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { SessionState } from "@/services/tauri";
-import { useClawdBar } from "@/hooks/useClawdBar";
-import { filterActive, activeKey } from "@/utils/session.utils";
+import { useEffect, useState } from "react";
 
+import { useClawdBar } from "@/hooks/useClawdBar";
+import { SessionState } from "@/services/tauri";
+import { activeKey, filterActive } from "@/utils/session.utils";
 
 export function useBar(sessions: SessionState[], barHeight: number) {
   const [activeSessions, setActiveSessions] = useState(() =>

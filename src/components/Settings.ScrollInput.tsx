@@ -1,4 +1,5 @@
-import { useState, useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
+
 import { scrollInputStyle } from "@/styles/Settings.styles";
 
 interface ScrollInputProps {

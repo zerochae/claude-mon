@@ -1,7 +1,8 @@
-import { useState, useCallback, useRef, useEffect } from "react";
-import { resizeAnchored, animateWindowSize } from "@/utils/windowManager";
-import { type WindowAnchor, type DockPosition } from "@/hooks/useSettings";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { useDisplayWatch } from "@/hooks/useDisplayWatch";
+import { type DockPosition, type WindowAnchor } from "@/hooks/useSettings";
+import { animateWindowSize, resizeAnchored } from "@/utils/windowManager";
 
 const EXPANDED_HEIGHT = 460;
 const ANIM_MS = 250;

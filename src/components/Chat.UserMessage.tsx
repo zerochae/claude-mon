@@ -1,6 +1,6 @@
 import { Markdown } from "@/components/Markdown";
 import { ChatMessage } from "@/services/tauri";
-import { userBubbleWrap, userBubble } from "@/styles/Chat.styles";
+import { userBubble, userBubbleWrap } from "@/styles/Chat.styles";
 
 export function UserMessage({ message }: { message: ChatMessage }) {
   const isPending = message.id.startsWith("pending-");

@@ -1,14 +1,14 @@
-import type { AppSettings } from "@/hooks/useSettings";
 import { ScrollInput } from "@/components/Settings.ScrollInput";
 import { Toggle } from "@/components/Settings.Toggle";
+import type { AppSettings } from "@/hooks/useSettings";
 import {
-  VIBRANCY_OPTIONS,
   column,
-  columnHeader,
   columnBody,
-  rowStyle,
+  columnHeader,
   rowLabel,
+  rowStyle,
   selectStyle,
+  VIBRANCY_OPTIONS,
 } from "@/styles/Settings.styles";
 
 interface SettingsAppearanceProps {

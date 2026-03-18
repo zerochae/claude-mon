@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, useCallback, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+
 import { type ChatMessage, getChatMessages } from "@/services/tauri";
 
 const PAGE_SIZE = 50;

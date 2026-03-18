@@ -1,28 +1,33 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { SessionState, getSessionStats, type SessionStats } from "@/services/tauri";
-import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
-import { Clawd } from "@/components/Clawd";
+
 import { Bubble } from "@/components/Bubble";
-import { PermissionCard } from "@/components/PermissionCard";
-import { useClaudeUsage, formatResetCountdown } from "@/hooks/useClaudeUsage";
+import { Clawd } from "@/components/Clawd";
 import { InfoChip } from "@/components/InfoChip";
+import { PermissionCard } from "@/components/PermissionCard";
 import { SleepingZzz } from "@/components/SleepingZzz";
-import { isSessionSleeping } from "@/utils/session.utils";
+import { COLOR_COUNT, getClawdColor } from "@/constants/colors";
+import { formatResetCountdown, useClaudeUsage } from "@/hooks/useClaudeUsage";
 import {
+  getSessionStats,
+  SessionState,
+  type SessionStats,
+} from "@/services/tauri";
+import {
+  clawdCenter,
   container,
   detailHeader,
-  clawdCenter,
   infoCard,
   infoRow,
   infoValue,
-  usageSection,
-  usageRow,
-  usageLabel,
   usageBar,
   usageFill,
-  usageText,
+  usageLabel,
   usageMuted,
+  usageRow,
+  usageSection,
+  usageText,
 } from "@/styles/Detail.styles";
+import { isSessionSleeping } from "@/utils/session.utils";
 
 const statsCache = new Map<string, SessionStats>();
 
@@ -74,9 +79,7 @@ function UsageBarRow({
           }}
         />
       </div>
-      {resetStr && (
-        <span className={usageMuted}>Resets in {resetStr}</span>
-      )}
+      {resetStr && <span className={usageMuted}>Resets in {resetStr}</span>}
     </div>
   );
 }
@@ -178,9 +181,7 @@ export const Detail = memo(function Detail({
         {usage?.subscriptionType && (
           <div className={infoRow}>
             <InfoChip icon="plan" value="Plan" size="md" />
-            <span className={infoValue}>
-              Claude {usage.subscriptionType}
-            </span>
+            <span className={infoValue}>Claude {usage.subscriptionType}</span>
           </div>
         )}
         {stats && stats.message_count > 0 && (
@@ -213,7 +214,11 @@ export const Detail = memo(function Detail({
 
       {contextPct !== null && (
         <div className={usageSection}>
-          <UsageBarRow label="Context Window" pct={contextPct} resetIso={null} />
+          <UsageBarRow
+            label="Context Window"
+            pct={contextPct}
+            resetIso={null}
+          />
         </div>
       )}
 
@@ -255,9 +260,7 @@ export const Detail = memo(function Detail({
             )}
           {usage.extraUsage?.isEnabled && (
             <div className={usageRow}>
-              <div
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span className={usageLabel}>Extra Usage</span>
                 <span className={usageText}>
                   ${((usage.extraUsage.usedCredits ?? 0) / 100).toFixed(2)}

@@ -1,17 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
+import type { SessionPhase } from "@/constants/phases";
 import {
-  scaled,
+  BASE_BAR_H,
+  type ClawdPos1D,
+  freeMinX,
   getMoveParams,
   hasCollision,
-  freeMinX,
-  sessionPriority,
-  resolveOverlaps,
-  BASE_BAR_H,
   PAD_L,
-  type ClawdPos1D,
+  resolveOverlaps,
+  scaled,
+  sessionPriority,
 } from "@/hooks/useClawdBar.utils";
 import type { SessionState } from "@/services/tauri";
-import type { SessionPhase } from "@/constants/phases";
 
 function makeSession(id: string, phase: SessionPhase = "idle"): SessionState {
   return {

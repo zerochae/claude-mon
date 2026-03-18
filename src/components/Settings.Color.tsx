@@ -1,17 +1,17 @@
-import type { AppSettings, ThemeName } from "@/hooks/useSettings";
 import { Button } from "@/components/Button";
-import { getThemeColor } from "@/utils/settings.utils";
+import type { AppSettings, ThemeName } from "@/hooks/useSettings";
 import {
   COLOR_OVERRIDE_KEYS,
-  column,
-  columnHeader,
-  columnBody,
-  rowStyle,
-  rowLabel,
   colorInput,
+  column,
+  columnBody,
+  columnHeader,
   hexInput,
   resetBtn,
+  rowLabel,
+  rowStyle,
 } from "@/styles/Settings.styles";
+import { getThemeColor } from "@/utils/settings.utils";
 
 interface SettingsColorProps {
   theme: ThemeName;

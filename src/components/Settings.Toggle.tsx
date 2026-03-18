@@ -1,4 +1,4 @@
-import { toggleTrack, toggleThumb } from "@/styles/Settings.styles";
+import { toggleThumb, toggleTrack } from "@/styles/Settings.styles";
 
 interface ToggleProps {
   value: boolean;

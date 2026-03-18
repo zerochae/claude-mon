@@ -1,26 +1,28 @@
-import { useState, useEffect, useRef } from "react";
-import { SessionState } from "@/services/tauri";
+import { useEffect, useRef, useState } from "react";
+
 import { ACTIVE_PHASES, type SessionPhase } from "@/constants/phases";
+import { SessionState } from "@/services/tauri";
+
 import {
   BASE_CLAWD_W,
   BASE_HITBOX_W,
   BASE_HOME_SLOT_W,
   BASE_PAD_R,
-  PAD_L,
-  FADE_OUT_MS,
-  HOME_RELEASE_MS,
-  OVERFLOW_FADE_MS,
-  RESOLVE_MS,
   type ClawdPos1D,
-  scaled,
+  FADE_OUT_MS,
+  freeMinX,
   getMoveParams,
   hasCollision,
-  freeMinX,
-  sessionPriority,
+  HOME_RELEASE_MS,
+  OVERFLOW_FADE_MS,
+  PAD_L,
+  RESOLVE_MS,
   resolveOverlaps,
+  scaled,
+  sessionPriority,
 } from "./useClawdBar.utils";
 
-export { CLAWD_BAR_WANDER_MS, CLAWD_BAR_RUN_MS } from "./useClawdBar.utils";
+export { CLAWD_BAR_RUN_MS, CLAWD_BAR_WANDER_MS } from "./useClawdBar.utils";
 
 let positionCache: Record<string, ClawdPos1D> = {};
 let homeIdsCache: string[] = [];
@@ -46,7 +48,9 @@ export function useClawdBar(sessions: SessionState[], barHeight: number) {
   const [runningId, setRunningId] = useState<string | null>(null);
   const [fadingIds, setFadingIds] = useState<Set<string>>(new Set());
   const fadingIdsRef = useRef(fadingIds);
-  useEffect(() => { fadingIdsRef.current = fadingIds; }, [fadingIds]);
+  useEffect(() => {
+    fadingIdsRef.current = fadingIds;
+  }, [fadingIds]);
   const [spawningIds, setSpawningIds] = useState<Set<string>>(new Set());
   const [overflowIds, setOverflowIds] = useState<Set<string>>(new Set());
   const homeIdsRef = useRef<string[]>(homeIdsCache);

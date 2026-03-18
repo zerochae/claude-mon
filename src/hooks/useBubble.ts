@@ -1,14 +1,16 @@
-import { useBubbleLifecycle } from "@/hooks/useBubbleLifecycle";
 import { ACTIVE_PHASES, DONE_PHASES } from "@/constants/phases";
+import { useBubbleLifecycle } from "@/hooks/useBubbleLifecycle";
 import {
-  STALE_THRESHOLD_SEC,
   DONE_VISIBLE_SEC,
   FADE_OUT_MS,
   SB_DONE_PHASES,
+  STALE_THRESHOLD_SEC,
 } from "@/styles/Bubble.styles";
 
 function getBubbleDoneSec(): number {
-  const v = getComputedStyle(document.documentElement).getPropertyValue("--bubble-done-sec").trim();
+  const v = getComputedStyle(document.documentElement)
+    .getPropertyValue("--bubble-done-sec")
+    .trim();
   return v ? Number(v) : 60;
 }
 

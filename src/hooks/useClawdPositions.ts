@@ -1,12 +1,13 @@
-import { useState, useEffect, useRef, type RefObject } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
+
 import { type SessionState } from "@/services/tauri";
 import {
   CLAWD_SIZE,
   LABEL_HEIGHT,
-  SLOT_W,
   PAD_X,
-  PAD_Y_TOP,
   PAD_Y_BOTTOM,
+  PAD_Y_TOP,
+  SLOT_W,
   WANDER_INTERVAL,
 } from "@/styles/Stage.styles";
 import {

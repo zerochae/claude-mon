@@ -1,45 +1,43 @@
-import { memo, useState, useEffect, useRef, useCallback } from "react";
-import { Clawd } from "@/components/Clawd";
-import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+
 import { Bubble } from "@/components/Bubble";
 import { Button } from "@/components/Button";
-import { Loading } from "@/components/Loading";
 import { MessageGroup } from "@/components/Chat.MessageGroup";
-import { ToolMessage } from "@/components/Chat.ToolMessage";
 import { ThinkingIndicator } from "@/components/Chat.ThinkingIndicator";
+import { ToolMessage } from "@/components/Chat.ToolMessage";
+import { Clawd } from "@/components/Clawd";
+import { InfoChip } from "@/components/InfoChip";
+import { Loading } from "@/components/Loading";
+import { SleepingZzz } from "@/components/SleepingZzz";
+import { COLOR_COUNT, getClawdColor } from "@/constants/colors";
+import { ui } from "@/constants/glyph";
 import { useChat } from "@/hooks/useChat";
 import {
-  getSessionStats,
   getGitInfo,
-  type SessionStats,
-  type SessionState,
+  getSessionStats,
   type GitInfo,
+  type SessionState,
+  type SessionStats,
 } from "@/services/tauri";
-import { InfoChip } from "@/components/InfoChip";
-import { ui } from "@/constants/glyph";
-import { SleepingZzz } from "@/components/SleepingZzz";
-import { isSessionSleeping } from "@/utils/session.utils";
 import {
-  outerContainer,
   chatHeader,
-  chatHeaderLeft,
   chatHeaderLabel,
+  chatHeaderLeft,
+  chatInput,
   chatMiniRow,
   chatMiniWrap,
-  scrollArea,
   inputBar,
-  chatInput,
+  outerContainer,
+  scrollArea,
 } from "@/styles/Chat.styles";
+import { isSessionSleeping } from "@/utils/session.utils";
 
 interface ChatProps {
   session: SessionState;
   onOpenDetail?: () => void;
 }
 
-export const Chat = memo(function Chat({
-  session,
-  onOpenDetail,
-}: ChatProps) {
+export const Chat = memo(function Chat({ session, onOpenDetail }: ChatProps) {
   const {
     session_id: sessionId,
     cwd,
@@ -84,12 +82,17 @@ export const Chat = memo(function Chat({
     if (len === prevGroupsLenRef.current) return;
     prevGroupsLenRef.current = len;
     void getSessionStats(sessionId, cwd).then(setStats);
-    void getGitInfo(cwd).then(setGit).catch(() => undefined);
+    void getGitInfo(cwd)
+      .then(setGit)
+      .catch(() => undefined);
   }, [sessionId, cwd, groups.length]);
 
   const isWaiting = phase === "waiting_for_approval" && !!toolUseId;
   const [showPendingTool, setShowPendingTool] = useState(false);
-  const togglePendingTool = useCallback(() => setShowPendingTool((p) => !p), []);
+  const togglePendingTool = useCallback(
+    () => setShowPendingTool((p) => !p),
+    [],
+  );
 
   const modelLabel =
     stats?.model
@@ -150,16 +153,20 @@ export const Chat = memo(function Chat({
           ) : null}
         </div>
         <span className={chatHeaderLabel}>
-          {modelLabel && (
-            <InfoChip icon="model" value={modelLabel} />
-          )}
+          {modelLabel && <InfoChip icon="model" value={modelLabel} />}
           {tokenPct !== null && (
             <>
               <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
               <InfoChip
                 icon="token"
                 value={`${tokenPct}%`}
-                color={tokenPct > 80 ? "var(--colors-red)" : tokenPct > 50 ? "var(--colors-yellow)" : "var(--colors-green)"}
+                color={
+                  tokenPct > 80
+                    ? "var(--colors-red)"
+                    : tokenPct > 50
+                      ? "var(--colors-yellow)"
+                      : "var(--colors-green)"
+                }
                 colorText
               />
             </>
@@ -171,10 +178,27 @@ export const Chat = memo(function Chat({
               <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
               <InfoChip icon="branch" value={git.branch} />
               {(git.changedFiles > 0 || git.added > 0 || git.removed > 0) && (
-                <span style={{ marginLeft: "4px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                  {git.added > 0 && <InfoChip icon="git_add" value={git.added} colorText />}
-                  {git.changedFiles > 0 && <InfoChip icon="git_change" value={git.changedFiles} colorText />}
-                  {git.removed > 0 && <InfoChip icon="git_remove" value={git.removed} colorText />}
+                <span
+                  style={{
+                    marginLeft: "4px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  {git.added > 0 && (
+                    <InfoChip icon="git_add" value={git.added} colorText />
+                  )}
+                  {git.changedFiles > 0 && (
+                    <InfoChip
+                      icon="git_change"
+                      value={git.changedFiles}
+                      colorText
+                    />
+                  )}
+                  {git.removed > 0 && (
+                    <InfoChip icon="git_remove" value={git.removed} colorText />
+                  )}
                 </span>
               )}
             </>
@@ -232,7 +256,9 @@ export const Chat = memo(function Chat({
                     opacity: showPendingTool ? 0.6 : 1,
                   }}
                 >
-                  <span style={{ animation: "zzz-float 2s ease-in-out infinite" }}>
+                  <span
+                    style={{ animation: "zzz-float 2s ease-in-out infinite" }}
+                  >
                     {ui.bubble_waiting_for_approval}
                   </span>
                   Requesting permission…
@@ -243,9 +269,7 @@ export const Chat = memo(function Chat({
                 {showPendingTool &&
                   groups[groups.length - 1]
                     ?.filter((m) => m.role === "tool")
-                    .map((m) => (
-                      <ToolMessage key={m.id} message={m} locked />
-                    ))}
+                    .map((m) => <ToolMessage key={m.id} message={m} locked />)}
               </>
             )}
             {isActive && !isWaiting && <ThinkingIndicator />}

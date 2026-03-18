@@ -1,23 +1,24 @@
 import { css, cva } from "@styled-system/css";
+
 import { MOTION } from "@/constants/motion";
 import type {
   AppSettings,
+  DockPosition,
   ThemeName,
   WindowAnchor,
-  DockPosition,
 } from "@/hooks/useSettings";
 import {
-  onedarkColors,
+  ayudarkColors,
+  ayulightColors,
+  blossomlightColors,
+  githubdarkColors,
+  githublightColors,
+  gruvboxdarkColors,
+  gruvboxlightColors,
   nordColors,
+  onedarkColors,
   onelightColors,
   tokyonightColors,
-  ayulightColors,
-  ayudarkColors,
-  gruvboxlightColors,
-  gruvboxdarkColors,
-  blossomlightColors,
-  githublightColors,
-  githubdarkColors,
 } from "@/theme/colorscheme";
 
 export const VIEW_WIDTH_ITEMS: {

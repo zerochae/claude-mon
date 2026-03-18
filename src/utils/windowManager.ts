@@ -1,10 +1,11 @@
 import {
+  currentMonitor,
   getCurrentWindow,
   LogicalSize,
   PhysicalPosition,
-  currentMonitor,
 } from "@tauri-apps/api/window";
-import { type WindowAnchor, type DockPosition } from "@/hooks/useSettings";
+
+import { type DockPosition, type WindowAnchor } from "@/hooks/useSettings";
 
 export async function getScreenBounds() {
   const monitor = await currentMonitor();

@@ -1,25 +1,26 @@
 import {
+  type CSSProperties,
+  useCallback,
   useEffect,
   useMemo,
-  useCallback,
   useRef,
   useState,
-  type CSSProperties,
 } from "react";
+
+import { Bar } from "@/components/Bar";
+import { Chat } from "@/components/Chat";
+import { Detail } from "@/components/Detail";
+import { ExpandedHeader } from "@/components/Header";
+import { PermissionCard } from "@/components/PermissionCard";
+import { Settings } from "@/components/Settings";
+import { Stage } from "@/components/Stage";
+import { MOTION } from "@/constants/motion";
+import { useNavigation, type View } from "@/hooks/useNavigation";
 import { useSessions } from "@/hooks/useSessions";
-import type { SessionState } from "@/services/tauri";
 import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
+import type { SessionState } from "@/services/tauri";
 import { resizeAnchored } from "@/utils/windowManager";
-import { useNavigation, type View } from "@/hooks/useNavigation";
-import { ExpandedHeader } from "@/components/Header";
-import { Bar } from "@/components/Bar";
-import { Stage } from "@/components/Stage";
-import { Detail } from "@/components/Detail";
-import { Chat } from "@/components/Chat";
-import { Settings } from "@/components/Settings";
-import { PermissionCard } from "@/components/PermissionCard";
-import { MOTION } from "@/constants/motion";
 
 const permWrapStyle: CSSProperties = {
   padding: "4px 6px 6px",
@@ -142,8 +143,7 @@ export default function App() {
   }, [expanded, currentViewWidth, setActiveWidth]);
 
   const barPermissions = !expanded ? pendingPermissions : [];
-  const chatPermissions =
-    expanded && view === "chat" ? pendingPermissions : [];
+  const chatPermissions = expanded && view === "chat" ? pendingPermissions : [];
 
   useEffect(() => {
     const el = permWrapRef.current;
@@ -202,10 +202,7 @@ export default function App() {
     ),
     chat: () =>
       selectedSession ? (
-        <Chat
-          session={selectedSession}
-          onOpenDetail={handleOpenDetail}
-        />
+        <Chat session={selectedSession} onOpenDetail={handleOpenDetail} />
       ) : null,
     detail: () =>
       selectedSession ? (
@@ -229,10 +226,22 @@ export default function App() {
       const h = contentH + HEADER_H;
       if (Math.abs(h - detailHeightRef.current) < 2) return;
       detailHeightRef.current = h;
-      resizeAnchored(activeWidth, h, settings.anchor, settings.dock, settings.dockMargin)
-        .catch(() => undefined);
+      resizeAnchored(
+        activeWidth,
+        h,
+        settings.anchor,
+        settings.dock,
+        settings.dockMargin,
+      ).catch(() => undefined);
     },
-    [resolvedView, expanded, activeWidth, settings.anchor, settings.dock, settings.dockMargin],
+    [
+      resolvedView,
+      expanded,
+      activeWidth,
+      settings.anchor,
+      settings.dock,
+      settings.dockMargin,
+    ],
   );
 
   return (

@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { Markdown } from "@/components/Markdown";
-import { ChatMessage } from "@/services/tauri";
-import { Clawd } from "@/components/Clawd";
-import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
+
 import { Button } from "@/components/Button";
+import { Clawd } from "@/components/Clawd";
+import { Markdown } from "@/components/Markdown";
+import { COLOR_COUNT, getClawdColor } from "@/constants/colors";
+import { ChatMessage } from "@/services/tauri";
 import {
-  subagentWrap,
-  subagentClickable,
   subagentBubble,
+  subagentClickable,
   subagentName,
   subagentPromptWrap,
+  subagentWrap,
 } from "@/styles/Chat.styles";
 
 interface SubagentMessageProps {

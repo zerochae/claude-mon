@@ -1,9 +1,10 @@
 import { cx } from "@styled-system/css";
+
 import {
   buttonRecipe,
-  type Variant,
-  type Size,
   type Color,
+  type Size,
+  type Variant,
 } from "@/styles/Button.styles";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

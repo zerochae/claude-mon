@@ -1,4 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
+
 import { type SessionState } from "@/services/tauri";
 
 export function useActivityDismissal(sessions: SessionState[]) {

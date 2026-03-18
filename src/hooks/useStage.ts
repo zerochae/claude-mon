@@ -1,7 +1,8 @@
-import { useState, useRef } from "react";
-import { SessionState } from "@/services/tauri";
-import { useClawdPositions } from "@/hooks/useClawdPositions";
+import { useRef, useState } from "react";
+
 import { useActivityDismissal } from "@/hooks/useActivityDismissal";
+import { useClawdPositions } from "@/hooks/useClawdPositions";
+import { SessionState } from "@/services/tauri";
 
 export function useStage(sessions: SessionState[]) {
   const containerRef = useRef<HTMLDivElement>(null);

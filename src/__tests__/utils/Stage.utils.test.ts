@@ -1,10 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import {
-  getMoveParams,
-  overlaps,
-  hasCollision,
-  resolveOverlaps2D,
   type ClawdPos2D,
+  getMoveParams,
+  hasCollision,
+  overlaps,
+  resolveOverlaps2D,
 } from "@/utils/Stage.utils";
 
 describe("getMoveParams", () => {

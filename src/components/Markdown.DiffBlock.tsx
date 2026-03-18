@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react";
 import { css } from "@styled-system/css";
-import { highlightLines } from "@/utils/shiki-highlighter";
+import { useEffect, useRef, useState } from "react";
+
 import { MONO, shikiWrapClass } from "@/styles/Markdown.styles";
+import { highlightLines } from "@/utils/shiki-highlighter";
 
 interface DiffLine {
   type: "add" | "del" | "ctx";

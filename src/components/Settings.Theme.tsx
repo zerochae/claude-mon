@@ -1,15 +1,15 @@
-import type { AppSettings, ThemeName } from "@/hooks/useSettings";
 import { Button } from "@/components/Button";
+import type { AppSettings, ThemeName } from "@/hooks/useSettings";
 import {
-  THEMES,
-  PREVIEW_KEYS,
-  column,
-  columnHeader,
-  columnBody,
-  themeButton,
-  previewStrip,
-  themeOptLabel,
   checkMark,
+  column,
+  columnBody,
+  columnHeader,
+  PREVIEW_KEYS,
+  previewStrip,
+  themeButton,
+  themeOptLabel,
+  THEMES,
 } from "@/styles/Settings.styles";
 
 interface SettingsThemeProps {

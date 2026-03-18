@@ -1,17 +1,17 @@
-import type { AppSettings } from "@/hooks/useSettings";
 import { Button } from "@/components/Button";
 import { ScrollInput } from "@/components/Settings.ScrollInput";
+import type { AppSettings } from "@/hooks/useSettings";
 import {
-  VIEW_WIDTH_ITEMS,
   ANCHOR_OPTIONS,
-  DOCK_OPTIONS,
-  column,
-  columnHeader,
-  columnBody,
-  rowStyle,
-  rowLabel,
-  anchorGroup,
   anchorBtn,
+  anchorGroup,
+  column,
+  columnBody,
+  columnHeader,
+  DOCK_OPTIONS,
+  rowLabel,
+  rowStyle,
+  VIEW_WIDTH_ITEMS,
 } from "@/styles/Settings.styles";
 
 interface SettingsWindowProps {

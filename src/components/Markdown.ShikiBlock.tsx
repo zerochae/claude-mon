@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { highlight } from "@/utils/shiki-highlighter";
+import { useEffect, useRef, useState } from "react";
+
 import { MONO, shikiWrapClass } from "@/styles/Markdown.styles";
+import { highlight } from "@/utils/shiki-highlighter";
 
 export function ShikiBlock({ code, lang }: { code: string; lang: string }) {
   const [html, setHtml] = useState<string | null>(null);

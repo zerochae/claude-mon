@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { sendMessage, type ChatMessage } from "@/services/tauri";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { useChatMessages } from "@/hooks/useChatMessages";
+import { type ChatMessage, sendMessage } from "@/services/tauri";
 import { groupMessages } from "@/utils/chat.utils";
 
 export function useChat(sessionId: string, cwd: string, phase: string) {

@@ -1,4 +1,5 @@
 import { cva } from "@styled-system/css";
+
 import { MOTION } from "@/constants/motion";
 
 export type Variant = "ghost" | "solid" | "outline";

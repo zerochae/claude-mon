@@ -1,10 +1,11 @@
 import { useEffect, useRef } from "react";
+
+import { type DockPosition, type WindowAnchor } from "@/hooks/useSettings";
 import {
-  watchDisplayChange,
-  resizeAnchored,
   type MonitorBounds,
+  resizeAnchored,
+  watchDisplayChange,
 } from "@/utils/windowManager";
-import { type WindowAnchor, type DockPosition } from "@/hooks/useSettings";
 
 interface DisplayWatchConfig {
   width: number;

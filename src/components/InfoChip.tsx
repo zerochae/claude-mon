@@ -1,4 +1,5 @@
-import { memo, type CSSProperties } from "react";
+import { type CSSProperties, memo } from "react";
+
 import { Glyph } from "@/components/Glyph";
 import { ui } from "@/constants/glyph";
 
@@ -41,7 +42,9 @@ export const InfoChip = memo(function InfoChip({
   colorText = false,
   style,
 }: InfoChipProps) {
-  const mapping = ICON_MAP[icon] as { glyph: string; color: string } | undefined;
+  const mapping = ICON_MAP[icon] as
+    | { glyph: string; color: string }
+    | undefined;
   if (!mapping) return null;
   const iconColor = color ?? mapping.color;
   const cfg = SIZE_CONFIG[size];

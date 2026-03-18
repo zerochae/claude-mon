@@ -1,5 +1,5 @@
-import { useRef, useEffect } from "react";
 import { css } from "@styled-system/css";
+import { useEffect, useRef } from "react";
 
 interface ClawdCanvasProps {
   color: string;
@@ -18,9 +18,7 @@ const LEG_OFFSETS = [
   [0, 0, 0, 0],
 ];
 
-
 const canvasStyle = css({ imageRendering: "pixelated" });
-
 
 export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -55,9 +53,16 @@ export function Clawd({ color, phase, size = 64, onClick }: ClawdCanvasProps) {
     function draw() {
       if (!ctx) return;
       const now = Date.now();
-      const animEnabled = getComputedStyle(document.documentElement).getPropertyValue("--clawd-animate").trim() !== "0";
+      const animEnabled =
+        getComputedStyle(document.documentElement)
+          .getPropertyValue("--clawd-animate")
+          .trim() !== "0";
 
-      if (isAnimating && animEnabled && now - lastLegTickRef.current >= animSpeed) {
+      if (
+        isAnimating &&
+        animEnabled &&
+        now - lastLegTickRef.current >= animSpeed
+      ) {
         legPhaseRef.current = (legPhaseRef.current + 1) % 4;
         lastLegTickRef.current = now;
       }

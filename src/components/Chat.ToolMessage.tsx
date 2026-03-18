@@ -1,19 +1,20 @@
-import { memo, useState, type CSSProperties } from "react";
 import { css } from "@styled-system/css";
-import { Markdown } from "@/components/Markdown";
+import { type CSSProperties, memo, useState } from "react";
+
+import { GitDiffBlock } from "@/components/Chat.GitDiffBlock";
 import { Glyph } from "@/components/Glyph";
-import { ChatMessage } from "@/services/tauri";
+import { Markdown } from "@/components/Markdown";
+import { extensions, ui } from "@/constants/glyph";
 import {
-  getToolIcon,
-  getToolColor,
-  getToolLabel,
-  extractFilename,
   detectBashSubtype,
+  extractFilename,
+  getToolColor,
+  getToolIcon,
+  getToolLabel,
 } from "@/constants/tools";
-import { ui, extensions } from "@/constants/glyph";
+import { ChatMessage } from "@/services/tauri";
 import { ansiToHtml, hasAnsi } from "@/utils/ansi";
 import { highlightGitOutput } from "@/utils/gitHighlight";
-import { GitDiffBlock } from "@/components/Chat.GitDiffBlock";
 
 const wrap = css({
   px: "12px",
@@ -105,9 +106,7 @@ export const ToolMessage = memo(function ToolMessage({
         onClick={toggle}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) =>
-          (e.key === "Enter" || e.key === " ") && toggle?.()
-        }
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && toggle?.()}
         style={{ color: iconColor }}
       >
         {message.tool_name === "Read" ? (

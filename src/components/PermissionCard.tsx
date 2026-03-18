@@ -1,21 +1,22 @@
 import { memo } from "react";
+
 import { Button } from "@/components/Button";
+import { Clawd } from "@/components/Clawd";
 import { Glyph } from "@/components/Glyph";
-import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
 import { DiffBlock } from "@/components/Markdown.DiffBlock";
-import { getToolIcon, getToolColor, parseMcpToolName } from "@/constants/tools";
+import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
 import { getClawdColor } from "@/constants/colors";
 import { extensions as extGlyphs } from "@/constants/glyph";
-import { Clawd } from "@/components/Clawd";
-import { extractSummary, getDisplayPath } from "@/utils/permission.utils";
+import { getToolColor, getToolIcon, parseMcpToolName } from "@/constants/tools";
 import {
+  actions,
+  badge,
   card,
   header,
-  toolLabel,
-  badge,
   summaryBox,
-  actions,
+  toolLabel,
 } from "@/styles/PermissionCard.styles";
+import { extractSummary, getDisplayPath } from "@/utils/permission.utils";
 
 interface PermissionCardProps {
   toolName: string | null;
@@ -102,7 +103,13 @@ export const PermissionCard = memo(function PermissionCard({
                 ] as { icon: string } | undefined
               )?.icon ?? "\uf15b"}
             </Glyph>
-            <span style={{ lineHeight: 1, color: "var(--colors-text-muted)", whiteSpace: "nowrap" }}>
+            <span
+              style={{
+                lineHeight: 1,
+                color: "var(--colors-text-muted)",
+                whiteSpace: "nowrap",
+              }}
+            >
               {displayPath}
             </span>
           </span>

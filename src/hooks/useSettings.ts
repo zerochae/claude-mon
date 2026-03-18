@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { invoke } from "@tauri-apps/api/core";
 import { getTheme, injectTheme, type ThemeName } from "@styled-system/themes";
-import { setVibrancy } from "@/services/tauri";
+import { invoke } from "@tauri-apps/api/core";
+import { useCallback, useEffect, useRef, useState } from "react";
+
 import { invalidateColorCache } from "@/constants/colors";
+import { setVibrancy } from "@/services/tauri";
 
 export type { ThemeName };
 
@@ -202,7 +203,16 @@ export function useSettings() {
     invalidateColorCache();
   }, [loaded, settings.colorOverrides]);
 
-  const { opacity, bgBlur, fontSize, vibrancy, accessoryMode, clawdAnimation, barStaleSec, bubbleDoneSec } = settings;
+  const {
+    opacity,
+    bgBlur,
+    fontSize,
+    vibrancy,
+    accessoryMode,
+    clawdAnimation,
+    barStaleSec,
+    bubbleDoneSec,
+  } = settings;
   const { enabled: borderEnabled, radius: borderRadius } = settings.border;
 
   useEffect(() => {

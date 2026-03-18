@@ -1,4 +1,5 @@
 import { css, cva } from "@styled-system/css";
+
 import { DONE_PHASES } from "@/constants/phases";
 
 export const STALE_THRESHOLD_SEC = 10;

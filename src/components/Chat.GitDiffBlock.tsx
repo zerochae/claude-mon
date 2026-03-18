@@ -1,7 +1,8 @@
 import { css } from "@styled-system/css";
+
+import { Glyph } from "@/components/Glyph";
 import { DiffBlock } from "@/components/Markdown.DiffBlock";
 import { extensions } from "@/constants/glyph";
-import { Glyph } from "@/components/Glyph";
 
 interface GitDiffFile {
   path: string;

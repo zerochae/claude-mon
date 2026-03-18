@@ -1,23 +1,24 @@
 import { memo } from "react";
-import { SessionState } from "@/services/tauri";
-import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
-import { Clawd } from "@/components/Clawd";
+
 import { Bubble } from "@/components/Bubble";
+import { Clawd } from "@/components/Clawd";
 import { SessionList } from "@/components/SessionList";
+import { COLOR_COUNT, getClawdColor } from "@/constants/colors";
 import { useStage } from "@/hooks/useStage";
+import { SessionState } from "@/services/tauri";
 import {
-  CLAWD_SIZE,
-  MINI_CLAWD_SIZE,
-  WANDER_INTERVAL,
-  emptyState,
-  outerContainer,
   canvas,
-  clawdSlot,
-  clawdRow,
-  spriteWrapper,
+  CLAWD_SIZE,
   clawdLabel,
+  clawdRow,
+  clawdSlot,
+  emptyState,
+  MINI_CLAWD_SIZE,
   miniClawdRow,
   miniClawdWrap,
+  outerContainer,
+  spriteWrapper,
+  WANDER_INTERVAL,
 } from "@/styles/Stage.styles";
 
 interface StageProps {

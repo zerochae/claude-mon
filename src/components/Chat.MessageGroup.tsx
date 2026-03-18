@@ -1,10 +1,11 @@
 import { memo } from "react";
-import { ChatMessage } from "@/services/tauri";
-import { UserMessage } from "@/components/Chat.UserMessage";
+
 import { AssistantMessage } from "@/components/Chat.AssistantMessage";
 import { SubagentMessage } from "@/components/Chat.SubagentMessage";
 import { ToolMessage } from "@/components/Chat.ToolMessage";
+import { UserMessage } from "@/components/Chat.UserMessage";
 import { HIDDEN_TOOLS } from "@/constants/tools";
+import { ChatMessage } from "@/services/tauri";
 import { messageGroup } from "@/styles/Chat.styles";
 
 interface MessageGroupProps {

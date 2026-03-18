@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
-import { getClaudeUsage, type ClaudeUsage } from "@/services/tauri";
+import { useCallback, useEffect, useState } from "react";
+
+import { type ClaudeUsage, getClaudeUsage } from "@/services/tauri";
 
 const STORAGE_KEY = "claude-mon:usage";
 const BASE_INTERVAL = 120_000;
@@ -27,7 +28,9 @@ let memCache: ClaudeUsage | null = loadCached();
 let lastFetchAt = 0;
 let currentDelay = BASE_INTERVAL;
 let pollingTimer: ReturnType<typeof setTimeout> | undefined;
-const subscribers = new Set<(data: ClaudeUsage | null, err: string | null) => void>();
+const subscribers = new Set<
+  (data: ClaudeUsage | null, err: string | null) => void
+>();
 
 function notifyAll(data: ClaudeUsage | null, err: string | null) {
   for (const fn of subscribers) fn(data, err);

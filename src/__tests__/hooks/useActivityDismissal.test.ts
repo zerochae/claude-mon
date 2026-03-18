@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+
+import type { SessionPhase } from "@/constants/phases";
 import { useActivityDismissal } from "@/hooks/useActivityDismissal";
 import type { SessionState } from "@/services/tauri";
-import type { SessionPhase } from "@/constants/phases";
 
 function makeSession(
   id: string,

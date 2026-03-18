@@ -1,12 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { MOCK_SESSIONS } from "@/mocks/mockSessions";
 import {
-  getSessions,
-  listenSessionUpdate,
   approvePermission,
   denyPermission,
+  getSessions,
+  listenSessionUpdate,
   SessionState,
 } from "@/services/tauri";
-import { MOCK_SESSIONS } from "@/mocks/mockSessions";
 
 const isTauri = "__TAURI_INTERNALS__" in window;
 

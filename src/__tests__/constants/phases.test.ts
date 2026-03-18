@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import {
-  PHASE_LABELS,
   ACTIVE_PHASES,
-  DONE_PHASES,
   BAR_VISIBLE_PHASES,
+  DONE_PHASES,
+  PHASE_LABELS,
   type SessionPhase,
 } from "@/constants/phases";
 

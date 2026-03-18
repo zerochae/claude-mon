@@ -1,44 +1,45 @@
 import React from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { extensions } from "@/constants/glyph";
-import { CALLOUT_ICONS_MAP } from "@/constants/callout";
-import { parseCallout, preInner } from "@/utils/markdown.utils";
-import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
+
 import { DiffBlock } from "@/components/Markdown.DiffBlock";
+import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
+import { CALLOUT_ICONS_MAP } from "@/constants/callout";
+import { extensions } from "@/constants/glyph";
 import {
-  CALLOUT_COLORS,
-  type ColorToken,
+  aStyle,
   blockquoteRecipe,
+  CALLOUT_COLORS,
+  calloutContent,
   calloutHeading,
   calloutIcon,
-  calloutContent,
-  markdownWrap,
+  type ColorToken,
+  delStyle,
+  emStyle,
   h1Style,
   h2Style,
   h3Style,
   h4Style,
   h5Style,
   h6Style,
-  pStyle,
-  strongStyle,
-  emStyle,
-  delStyle,
-  aStyle,
+  hrStyle,
   inlineCode,
-  preOuter,
   langBar,
   langIcon,
-  ulStyle,
-  olStyle,
   liStyle,
-  hrStyle,
-  tableWrap,
+  markdownWrap,
+  olStyle,
+  preOuter,
+  pStyle,
+  strongStyle,
   tableStyle,
-  trStyle,
-  thStyle,
+  tableWrap,
   tdStyle,
+  thStyle,
+  trStyle,
+  ulStyle,
 } from "@/styles/Markdown.styles";
+import { parseCallout, preInner } from "@/utils/markdown.utils";
 
 const LANG_RE = /language-([\w:]+)/;
 

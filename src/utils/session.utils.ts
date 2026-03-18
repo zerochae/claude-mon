@@ -1,8 +1,14 @@
+import {
+  ACTIVE_PHASES,
+  BAR_STALE_SEC,
+  BAR_VISIBLE_PHASES,
+} from "@/constants/phases";
 import { SessionState } from "@/services/tauri";
-import { BAR_VISIBLE_PHASES, BAR_STALE_SEC, ACTIVE_PHASES } from "@/constants/phases";
 
 function getBarStaleSec(): number {
-  const v = getComputedStyle(document.documentElement).getPropertyValue("--bar-stale-sec").trim();
+  const v = getComputedStyle(document.documentElement)
+    .getPropertyValue("--bar-stale-sec")
+    .trim();
   return v ? Number(v) : BAR_STALE_SEC;
 }
 

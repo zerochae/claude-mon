@@ -1,8 +1,9 @@
 import { memo } from "react";
-import { ProcessingSpinner, CompactingDots } from "@/components/Spinners";
-import { phaseText, wrapper, bubble, tailStyle } from "@/styles/Bubble.styles";
+
+import { CompactingDots, ProcessingSpinner } from "@/components/Spinners";
 import { ui } from "@/constants/glyph";
 import { useBubble } from "@/hooks/useBubble";
+import { bubble, phaseText, tailStyle, wrapper } from "@/styles/Bubble.styles";
 
 type BubbleVariant = "bar" | "chat" | "stage";
 type BubbleSize = "lg" | "md" | "sm";
@@ -78,16 +79,28 @@ export const Bubble = memo(function Bubble({
       return null;
   }
 
-  const isBounce = !fading && (effectivePhase === "idle" || effectivePhase === "waiting_for_input");
+  const isBounce =
+    !fading &&
+    (effectivePhase === "idle" || effectivePhase === "waiting_for_input");
 
   return (
     <div
       className={wrapper({ variant })}
-      style={scale && scale < 1 ? { transform: `scale(${scale})`, transformOrigin: "left bottom" , marginBottom: `${Math.round(10 * scale)}px` } : undefined}
+      style={
+        scale && scale < 1
+          ? {
+              transform: `scale(${scale})`,
+              transformOrigin: "left bottom",
+              marginBottom: `${Math.round(10 * scale)}px`,
+            }
+          : undefined
+      }
     >
       <div
         key={isBounce ? `bounce-${effectivePhase}` : "bubble"}
-        style={isBounce ? { animation: "bubble-bounce 2s ease-in-out" } : undefined}
+        style={
+          isBounce ? { animation: "bubble-bounce 2s ease-in-out" } : undefined
+        }
       >
         <div
           className={bubble({ variant })}

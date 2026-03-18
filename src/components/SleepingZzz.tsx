@@ -28,9 +28,21 @@ export function SleepingZzz({ size = "md" }: SleepingZzzProps) {
   const [s1, s2, s3] = SIZES[size];
   return (
     <div className={row}>
-      <span className={z} style={{ fontSize: `${s1}px`, animationDelay: "0s" }}>z</span>
-      <span className={z} style={{ fontSize: `${s2}px`, animationDelay: "0.4s" }}>z</span>
-      <span className={z} style={{ fontSize: `${s3}px`, animationDelay: "0.8s" }}>z</span>
+      <span className={z} style={{ fontSize: `${s1}px`, animationDelay: "0s" }}>
+        z
+      </span>
+      <span
+        className={z}
+        style={{ fontSize: `${s2}px`, animationDelay: "0.4s" }}
+      >
+        z
+      </span>
+      <span
+        className={z}
+        style={{ fontSize: `${s3}px`, animationDelay: "0.8s" }}
+      >
+        z
+      </span>
     </div>
   );
 }

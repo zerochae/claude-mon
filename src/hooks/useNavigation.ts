@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
-import { SessionState } from "@/services/tauri";
+import { useCallback, useState } from "react";
+
 import { type ViewWidths } from "@/hooks/useSettings";
+import { SessionState } from "@/services/tauri";
 
 export type View = "stage" | "detail" | "chat" | "settings";
 
