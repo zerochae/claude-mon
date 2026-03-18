@@ -28,12 +28,28 @@ export function useChat(sessionId: string, cwd: string, phase: string) {
 
   const groups = useMemo(() => groupMessages(allMessages), [allMessages]);
 
+  const isNearBottomRef = useRef(true);
   useEffect(() => {
-    requestAnimationFrame(() => {
-      if (scrollRef.current) {
-        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-      }
-    });
+    const el = scrollRef.current;
+    if (!el) return;
+    const handler = () => {
+      const threshold = 60;
+      isNearBottomRef.current =
+        el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+    };
+    el.addEventListener("scroll", handler, { passive: true });
+    return () => el.removeEventListener("scroll", handler);
+  }, [loading]);
+
+  useEffect(() => {
+    if (!isNearBottomRef.current) return;
+    const scroll = () => {
+      const el = scrollRef.current;
+      if (el) el.scrollTo({ top: el.scrollHeight, behavior: "instant" });
+    };
+    requestAnimationFrame(() => requestAnimationFrame(scroll));
+    const t = setTimeout(scroll, 100);
+    return () => clearTimeout(t);
   }, [loading, allMessages.length, isActive]);
 
   const canSend = phase === "waiting_for_input" && !sending;

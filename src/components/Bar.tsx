@@ -6,6 +6,7 @@ import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
 import { CLAWD_BAR_WANDER_MS, CLAWD_BAR_RUN_MS } from "@/hooks/useClawdBar";
 import { Bubble } from "@/components/Bubble";
 import { useBar } from "@/hooks/useBar";
+import { SleepingZzz } from "@/components/SleepingZzz";
 import {
   BASE_CLAWD_SIZE,
   BASE_BAR_HEIGHT,
@@ -16,11 +17,6 @@ import {
   miniBarRow,
   miniBarWrap,
   sleepingWrap,
-  zzzRow,
-  zzz,
-  zSmall,
-  zMedium,
-  zLarge,
 } from "@/styles/Bar.styles";
 
 interface BarProps {
@@ -182,11 +178,7 @@ export const Bar = memo(function Bar({
               size={clawdSize}
             />
           </div>
-          <div className={zzzRow}>
-            <span className={`${zzz} ${zSmall}`}>z</span>
-            <span className={`${zzz} ${zMedium}`}>z</span>
-            <span className={`${zzz} ${zLarge}`}>z</span>
-          </div>
+          <SleepingZzz />
         </div>
       )}
     </div>

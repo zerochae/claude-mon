@@ -5,9 +5,9 @@ import { Bubble } from "@/components/Bubble";
 import { Button } from "@/components/Button";
 import { Loading } from "@/components/Loading";
 import { MessageGroup } from "@/components/Chat.MessageGroup";
+import { ToolMessage } from "@/components/Chat.ToolMessage";
 import { ThinkingIndicator } from "@/components/Chat.ThinkingIndicator";
 import { useChat } from "@/hooks/useChat";
-import { PermissionCard } from "@/components/PermissionCard";
 import {
   getSessionStats,
   getGitInfo,
@@ -15,8 +15,10 @@ import {
   type SessionState,
   type GitInfo,
 } from "@/services/tauri";
+import { InfoChip } from "@/components/InfoChip";
 import { ui } from "@/constants/glyph";
-import { Glyph } from "@/components/Glyph";
+import { SleepingZzz } from "@/components/SleepingZzz";
+import { isSessionSleeping } from "@/utils/session.utils";
 import {
   outerContainer,
   chatHeader,
@@ -31,15 +33,11 @@ import {
 
 interface ChatProps {
   session: SessionState;
-  onApprove?: (sessionId: string, toolUseId: string) => void;
-  onDeny?: (sessionId: string, toolUseId: string) => void;
   onOpenDetail?: () => void;
 }
 
 export const Chat = memo(function Chat({
   session,
-  onApprove,
-  onDeny,
   onOpenDetail,
 }: ChatProps) {
   const {
@@ -50,8 +48,6 @@ export const Chat = memo(function Chat({
     project_name: projectName,
     last_activity: lastActivity,
     subagent_count: subagentCount,
-    tool_name: toolName,
-    tool_input: toolInput,
     tool_use_id: toolUseId,
   } = session;
   const {
@@ -92,15 +88,8 @@ export const Chat = memo(function Chat({
   }, [sessionId, cwd, groups.length]);
 
   const isWaiting = phase === "waiting_for_approval" && !!toolUseId;
-  const [showPerm, setShowPerm] = useState(false);
-  useEffect(() => {
-    if (!isWaiting) {
-      const id = requestAnimationFrame(() => setShowPerm(false));
-      return () => cancelAnimationFrame(id);
-    }
-    const t = setTimeout(() => setShowPerm(true), 300);
-    return () => clearTimeout(t);
-  }, [isWaiting]);
+  const [showPendingTool, setShowPendingTool] = useState(false);
+  const togglePendingTool = useCallback(() => setShowPendingTool((p) => !p), []);
 
   const modelLabel =
     stats?.model
@@ -123,7 +112,11 @@ export const Chat = memo(function Chat({
             size={24}
             onClick={onOpenDetail}
           />
-          <Bubble variant="chat" phase={phase} lastActivity={lastActivity} />
+          {isSessionSleeping(session) ? (
+            <SleepingZzz size="sm" />
+          ) : (
+            <Bubble variant="chat" phase={phase} lastActivity={lastActivity} />
+          )}
           {subagentCount > 0 ? (
             <div className={chatMiniRow}>
               {Array.from({ length: Math.min(subagentCount, 3) }).map(
@@ -158,68 +151,36 @@ export const Chat = memo(function Chat({
         </div>
         <span className={chatHeaderLabel}>
           {modelLabel && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
-              <Glyph size={16} color="var(--colors-blue)">{ui.agent}</Glyph>
-              {modelLabel}
-            </span>
+            <InfoChip icon="model" value={modelLabel} />
           )}
           {tokenPct !== null && (
             <>
               <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "2px", color: tokenPct > 80 ? "var(--colors-red)" : tokenPct > 50 ? "var(--colors-yellow)" : "var(--colors-green)" }}>
-                <Glyph size={16} color={tokenPct > 80 ? "var(--colors-red)" : tokenPct > 50 ? "var(--colors-yellow)" : "var(--colors-green)"}>{ui.token}</Glyph>
-                {tokenPct}%
-              </span>
+              <InfoChip
+                icon="token"
+                value={`${tokenPct}%`}
+                color={tokenPct > 80 ? "var(--colors-red)" : tokenPct > 50 ? "var(--colors-yellow)" : "var(--colors-green)"}
+                colorText
+              />
             </>
           )}
           <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
-            <Glyph size={16} color="var(--colors-red)">{ui.folder_close}</Glyph>
-            {projectName}
-          </span>
+          <InfoChip icon="project" value={projectName} />
           {git?.branch && (
             <>
               <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
-                <Glyph size={13} color="var(--colors-magenta)">{ui.gitBranch}</Glyph>
-                {git.branch}
-              </span>
+              <InfoChip icon="branch" value={git.branch} />
               {(git.changedFiles > 0 || git.added > 0 || git.removed > 0) && (
                 <span style={{ marginLeft: "4px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                  {git.added > 0 && (
-                    <span style={{ color: "var(--colors-green)", display: "inline-flex", alignItems: "center", gap: "2px" }}>
-                      <Glyph size={12} color="var(--colors-green)">{ui.git_add}</Glyph>{git.added}
-                    </span>
-                  )}
-                  {git.changedFiles > 0 && (
-                    <span style={{ color: "var(--colors-orange)", display: "inline-flex", alignItems: "center", gap: "2px" }}>
-                      <Glyph size={12} color="var(--colors-orange)">{ui.git_change}</Glyph>{git.changedFiles}
-                    </span>
-                  )}
-                  {git.removed > 0 && (
-                    <span style={{ color: "var(--colors-red)", display: "inline-flex", alignItems: "center", gap: "2px" }}>
-                      <Glyph size={12} color="var(--colors-red)">{ui.git_remove}</Glyph>{git.removed}
-                    </span>
-                  )}
+                  {git.added > 0 && <InfoChip icon="git_add" value={git.added} colorText />}
+                  {git.changedFiles > 0 && <InfoChip icon="git_change" value={git.changedFiles} colorText />}
+                  {git.removed > 0 && <InfoChip icon="git_remove" value={git.removed} colorText />}
                 </span>
               )}
             </>
           )}
         </span>
       </div>
-      {showPerm && toolUseId && (
-        <PermissionCard
-          toolName={toolName}
-          toolInput={toolInput}
-          projectName={projectName}
-          cwd={cwd}
-          colorIndex={colorIndex}
-          phase={phase}
-          hideIdentity
-          onAllow={() => onApprove?.(sessionId, toolUseId)}
-          onDeny={() => onDeny?.(sessionId, toolUseId)}
-        />
-      )}
       <div ref={scrollRef} className={scrollArea} onScroll={handleScroll}>
         {loading ? (
           <div style={{ display: "flex", flex: 1, minHeight: "100%" }}>
@@ -240,14 +201,54 @@ export const Chat = memo(function Chat({
                 ↑ scroll for more
               </div>
             )}
-            {groups.map((group) => (
-              <MessageGroup
-                key={group[0].id}
-                messages={group}
-                sessionColorIndex={colorIndex}
-              />
-            ))}
-            {isActive && <ThinkingIndicator />}
+            {groups.map((group, gi) => {
+              const isLastGroup = gi === groups.length - 1;
+              const filtered =
+                isLastGroup && isWaiting
+                  ? group.filter((m) => m.role !== "tool")
+                  : group;
+              if (filtered.length === 0) return null;
+              return (
+                <MessageGroup
+                  key={group[0].id}
+                  messages={filtered}
+                  sessionColorIndex={colorIndex}
+                />
+              );
+            })}
+            {isWaiting && (
+              <>
+                <div
+                  onClick={togglePendingTool}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    padding: "6px 12px",
+                    fontSize: "11px",
+                    color: "var(--colors-yellow)",
+                    cursor: "pointer",
+                    userSelect: "none",
+                    opacity: showPendingTool ? 0.6 : 1,
+                  }}
+                >
+                  <span style={{ animation: "zzz-float 2s ease-in-out infinite" }}>
+                    {ui.bubble_waiting_for_approval}
+                  </span>
+                  Requesting permission…
+                  <span style={{ fontSize: "9px", opacity: 0.5 }}>
+                    {showPendingTool ? "▲" : "▼"}
+                  </span>
+                </div>
+                {showPendingTool &&
+                  groups[groups.length - 1]
+                    ?.filter((m) => m.role === "tool")
+                    .map((m) => (
+                      <ToolMessage key={m.id} message={m} locked />
+                    ))}
+              </>
+            )}
+            {isActive && !isWaiting && <ThinkingIndicator />}
           </>
         )}
       </div>

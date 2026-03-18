@@ -142,12 +142,8 @@ export default function App() {
   }, [expanded, currentViewWidth, setActiveWidth]);
 
   const barPermissions = !expanded ? pendingPermissions : [];
-  const chatOtherPermissions =
-    expanded && view === "chat" && selectedSession
-      ? pendingPermissions.filter(
-          (s) => s.session_id !== selectedSession.session_id,
-        )
-      : [];
+  const chatPermissions =
+    expanded && view === "chat" ? pendingPermissions : [];
 
   useEffect(() => {
     const el = permWrapRef.current;
@@ -173,7 +169,7 @@ export default function App() {
       ro.disconnect();
       setChatPermHeight(0);
     };
-  }, [chatOtherPermissions.length]);
+  }, [chatPermissions.length]);
 
   const handleToggle = useCallback(
     () => toggleExpand(viewWidth(view)),
@@ -208,8 +204,6 @@ export default function App() {
       selectedSession ? (
         <Chat
           session={selectedSession}
-          onApprove={handleApprove}
-          onDeny={handleDeny}
           onOpenDetail={handleOpenDetail}
         />
       ) : null,
@@ -291,9 +285,9 @@ export default function App() {
           {viewContent[resolvedView]()}
         </div>
       ) : null}
-      {chatOtherPermissions.length > 0 && (
+      {chatPermissions.length > 0 && (
         <div ref={chatPermRef} style={chatPermWrapStyle}>
-          {chatOtherPermissions.map((s) => (
+          {chatPermissions.map((s) => (
             <PermissionCard
               key={s.session_id}
               toolName={s.tool_name}

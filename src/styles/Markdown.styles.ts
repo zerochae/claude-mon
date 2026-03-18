@@ -236,6 +236,7 @@ export const ulStyle = css({
     fontFamily: NERD,
     fontSize: "0.65rem",
     marginRight: "0.4rem",
+    color: "orange",
   },
 });
 

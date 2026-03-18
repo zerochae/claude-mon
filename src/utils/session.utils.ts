@@ -18,6 +18,12 @@ export function filterActive(sessions: SessionState[]) {
   );
 }
 
+export function isSessionSleeping(session: SessionState): boolean {
+  if (session.phase !== "waiting_for_input") return false;
+  const now = Math.floor(Date.now() / 1000);
+  return now - session.last_activity >= getBarStaleSec();
+}
+
 export function activeKey(sessions: SessionState[]) {
   return sessions.map((s) => `${s.session_id}:${s.phase}`).join();
 }

@@ -76,12 +76,15 @@ const ansiPre = css({
 
 export const ToolMessage = memo(function ToolMessage({
   message,
+  locked,
 }: {
   message: ChatMessage;
+  locked?: boolean;
 }) {
   const isAgent = message.tool_name === "Agent" || message.tool_name === "Task";
   const defaultOpen = message.tool_name !== "Read";
-  const [expanded, setExpanded] = useState(defaultOpen);
+  const [expanded, setExpanded] = useState(locked ?? defaultOpen);
+  const toggle = locked ? undefined : () => setExpanded(!expanded);
   const isRunning = message.tool_status === "running";
   const isError = message.tool_status === "error";
 
@@ -99,11 +102,11 @@ export const ToolMessage = memo(function ToolMessage({
     <div className={wrap}>
       <div
         className={toolHeader}
-        onClick={() => setExpanded(!expanded)}
+        onClick={toggle}
         role="button"
         tabIndex={0}
         onKeyDown={(e) =>
-          (e.key === "Enter" || e.key === " ") && setExpanded(!expanded)
+          (e.key === "Enter" || e.key === " ") && toggle?.()
         }
         style={{ color: iconColor }}
       >

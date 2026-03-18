@@ -5,15 +5,15 @@ import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
 import { PermissionCard } from "@/components/PermissionCard";
 import { useClaudeUsage, formatResetCountdown } from "@/hooks/useClaudeUsage";
-import { Glyph } from "@/components/Glyph";
-import { ui } from "@/constants/glyph";
+import { InfoChip } from "@/components/InfoChip";
+import { SleepingZzz } from "@/components/SleepingZzz";
+import { isSessionSleeping } from "@/utils/session.utils";
 import {
   container,
   detailHeader,
   clawdCenter,
   infoCard,
   infoRow,
-  infoLabel,
   infoValue,
   usageSection,
   usageRow,
@@ -126,11 +126,15 @@ export const Detail = memo(function Detail({
       <div className={detailHeader}>
         <div className={clawdCenter}>
           <Clawd color={color} phase={session.phase} size={32} />
-          <Bubble
-            variant="bar"
-            phase={session.phase}
-            lastActivity={session.last_activity}
-          />
+          {isSessionSleeping(session) ? (
+            <SleepingZzz size="sm" />
+          ) : (
+            <Bubble
+              variant="bar"
+              phase={session.phase}
+              lastActivity={session.last_activity}
+            />
+          )}
           {session.subagent_count > 0 &&
             Array.from({ length: Math.min(session.subagent_count, 3) }).map(
               (_, i) => {
@@ -156,22 +160,16 @@ export const Detail = memo(function Detail({
 
       <div className={infoCard}>
         <div className={infoRow}>
-          <span className={infoLabel}>
-            <Glyph size={10} color="var(--colors-blue)">{ui.project}</Glyph> Project
-          </span>
+          <InfoChip icon="project" value="Project" size="md" />
           <span className={infoValue}>{session.project_name}</span>
         </div>
         <div className={infoRow}>
-          <span className={infoLabel}>
-            <Glyph size={10} color="var(--colors-comment)">{ui.folder_close}</Glyph> Path
-          </span>
+          <InfoChip icon="path" value="Path" size="md" />
           <span className={infoValue}>{shortenHome(session.cwd)}</span>
         </div>
         {stats?.model && (
           <div className={infoRow}>
-            <span className={infoLabel}>
-              <Glyph size={10} color="var(--colors-magenta)">{ui.agent}</Glyph> Model
-            </span>
+            <InfoChip icon="model" value="Model" size="md" />
             <span className={infoValue}>
               {stats.model.replace("claude-", "")}
             </span>
@@ -179,9 +177,7 @@ export const Detail = memo(function Detail({
         )}
         {usage?.subscriptionType && (
           <div className={infoRow}>
-            <span className={infoLabel}>
-              <Glyph size={10} color="var(--colors-green)">{ui.tag}</Glyph> Plan
-            </span>
+            <InfoChip icon="plan" value="Plan" size="md" />
             <span className={infoValue}>
               Claude {usage.subscriptionType}
             </span>
@@ -189,17 +185,13 @@ export const Detail = memo(function Detail({
         )}
         {stats && stats.message_count > 0 && (
           <div className={infoRow}>
-            <span className={infoLabel}>
-              <Glyph size={10} color="var(--colors-cyan)">{ui.bubble_waiting_for_input}</Glyph> Messages
-            </span>
+            <InfoChip icon="messages" value="Messages" size="md" />
             <span className={infoValue}>{stats.message_count}</span>
           </div>
         )}
         {stats && stats.total_input_tokens > 0 && (
           <div className={infoRow}>
-            <span className={infoLabel}>
-              <Glyph size={10} color="var(--colors-yellow)">{ui.token}</Glyph> Tokens
-            </span>
+            <InfoChip icon="token" value="Tokens" size="md" />
             <span className={infoValue}>
               {formatTokens(stats.total_input_tokens)} in
               {" / "}
@@ -209,9 +201,7 @@ export const Detail = memo(function Detail({
         )}
         {stats && stats.total_cache_read_tokens > 0 && (
           <div className={infoRow}>
-            <span className={infoLabel}>
-              <Glyph size={10} color="var(--colors-orange)">{ui.copy}</Glyph> Cache
-            </span>
+            <InfoChip icon="cache" value="Cache" size="md" />
             <span className={infoValue}>
               {formatTokens(stats.total_cache_read_tokens)} read
               {stats.total_cache_write_tokens > 0 &&
