@@ -18,7 +18,7 @@ export const MOCK_SESSIONS: MockSession[] = [
     tty: null,
     subagent_count: 0,
     color_index: 0,
-    last_activity: now - 120000,
+    context_remaining_pct: null, context_used_tokens: null, context_max_tokens: null, last_activity: now - 120000,
   },
   {
     session_id: "mock-processing-1",
@@ -32,7 +32,7 @@ export const MOCK_SESSIONS: MockSession[] = [
     tty: null,
     subagent_count: 3,
     color_index: 1,
-    last_activity: now - 5000,
+    context_remaining_pct: null, context_used_tokens: null, context_max_tokens: null, last_activity: now - 5000,
   },
   {
     session_id: "mock-approval-1",
@@ -46,7 +46,7 @@ export const MOCK_SESSIONS: MockSession[] = [
     tty: null,
     subagent_count: 0,
     color_index: 2,
-    last_activity: now - 2000,
+    context_remaining_pct: null, context_used_tokens: null, context_max_tokens: null, last_activity: now - 2000,
   },
   {
     session_id: "mock-input-1",
@@ -60,7 +60,7 @@ export const MOCK_SESSIONS: MockSession[] = [
     tty: null,
     subagent_count: 0,
     color_index: 3,
-    last_activity: now - 30000,
+    context_remaining_pct: null, context_used_tokens: null, context_max_tokens: null, last_activity: now - 30000,
   },
   {
     session_id: "mock-compacting-1",
@@ -74,7 +74,7 @@ export const MOCK_SESSIONS: MockSession[] = [
     tty: null,
     subagent_count: 0,
     color_index: 4,
-    last_activity: now - 10000,
+    context_remaining_pct: null, context_used_tokens: null, context_max_tokens: null, last_activity: now - 10000,
   },
   {
     session_id: "mock-processing-2",
@@ -88,7 +88,7 @@ export const MOCK_SESSIONS: MockSession[] = [
     tty: null,
     subagent_count: 0,
     color_index: 5,
-    last_activity: now - 8000,
+    context_remaining_pct: null, context_used_tokens: null, context_max_tokens: null, last_activity: now - 8000,
   },
   {
     session_id: "mock-approval-2",
@@ -102,7 +102,7 @@ export const MOCK_SESSIONS: MockSession[] = [
     tty: null,
     subagent_count: 0,
     color_index: 6,
-    last_activity: now - 1000,
+    context_remaining_pct: null, context_used_tokens: null, context_max_tokens: null, last_activity: now - 1000,
   },
   {
     session_id: "mock-ended-1",
@@ -116,6 +116,6 @@ export const MOCK_SESSIONS: MockSession[] = [
     tty: null,
     subagent_count: 0,
     color_index: 7,
-    last_activity: now - 600000,
+    context_remaining_pct: null, context_used_tokens: null, context_max_tokens: null, last_activity: now - 600000,
   },
 ];

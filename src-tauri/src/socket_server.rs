@@ -25,6 +25,15 @@ pub struct HookEvent {
     pub tty: Option<String>,
     pub notification_type: Option<String>,
     pub message: Option<String>,
+    pub context_window: Option<ContextWindowInfo>,
+    pub model_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct ContextWindowInfo {
+    pub remaining_percentage: Option<f64>,
+    pub used_tokens: Option<u64>,
+    pub max_tokens: Option<u64>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

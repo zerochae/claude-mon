@@ -1,36 +1,50 @@
 import { css } from "@styled-system/css";
 
 export const container = css({
-  flex: 1,
   display: "flex",
   flexDirection: "column",
-  padding: "12px 16px",
-  gap: "12px",
-  overflowY: "auto",
-  height: "100%",
+  padding: "12px 16px 16px",
+  gap: "10px",
   animation: "view-enter 200ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+});
+
+export const detailHeader = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  pt: "4px",
 });
 
 export const clawdCenter = css({
   display: "flex",
-  flexDirection: "column",
+  flexDirection: "row",
   alignItems: "center",
-  pt: "32px",
+  gap: "2px",
+  flexShrink: 0,
 });
 
-export const projectInfo = css({ textAlign: "center" });
+export const projectInfo = css({
+  minWidth: 0,
+  flex: 1,
+  textAlign: "right",
+});
 
 export const projectName = css({
   color: "text",
-  fontSize: "15px",
+  fontSize: "13px",
   fontWeight: 600,
-  mb: "4px",
+  mb: "2px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 });
 
 export const projectCwd = css({
   color: "textMuted",
-  fontSize: "11px",
-  wordBreak: "break-all",
+  fontSize: "10px",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
 });
 
 export const infoCard = css({

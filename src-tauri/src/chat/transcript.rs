@@ -246,12 +246,10 @@ pub fn parse_transcript(cwd: &str, session_id: &str) -> Vec<ChatMessage> {
 }
 
 fn context_window_for_model(model: &str) -> u64 {
-    if model.contains("opus") {
-        200_000
-    } else if model.contains("sonnet") {
-        200_000
-    } else if model.contains("haiku") {
-        200_000
+    if model.contains("opus-4-6") || model.contains("opus-4-5") {
+        1_000_000
+    } else if model.contains("sonnet-4-6") || model.contains("sonnet-4-5") {
+        1_000_000
     } else {
         200_000
     }

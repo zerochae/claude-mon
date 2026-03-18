@@ -15,6 +15,9 @@ export interface SessionState {
   subagent_count: number;
   color_index: number;
   last_activity: number;
+  context_remaining_pct: number | null;
+  context_used_tokens: number | null;
+  context_max_tokens: number | null;
 }
 
 export function getSessions(): Promise<SessionState[]> {

@@ -107,7 +107,8 @@ fn decode_png(bytes: &[u8]) -> tauri::image::Image<'static> {
 fn setup_tray(app: &AppHandle, _session_manager: Arc<Mutex<SessionManager>>) -> tauri::Result<()> {
     let quit = MenuItemBuilder::with_id("quit", "Quit ClaudeMon").build(app)?;
     let show = MenuItemBuilder::with_id("show", "Show / Hide").build(app)?;
-    let menu = MenuBuilder::new(app).item(&show).item(&quit).build()?;
+    let devtools = MenuItemBuilder::with_id("devtools", "Open DevTools").build(app)?;
+    let menu = MenuBuilder::new(app).item(&show).item(&devtools).item(&quit).build()?;
 
     let frames: Vec<tauri::image::Image<'static>> = vec![
         decode_png(include_bytes!("../icons/tray_frame_0.png")),
@@ -136,6 +137,15 @@ fn setup_tray(app: &AppHandle, _session_manager: Arc<Mutex<SessionManager>>) -> 
                     } else {
                         let _ = window.show();
                         let _ = window.set_focus();
+                    }
+                }
+            }
+            "devtools" => {
+                if let Some(window) = app.get_webview_window("main") {
+                    if window.is_devtools_open() {
+                        window.close_devtools();
+                    } else {
+                        window.open_devtools();
                     }
                 }
             }

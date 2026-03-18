@@ -6,6 +6,8 @@ use tauri::Manager;
 
 const HOOK_SCRIPT_NAME: &str = "claude-mon-state.py";
 const HOOK_IDENTIFIER: &str = "claude-mon-state.py";
+const STATUSLINE_SCRIPT_NAME: &str = "claude-mon-statusline.py";
+const STATUSLINE_IDENTIFIER: &str = "claude-mon-statusline.py";
 
 pub fn install_hooks(app: &tauri::AppHandle) {
     let resource_path = match get_resource_path(app) {
@@ -43,6 +45,20 @@ pub fn install_hooks(app: &tauri::AppHandle) {
         Err(e) => {
             eprintln!("[hooks] copy failed: {}", e);
             return;
+        }
+    }
+
+    let statusline_resource = get_resource_path_for(app, STATUSLINE_SCRIPT_NAME);
+    if let Some(src) = statusline_resource {
+        let statusline_dest = hooks_dir.join(STATUSLINE_SCRIPT_NAME);
+        let _ = fs::remove_file(&statusline_dest);
+        if let Ok(_) = fs::copy(&src, &statusline_dest) {
+            eprintln!("[hooks] statusline copied to {:?}", statusline_dest);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                let _ = fs::set_permissions(&statusline_dest, fs::Permissions::from_mode(0o755));
+            }
         }
     }
 
@@ -109,6 +125,12 @@ fn update_settings(settings_path: &PathBuf) {
         }
     }
 
+    let statusline_cmd = format!("python3 ~/.claude/hooks/{}", STATUSLINE_SCRIPT_NAME);
+    let existing_statusline = root.get("statusline").and_then(|v| v.as_str()).unwrap_or("");
+    if !existing_statusline.contains(STATUSLINE_IDENTIFIER) {
+        root.insert("statusline".to_string(), Value::String(statusline_cmd));
+    }
+
     if let Ok(output) = serde_json::to_string_pretty(&json) {
         let _ = fs::write(settings_path, output);
     }
@@ -134,10 +156,14 @@ fn home_dir() -> PathBuf {
 }
 
 fn get_resource_path(app: &tauri::AppHandle) -> Option<PathBuf> {
+    get_resource_path_for(app, HOOK_SCRIPT_NAME)
+}
+
+fn get_resource_path_for(app: &tauri::AppHandle, name: &str) -> Option<PathBuf> {
     let bundled = app.path()
         .resource_dir()
         .ok()
-        .map(|dir| dir.join(HOOK_SCRIPT_NAME));
+        .map(|dir| dir.join(name));
 
     if let Some(ref p) = bundled {
         if p.exists() {
@@ -149,7 +175,7 @@ fn get_resource_path(app: &tauri::AppHandle) -> Option<PathBuf> {
         .resource_dir()
         .ok()
         .and_then(|dir| dir.parent().and_then(|p| p.parent()).map(|p| p.to_path_buf()))
-        .map(|dir| dir.join("resources").join(HOOK_SCRIPT_NAME));
+        .map(|dir| dir.join("resources").join(name));
 
     dev_path
 }

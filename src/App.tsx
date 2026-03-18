@@ -10,6 +10,7 @@ import { useSessions } from "@/hooks/useSessions";
 import type { SessionState } from "@/services/tauri";
 import { useSettings } from "@/hooks/useSettings";
 import { useWindowExpansion } from "@/hooks/useWindowExpansion";
+import { resizeAnchored } from "@/utils/windowManager";
 import { useNavigation, type View } from "@/hooks/useNavigation";
 import { ExpandedHeader } from "@/components/Header";
 import { Bar } from "@/components/Bar";
@@ -218,11 +219,27 @@ export default function App() {
           session={selectedSession}
           onApprove={handleApprove}
           onDeny={handleDeny}
+          onContentHeight={handleDetailHeight}
         />
       ) : null,
   };
 
   const resolvedView = view === "chat" && !selectedSession ? "stage" : view;
+
+  const detailHeightRef = useRef(0);
+
+  const handleDetailHeight = useCallback(
+    (contentH: number) => {
+      if (resolvedView !== "detail" || !expanded) return;
+      const HEADER_H = 36;
+      const h = contentH + HEADER_H;
+      if (Math.abs(h - detailHeightRef.current) < 2) return;
+      detailHeightRef.current = h;
+      resizeAnchored(activeWidth, h, settings.anchor, settings.dock, settings.dockMargin)
+        .catch(() => undefined);
+    },
+    [resolvedView, expanded, activeWidth, settings.anchor, settings.dock, settings.dockMargin],
+  );
 
   return (
     <div className="widget-container">
@@ -262,11 +279,11 @@ export default function App() {
       {expanded ? (
         <div
           style={{
-            flex: 1,
+            flex: resolvedView === "detail" ? undefined : 1,
             opacity: showContent ? 1 : 0,
             transform: showContent ? "translateY(0)" : "translateY(8px)",
             transition: `opacity ${MOTION.duration.normal} ${MOTION.easing.default}, transform ${MOTION.duration.normal} ${MOTION.easing.spring}`,
-            overflow: "hidden",
+            overflow: resolvedView === "detail" ? undefined : "hidden",
             display: "flex",
             flexDirection: "column",
           }}

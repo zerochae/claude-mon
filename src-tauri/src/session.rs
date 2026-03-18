@@ -19,6 +19,9 @@ pub struct SessionState {
     pub subagent_count: u32,
     pub color_index: usize,
     pub last_activity: u64,
+    pub context_remaining_pct: Option<f64>,
+    pub context_used_tokens: Option<u64>,
+    pub context_max_tokens: Option<u64>,
 }
 
 const NUM_COLORS: usize = 20;
@@ -75,6 +78,9 @@ impl SessionManager {
                 subagent_count: 0,
                 color_index: color,
                 last_activity: now,
+                context_remaining_pct: None,
+                context_used_tokens: None,
+                context_max_tokens: None,
             }
         });
 
@@ -144,7 +150,14 @@ impl SessionManager {
                     session.phase = "waiting_for_input".to_string();
                 }
             }
+            "statusline" => {}
             _ => {}
+        }
+
+        if let Some(ctx) = &event.context_window {
+            session.context_remaining_pct = ctx.remaining_percentage;
+            session.context_used_tokens = ctx.used_tokens;
+            session.context_max_tokens = ctx.max_tokens;
         }
 
         self.cleanup_stale_ended(60);

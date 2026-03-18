@@ -1,16 +1,16 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { SessionState, getSessionStats, type SessionStats } from "@/services/tauri";
-import { getClawdColor } from "@/constants/colors";
+import { getClawdColor, COLOR_COUNT } from "@/constants/colors";
 import { Clawd } from "@/components/Clawd";
 import { Bubble } from "@/components/Bubble";
 import { PermissionCard } from "@/components/PermissionCard";
 import { useClaudeUsage, formatResetCountdown } from "@/hooks/useClaudeUsage";
+import { Glyph } from "@/components/Glyph";
+import { ui } from "@/constants/glyph";
 import {
   container,
+  detailHeader,
   clawdCenter,
-  projectInfo,
-  projectName,
-  projectCwd,
   infoCard,
   infoRow,
   infoLabel,
@@ -24,10 +24,17 @@ import {
   usageMuted,
 } from "@/styles/Detail.styles";
 
+const statsCache = new Map<string, SessionStats>();
+
 interface DetailProps {
   session: SessionState;
   onApprove: (sessionId: string, toolUseId: string) => void;
   onDeny: (sessionId: string, toolUseId: string) => void;
+  onContentHeight?: (height: number) => void;
+}
+
+function shortenHome(path: string): string {
+  return path.replace(/^\/(?:Users|home)\/[^/]+/, "~");
 }
 
 function formatTokens(n: number): string {
@@ -78,42 +85,93 @@ export const Detail = memo(function Detail({
   session,
   onApprove,
   onDeny,
+  onContentHeight,
 }: DetailProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const color = getClawdColor(session.color_index);
   const { usage } = useClaudeUsage();
-  const [stats, setStats] = useState<SessionStats | null>(null);
+
+  useEffect(() => {
+    if (!onContentHeight) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => {
+      onContentHeight(el.offsetHeight);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [onContentHeight]);
+  const [stats, setStats] = useState<SessionStats | null>(
+    statsCache.get(session.session_id) ?? null,
+  );
 
   useEffect(() => {
     getSessionStats(session.session_id, session.cwd)
-      .then(setStats)
+      .then((data) => {
+        statsCache.set(session.session_id, data);
+        setStats(data);
+      })
       .catch(() => undefined);
   }, [session.session_id, session.cwd, session.last_activity]);
 
   const contextPct =
-    stats && stats.context_window > 0
-      ? (stats.current_context_tokens / stats.context_window) * 100
-      : null;
+    session.context_remaining_pct !== null
+      ? 100 - session.context_remaining_pct
+      : stats && stats.context_window > 0
+        ? (stats.current_context_tokens / stats.context_window) * 100
+        : null;
 
   return (
-    <div className={container}>
-      <div className={clawdCenter}>
-        <Bubble
-          variant="stage"
-          phase={session.phase}
-          lastActivity={session.last_activity}
-        />
-        <Clawd color={color} phase={session.phase} size={48} />
-      </div>
-
-      <div className={projectInfo}>
-        <div className={projectName}>{session.project_name}</div>
-        <div className={projectCwd}>{session.cwd}</div>
+    <div ref={containerRef} className={container}>
+      <div className={detailHeader}>
+        <div className={clawdCenter}>
+          <Clawd color={color} phase={session.phase} size={32} />
+          <Bubble
+            variant="bar"
+            phase={session.phase}
+            lastActivity={session.last_activity}
+          />
+          {session.subagent_count > 0 &&
+            Array.from({ length: Math.min(session.subagent_count, 3) }).map(
+              (_, i) => {
+                const miniPhases = [
+                  "processing",
+                  "compacting",
+                  "idle",
+                ] as const;
+                return (
+                  <Clawd
+                    key={i}
+                    color={getClawdColor(
+                      (session.color_index + i + 3) % COLOR_COUNT,
+                    )}
+                    phase={miniPhases[i % miniPhases.length]}
+                    size={14}
+                  />
+                );
+              },
+            )}
+        </div>
       </div>
 
       <div className={infoCard}>
+        <div className={infoRow}>
+          <span className={infoLabel}>
+            <Glyph size={10} color="var(--colors-blue)">{ui.project}</Glyph> Project
+          </span>
+          <span className={infoValue}>{session.project_name}</span>
+        </div>
+        <div className={infoRow}>
+          <span className={infoLabel}>
+            <Glyph size={10} color="var(--colors-comment)">{ui.folder_close}</Glyph> Path
+          </span>
+          <span className={infoValue}>{shortenHome(session.cwd)}</span>
+        </div>
         {stats?.model && (
           <div className={infoRow}>
-            <span className={infoLabel}>Model</span>
+            <span className={infoLabel}>
+              <Glyph size={10} color="var(--colors-magenta)">{ui.agent}</Glyph> Model
+            </span>
             <span className={infoValue}>
               {stats.model.replace("claude-", "")}
             </span>
@@ -121,7 +179,9 @@ export const Detail = memo(function Detail({
         )}
         {usage?.subscriptionType && (
           <div className={infoRow}>
-            <span className={infoLabel}>Plan</span>
+            <span className={infoLabel}>
+              <Glyph size={10} color="var(--colors-green)">{ui.tag}</Glyph> Plan
+            </span>
             <span className={infoValue}>
               Claude {usage.subscriptionType}
             </span>
@@ -129,13 +189,17 @@ export const Detail = memo(function Detail({
         )}
         {stats && stats.message_count > 0 && (
           <div className={infoRow}>
-            <span className={infoLabel}>Messages</span>
+            <span className={infoLabel}>
+              <Glyph size={10} color="var(--colors-cyan)">{ui.bubble_waiting_for_input}</Glyph> Messages
+            </span>
             <span className={infoValue}>{stats.message_count}</span>
           </div>
         )}
         {stats && stats.total_input_tokens > 0 && (
           <div className={infoRow}>
-            <span className={infoLabel}>Tokens</span>
+            <span className={infoLabel}>
+              <Glyph size={10} color="var(--colors-yellow)">{ui.token}</Glyph> Tokens
+            </span>
             <span className={infoValue}>
               {formatTokens(stats.total_input_tokens)} in
               {" / "}
@@ -145,7 +209,9 @@ export const Detail = memo(function Detail({
         )}
         {stats && stats.total_cache_read_tokens > 0 && (
           <div className={infoRow}>
-            <span className={infoLabel}>Cache</span>
+            <span className={infoLabel}>
+              <Glyph size={10} color="var(--colors-orange)">{ui.copy}</Glyph> Cache
+            </span>
             <span className={infoValue}>
               {formatTokens(stats.total_cache_read_tokens)} read
               {stats.total_cache_write_tokens > 0 &&

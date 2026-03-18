@@ -22,6 +22,9 @@ function makeSession(
     subagent_count: 0,
     color_index: 0,
     last_activity: lastActivity,
+    context_remaining_pct: null,
+    context_used_tokens: null,
+    context_max_tokens: null,
   };
 }
 

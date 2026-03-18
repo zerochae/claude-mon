@@ -19,14 +19,42 @@ pub async fn approve_permission(
     tool_use_id: String,
     state: State<'_, AppState>,
 ) -> Result<bool, String> {
-    let _ = session_id;
-    Ok(socket_server::respond_to_permission(
+    let result = socket_server::respond_to_permission(
         tool_use_id,
         "allow".to_string(),
         None,
         state.pending_permissions.clone(),
     )
-    .await)
+    .await;
+
+    if result {
+        let tty_and_pid = {
+            let sm = state.session_manager.lock().await;
+            sm.get_session(&session_id).and_then(|s| {
+                let tty = s.tty.as_ref()?;
+                if tty.starts_with("/dev/tty") || tty.starts_with("/dev/pts/") {
+                    Some((tty.clone(), s.pid))
+                } else {
+                    None
+                }
+            })
+        };
+
+        if let Some((tty_path, pid)) = tty_and_pid {
+            let _ = tokio::task::spawn_blocking(move || {
+                if let Ok(tmux) = find_tmux_bin() {
+                    if let Ok(target) = find_tmux_target(&tty_path, pid) {
+                        let _ = std::process::Command::new(&tmux)
+                            .args(["send-keys", "-t", &target, "Enter"])
+                            .output();
+                    }
+                }
+            })
+            .await;
+        }
+    }
+
+    Ok(result)
 }
 
 #[tauri::command]

@@ -27,6 +27,9 @@ function makeSession(id: string, phase: SessionPhase = "idle"): SessionState {
     subagent_count: 0,
     color_index: 0,
     last_activity: Date.now() / 1000,
+    context_remaining_pct: null,
+    context_used_tokens: null,
+    context_max_tokens: null,
   };
 }
 
