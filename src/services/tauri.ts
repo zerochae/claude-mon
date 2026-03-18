@@ -106,6 +106,17 @@ export interface ClaudeUsage {
   rateLimitTier: string | null;
 }
 
+export interface GitInfo {
+  branch: string | null;
+  added: number;
+  removed: number;
+  changedFiles: number;
+}
+
+export function getGitInfo(cwd: string): Promise<GitInfo> {
+  return invoke<GitInfo>("get_git_info", { cwd });
+}
+
 export function getClaudeUsage(): Promise<ClaudeUsage> {
   return invoke<ClaudeUsage>("get_claude_usage");
 }

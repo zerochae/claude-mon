@@ -86,6 +86,7 @@ pub fn run() {
             commands::get_chat_messages,
             commands::get_session_stats,
             commands::get_claude_usage,
+            commands::get_git_info,
             settings::load_settings,
             settings::save_settings,
             window::set_vibrancy,

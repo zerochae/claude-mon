@@ -192,14 +192,15 @@ export const chatMiniWrap = css({
 });
 
 export const chatHeaderLabel = css({
-  display: "inline-flex",
+  display: "flex",
   alignItems: "center",
+  flexWrap: "wrap",
   gap: "3px",
   fontSize: "0.72rem",
+  lineHeight: "14px",
   color: "textMuted",
   fontFamily: "inherit",
   overflow: "hidden",
-  textOverflow: "ellipsis",
   whiteSpace: "nowrap",
 });
 

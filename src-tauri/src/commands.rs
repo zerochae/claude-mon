@@ -143,3 +143,56 @@ pub async fn get_session_stats(
 pub async fn get_claude_usage() -> Result<usage::ClaudeUsage, String> {
     usage::fetch_usage().await
 }
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GitInfo {
+    pub branch: Option<String>,
+    pub added: u32,
+    pub removed: u32,
+    pub changed_files: u32,
+}
+
+#[tauri::command]
+pub async fn get_git_info(cwd: String) -> Result<GitInfo, String> {
+    tokio::task::spawn_blocking(move || {
+        let branch = std::process::Command::new("git")
+            .args(["rev-parse", "--abbrev-ref", "HEAD"])
+            .current_dir(&cwd)
+            .output()
+            .ok()
+            .filter(|o| o.status.success())
+            .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string());
+
+        let diff = std::process::Command::new("git")
+            .args(["diff", "--shortstat"])
+            .current_dir(&cwd)
+            .output()
+            .ok()
+            .filter(|o| o.status.success())
+            .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+            .unwrap_or_default();
+
+        let mut changed_files = 0u32;
+        let mut added = 0u32;
+        let mut removed = 0u32;
+
+        for part in diff.split(',') {
+            let trimmed = part.trim();
+            if trimmed.contains("file") {
+                changed_files = trimmed.split_whitespace().next()
+                    .and_then(|n| n.parse().ok()).unwrap_or(0);
+            } else if trimmed.contains("insertion") {
+                added = trimmed.split_whitespace().next()
+                    .and_then(|n| n.parse().ok()).unwrap_or(0);
+            } else if trimmed.contains("deletion") {
+                removed = trimmed.split_whitespace().next()
+                    .and_then(|n| n.parse().ok()).unwrap_or(0);
+            }
+        }
+
+        Ok(GitInfo { branch, added, removed, changed_files })
+    })
+    .await
+    .map_err(|e| format!("Join error: {}", e))?
+}

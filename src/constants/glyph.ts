@@ -71,6 +71,9 @@ export const ui = {
   project: "",
   agent: "󰚩",
   token: "󰍛",
+  git_add: "",          // nf-oct-diff_added
+  git_change: "",       // nf-oct-diff_modified
+  git_remove: "",       // nf-oct-diff_removed
 };
 
 export const extensions = {

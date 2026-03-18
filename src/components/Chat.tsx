@@ -10,8 +10,10 @@ import { useChat } from "@/hooks/useChat";
 import { PermissionCard } from "@/components/PermissionCard";
 import {
   getSessionStats,
+  getGitInfo,
   type SessionStats,
   type SessionState,
+  type GitInfo,
 } from "@/services/tauri";
 import { ui } from "@/constants/glyph";
 import { Glyph } from "@/components/Glyph";
@@ -79,12 +81,14 @@ export const Chat = memo(function Chat({
   }, [scrollRef, hasMore, loadMore]);
 
   const [stats, setStats] = useState<SessionStats | null>(null);
+  const [git, setGit] = useState<GitInfo | null>(null);
   const prevGroupsLenRef = useRef(-1);
   useEffect(() => {
     const len = groups.length;
     if (len === prevGroupsLenRef.current) return;
     prevGroupsLenRef.current = len;
     void getSessionStats(sessionId, cwd).then(setStats);
+    void getGitInfo(cwd).then(setGit).catch(() => undefined);
   }, [sessionId, cwd, groups.length]);
 
   const isWaiting = phase === "waiting_for_approval" && !!toolUseId;
@@ -153,46 +157,52 @@ export const Chat = memo(function Chat({
           ) : null}
         </div>
         <span className={chatHeaderLabel}>
-          <Glyph size={16} color="var(--colors-red)">
-            {ui.folder_close}
-          </Glyph>
-          {projectName}
           {modelLabel && (
-            <>
-              <span style={{ opacity: 0.3, margin: "0 4px" }}> </span>
-              <Glyph size={16} color="var(--colors-blue)">
-                {ui.agent}
-              </Glyph>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
+              <Glyph size={16} color="var(--colors-blue)">{ui.agent}</Glyph>
               {modelLabel}
-            </>
+            </span>
           )}
           {tokenPct !== null && (
             <>
-              <span style={{ opacity: 0.3, margin: "0 4px" }}> </span>
-              <Glyph
-                size={16}
-                color={
-                  tokenPct > 80
-                    ? "var(--colors-red, #E06C75)"
-                    : tokenPct > 50
-                      ? "var(--colors-yellow, #e5c07b)"
-                      : "var(--colors-green, #98c379)"
-                }
-              >
-                {ui.token}
-              </Glyph>
-              <span
-                style={{
-                  color:
-                    tokenPct > 80
-                      ? "var(--colors-red, #E06C75)"
-                      : tokenPct > 50
-                        ? "var(--colors-yellow, #e5c07b)"
-                        : "var(--colors-green, #98c379)",
-                }}
-              >
+              <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "2px", color: tokenPct > 80 ? "var(--colors-red)" : tokenPct > 50 ? "var(--colors-yellow)" : "var(--colors-green)" }}>
+                <Glyph size={16} color={tokenPct > 80 ? "var(--colors-red)" : tokenPct > 50 ? "var(--colors-yellow)" : "var(--colors-green)"}>{ui.token}</Glyph>
                 {tokenPct}%
               </span>
+            </>
+          )}
+          <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
+            <Glyph size={16} color="var(--colors-red)">{ui.folder_close}</Glyph>
+            {projectName}
+          </span>
+          {git?.branch && (
+            <>
+              <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
+                <Glyph size={13} color="var(--colors-magenta)">{ui.gitBranch}</Glyph>
+                {git.branch}
+              </span>
+              {(git.changedFiles > 0 || git.added > 0 || git.removed > 0) && (
+                <span style={{ marginLeft: "4px", display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  {git.added > 0 && (
+                    <span style={{ color: "var(--colors-green)", display: "inline-flex", alignItems: "center", gap: "2px" }}>
+                      <Glyph size={12} color="var(--colors-green)">{ui.git_add}</Glyph>{git.added}
+                    </span>
+                  )}
+                  {git.changedFiles > 0 && (
+                    <span style={{ color: "var(--colors-orange)", display: "inline-flex", alignItems: "center", gap: "2px" }}>
+                      <Glyph size={12} color="var(--colors-orange)">{ui.git_change}</Glyph>{git.changedFiles}
+                    </span>
+                  )}
+                  {git.removed > 0 && (
+                    <span style={{ color: "var(--colors-red)", display: "inline-flex", alignItems: "center", gap: "2px" }}>
+                      <Glyph size={12} color="var(--colors-red)">{ui.git_remove}</Glyph>{git.removed}
+                    </span>
+                  )}
+                </span>
+              )}
             </>
           )}
         </span>
