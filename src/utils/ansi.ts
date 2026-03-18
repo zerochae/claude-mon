@@ -1,9 +1,41 @@
 const ESC = "\x1b";
 
+interface SgrState {
+  bold: boolean;
+  dim: boolean;
+  italic: boolean;
+  underline: boolean;
+  fgColor: string | null;
+  bgColor: string | null;
+}
+
+function emptySgr(): SgrState {
+  return {
+    bold: false,
+    dim: false,
+    italic: false,
+    underline: false,
+    fgColor: null,
+    bgColor: null,
+  };
+}
+
+function sgrToStyle(s: SgrState): string {
+  const parts: string[] = [];
+  if (s.bold) parts.push("font-weight:bold");
+  if (s.dim) parts.push("opacity:0.7");
+  if (s.italic) parts.push("font-style:italic");
+  if (s.underline) parts.push("text-decoration:underline");
+  if (s.fgColor) parts.push(`color:${s.fgColor}`);
+  if (s.bgColor) parts.push(`background:${s.bgColor}`);
+  return parts.join(";");
+}
+
 export function ansiToHtml(input: string): string {
   let result = "";
   let i = 0;
-  let openSpans = 0;
+  let spanOpen = false;
+  const state = emptySgr();
 
   while (i < input.length) {
     if (input[i] === ESC && input[i + 1] === "[") {
@@ -15,17 +47,19 @@ export function ansiToHtml(input: string): string {
       }
       const seq = input.slice(i + 2, end);
       const codes = seq.split(";").map(Number);
-      const style = parseSgr(codes);
 
-      if (style === null) {
-        while (openSpans > 0) {
-          result += "</span>";
-          openSpans--;
-        }
-      } else if (style) {
-        result += `<span style="${style}">`;
-        openSpans++;
+      if (spanOpen) {
+        result += "</span>";
+        spanOpen = false;
       }
+
+      applySgr(state, codes);
+      const style = sgrToStyle(state);
+      if (style) {
+        result += `<span style="${style}">`;
+        spanOpen = true;
+      }
+
       i = end + 1;
     } else {
       result += escapeHtml(input[i]);
@@ -33,60 +67,57 @@ export function ansiToHtml(input: string): string {
     }
   }
 
-  while (openSpans > 0) {
-    result += "</span>";
-    openSpans--;
-  }
-
+  if (spanOpen) result += "</span>";
   return result;
 }
 
-function parseSgr(codes: number[]): string | null {
-  if (codes.length === 0 || (codes.length === 1 && codes[0] === 0)) return null;
-
-  const styles: string[] = [];
+function applySgr(state: SgrState, codes: number[]) {
   let i = 0;
-
   while (i < codes.length) {
     const c = codes[i];
 
     if (c === 0) {
-      return null;
+      Object.assign(state, emptySgr());
     } else if (c === 1) {
-      styles.push("font-weight:bold");
+      state.bold = true;
     } else if (c === 2) {
-      styles.push("opacity:0.7");
+      state.dim = true;
     } else if (c === 3) {
-      styles.push("font-style:italic");
+      state.italic = true;
     } else if (c === 4) {
-      styles.push("text-decoration:underline");
+      state.underline = true;
+    } else if (c === 22) {
+      state.bold = false;
+      state.dim = false;
+    } else if (c === 23) {
+      state.italic = false;
+    } else if (c === 24) {
+      state.underline = false;
+    } else if (c === 39) {
+      state.fgColor = null;
+    } else if (c === 49) {
+      state.bgColor = null;
     } else if (c >= 30 && c <= 37) {
-      styles.push(`color:${ansi256(c - 30)}`);
+      state.fgColor = ansi256(c - 30);
     } else if (c === 38 && codes[i + 1] === 2 && i + 4 < codes.length) {
-      styles.push(
-        `color:rgb(${clampByte(codes[i + 2])},${clampByte(codes[i + 3])},${clampByte(codes[i + 4])})`,
-      );
+      state.fgColor = `rgb(${clampByte(codes[i + 2])},${clampByte(codes[i + 3])},${clampByte(codes[i + 4])})`;
       i += 4;
     } else if (c === 38 && codes[i + 1] === 5 && i + 2 < codes.length) {
-      styles.push(`color:${ansi256(codes[i + 2])}`);
+      state.fgColor = ansi256(codes[i + 2]);
       i += 2;
     } else if (c >= 40 && c <= 47) {
-      styles.push(`background:${ansi256(c - 40)}`);
+      state.bgColor = ansi256(c - 40);
     } else if (c === 48 && codes[i + 1] === 2 && i + 4 < codes.length) {
-      styles.push(
-        `background:rgb(${clampByte(codes[i + 2])},${clampByte(codes[i + 3])},${clampByte(codes[i + 4])})`,
-      );
+      state.bgColor = `rgb(${clampByte(codes[i + 2])},${clampByte(codes[i + 3])},${clampByte(codes[i + 4])})`;
       i += 4;
     } else if (c === 48 && codes[i + 1] === 5 && i + 2 < codes.length) {
-      styles.push(`background:${ansi256(codes[i + 2])}`);
+      state.bgColor = ansi256(codes[i + 2]);
       i += 2;
     } else if (c >= 90 && c <= 97) {
-      styles.push(`color:${ansi256(c - 90 + 8)}`);
+      state.fgColor = ansi256(c - 90 + 8);
     }
     i++;
   }
-
-  return styles.length > 0 ? styles.join(";") : "";
 }
 
 const BASIC_COLORS = [
