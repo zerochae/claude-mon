@@ -255,7 +255,13 @@ export const liStyle = css({
   fontSize: "0.8rem",
 });
 
-export const hrStyle = css({ my: "0.5rem", h: "1.5px", opacity: 0.3 });
+export const hrStyle = css({
+  my: "0.5rem",
+  h: "1.5px",
+  opacity: 0.3,
+  background:
+    "linear-gradient(to right, transparent, var(--colors-text, #abb2bf), transparent)",
+});
 
 export const tableWrap = css({ overflowX: "auto", my: "0.3rem" });
 
@@ -283,3 +289,36 @@ export const thStyle = css({
 });
 
 export const tdStyle = css({ color: "text", p: "0.25rem 0.4rem" });
+
+export const hrBackground = css({
+  background:
+    "linear-gradient(to right, transparent, var(--colors-text, #abb2bf), transparent)",
+});
+
+export const diffPre = css({
+  margin: 0,
+  padding: 0,
+  background: "transparent",
+  overflowX: "auto",
+});
+
+export const diffCode = css({
+  fontFamily: MONO,
+  display: "block",
+  minWidth: "fit-content",
+});
+
+export const shikiFallbackPre = css({
+  margin: 0,
+  padding: 0,
+  background: "transparent",
+  fontSize: "0.8rem",
+  lineHeight: 1.5,
+});
+
+export const shikiFallbackCode = css({
+  fontFamily: MONO,
+  color: "var(--colors-text, #abb2bf)",
+});
+
+export const diffFallbackText = css({ color: "var(--colors-text, #abb2bf)" });

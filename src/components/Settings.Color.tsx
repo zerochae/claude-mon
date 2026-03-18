@@ -7,6 +7,7 @@ import {
   columnBody,
   columnHeader,
   hexInput,
+  overrideStar,
   resetBtn,
   rowLabel,
   rowStyle,
@@ -39,17 +40,7 @@ export function SettingsColor({
             <div key={key} className={rowStyle}>
               <span className={rowLabel}>
                 {label}
-                {isOverridden && (
-                  <span
-                    style={{
-                      color: "var(--colors-orange)",
-                      marginLeft: 3,
-                      fontSize: "9px",
-                    }}
-                  >
-                    *
-                  </span>
-                )}
+                {isOverridden && <span className={overrideStar}>*</span>}
               </span>
               <input
                 type="color"

@@ -295,3 +295,13 @@ export const themeOptLabel = cva({
 });
 
 export const checkMark = css({ color: "green", fontSize: "11px" });
+
+export const overrideStar = css({
+  color: "var(--colors-orange)",
+  marginLeft: "3px",
+  fontSize: "9px",
+});
+
+export const previewBg = css({ width: "10px", height: "16px" });
+
+export const previewColor = css({ width: "7px", height: "16px" });

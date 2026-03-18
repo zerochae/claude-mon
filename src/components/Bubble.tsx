@@ -1,18 +1,10 @@
 import { memo } from "react";
 
 import { CompactingDots, ProcessingSpinner } from "@/components/Spinners";
+import { type BubbleVariant, VARIANT_SIZE } from "@/constants/bubble";
 import { ui } from "@/constants/glyph";
 import { useBubble } from "@/hooks/useBubble";
 import { bubble, phaseText, tailStyle, wrapper } from "@/styles/Bubble.styles";
-
-type BubbleVariant = "bar" | "chat" | "stage";
-type BubbleSize = "lg" | "md" | "sm";
-
-const VARIANT_SIZE: Record<BubbleVariant, BubbleSize> = {
-  bar: "lg",
-  chat: "sm",
-  stage: "md",
-};
 
 interface BubbleProps {
   variant: BubbleVariant;

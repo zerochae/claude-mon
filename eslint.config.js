@@ -4,9 +4,12 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
 import prettier from "eslint-config-prettier";
+import noTypesInTsx from "./eslint-rules/no-types-in-tsx.js";
+import noConstantsInTsx from "./eslint-rules/no-constants-in-tsx.js";
+import noInlineStyleInTsx from "./eslint-rules/no-inline-style-in-tsx.js";
 
 export default [
-  { ignores: ["dist", "src-tauri", "styled-system", "eslint.config.js"] },
+  { ignores: ["dist", "src-tauri", "styled-system", "eslint.config.js", "eslint-rules"] },
 
   js.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
@@ -29,10 +32,21 @@ export default [
     plugins: {
       "react-refresh": reactRefresh,
       "simple-import-sort": simpleImportSort,
+      "local": {
+        rules: {
+          "no-types-in-tsx": noTypesInTsx,
+          "no-constants-in-tsx": noConstantsInTsx,
+          "no-inline-style-in-tsx": noInlineStyleInTsx,
+        },
+      },
     },
     rules: {
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
+      "local/no-types-in-tsx": "warn",
+      "local/no-constants-in-tsx": "warn",
+      "local/no-inline-style-in-tsx": "warn",
+      "max-lines": ["warn", { max: 300, skipBlankLines: true, skipComments: true }],
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },

@@ -15,34 +15,30 @@ const z = css({
   lineHeight: 1,
 });
 
+const zStyles: Record<"sm" | "md", [string, string, string]> = {
+  sm: [
+    css({ fontSize: "6px", animationDelay: "0s" }),
+    css({ fontSize: "8px", animationDelay: "0.4s" }),
+    css({ fontSize: "10px", animationDelay: "0.8s" }),
+  ],
+  md: [
+    css({ fontSize: "7px", animationDelay: "0s" }),
+    css({ fontSize: "9px", animationDelay: "0.4s" }),
+    css({ fontSize: "11px", animationDelay: "0.8s" }),
+  ],
+};
+
 interface SleepingZzzProps {
   size?: "sm" | "md";
 }
 
-const SIZES = {
-  sm: [6, 8, 10],
-  md: [7, 9, 11],
-};
-
 export function SleepingZzz({ size = "md" }: SleepingZzzProps) {
-  const [s1, s2, s3] = SIZES[size];
+  const [c1, c2, c3] = zStyles[size];
   return (
     <div className={row}>
-      <span className={z} style={{ fontSize: `${s1}px`, animationDelay: "0s" }}>
-        z
-      </span>
-      <span
-        className={z}
-        style={{ fontSize: `${s2}px`, animationDelay: "0.4s" }}
-      >
-        z
-      </span>
-      <span
-        className={z}
-        style={{ fontSize: `${s3}px`, animationDelay: "0.8s" }}
-      >
-        z
-      </span>
+      <span className={`${z} ${c1}`}>z</span>
+      <span className={`${z} ${c2}`}>z</span>
+      <span className={`${z} ${c3}`}>z</span>
     </div>
   );
 }

@@ -6,6 +6,8 @@ import {
   columnBody,
   columnHeader,
   PREVIEW_KEYS,
+  previewBg,
+  previewColor,
   previewStrip,
   themeButton,
   themeOptLabel,
@@ -24,21 +26,20 @@ export function SettingsTheme({ theme, onUpdate }: SettingsThemeProps) {
       <div className={columnBody}>
         {THEMES.map(({ name, label, colors }) => {
           const isActive = name === theme;
+          const stripStyle = { border: `1px solid ${colors.border}` };
           return (
             <Button
               key={name}
               onClick={() => onUpdate({ theme: name })}
               className={themeButton({ active: isActive })}
             >
-              <div
-                className={previewStrip}
-                style={{ border: `1px solid ${colors.border}` }}
-              >
-                <div style={{ width: 10, height: 16, background: colors.bg }} />
+              <div className={previewStrip} style={stripStyle}>
+                <div className={previewBg} style={{ background: colors.bg }} />
                 {PREVIEW_KEYS.map((key) => (
                   <div
                     key={key}
-                    style={{ width: 7, height: 16, background: colors[key] }}
+                    className={previewColor}
+                    style={{ background: colors[key] }}
                   />
                 ))}
               </div>

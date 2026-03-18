@@ -1,7 +1,12 @@
 import { css } from "@styled-system/css";
 import { useEffect, useRef, useState } from "react";
 
-import { MONO, shikiWrapClass } from "@/styles/Markdown.styles";
+import {
+  diffCode,
+  diffFallbackText,
+  diffPre,
+  shikiWrapClass,
+} from "@/styles/Markdown.styles";
 import { highlightLines } from "@/utils/shiki-highlighter";
 
 interface DiffLine {
@@ -65,21 +70,8 @@ export function DiffBlock({ code, lang }: { code: string; lang: string }) {
 
   return (
     <div className={shikiWrapClass}>
-      <pre
-        style={{
-          margin: 0,
-          padding: 0,
-          background: "transparent",
-          overflowX: "auto",
-        }}
-      >
-        <code
-          style={{
-            fontFamily: MONO,
-            display: "block",
-            minWidth: "fit-content",
-          }}
-        >
+      <pre className={diffPre}>
+        <code className={diffCode}>
           {lines.map((line, i) => {
             const bgClass =
               line.type === "add" ? addBg : line.type === "del" ? delBg : "";
@@ -98,9 +90,7 @@ export function DiffBlock({ code, lang }: { code: string; lang: string }) {
                 {hlLines?.[i] !== undefined ? (
                   <span dangerouslySetInnerHTML={{ __html: hlLines[i] }} />
                 ) : (
-                  <span style={{ color: "var(--colors-text, #abb2bf)" }}>
-                    {line.code}
-                  </span>
+                  <span className={diffFallbackText}>{line.code}</span>
                 )}
               </span>
             );

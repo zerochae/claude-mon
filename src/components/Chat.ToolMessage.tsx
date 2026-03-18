@@ -4,7 +4,7 @@ import { type CSSProperties, memo, useState } from "react";
 import { GitDiffBlock } from "@/components/Chat.GitDiffBlock";
 import { Glyph } from "@/components/Glyph";
 import { Markdown } from "@/components/Markdown";
-import { extensions, ui } from "@/constants/glyph";
+import { extensions, NERD, ui } from "@/constants/glyph";
 import {
   detectBashSubtype,
   extractFilename,
@@ -134,9 +134,7 @@ export const ToolMessage = memo(function ToolMessage({
           </>
         )}
         {message.tool_name !== "Read" && (
-          <span style={{ fontSize: "8px", opacity: 0.5, marginLeft: "2px" }}>
-            {expanded ? "▼" : "▶"}
-          </span>
+          <span style={arrowStyle}>{expanded ? "▼" : "▶"}</span>
         )}
       </div>
       {expanded && !isAgent && (
@@ -182,8 +180,6 @@ export const ToolMessage = memo(function ToolMessage({
     </div>
   );
 });
-
-const NERD = "'SpaceMonoNerd'";
 
 const readLabelStyle: CSSProperties = { fontSize: "0.72rem", opacity: 0.6 };
 const readFilenameStyle: CSSProperties = {

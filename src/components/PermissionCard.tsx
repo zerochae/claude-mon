@@ -9,10 +9,16 @@ import { getClawdColor } from "@/constants/colors";
 import { extensions as extGlyphs } from "@/constants/glyph";
 import { getToolColor, getToolIcon, parseMcpToolName } from "@/constants/tools";
 import {
+  actionButton,
   actions,
   badge,
   card,
+  descriptionText,
+  filePathRow,
+  filePathText,
   header,
+  identityLabel,
+  identityRow,
   summaryBox,
   toolLabel,
 } from "@/styles/PermissionCard.styles";
@@ -51,19 +57,9 @@ export const PermissionCard = memo(function PermissionCard({
   return (
     <div className={card}>
       {!hideIdentity && (
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+        <div className={identityRow}>
           <Clawd color={getClawdColor(colorIndex)} phase={phase} size={16} />
-          {projectName && (
-            <span
-              style={{
-                fontSize: "10px",
-                color: "var(--colors-text-muted)",
-                fontWeight: 500,
-              }}
-            >
-              {projectName}
-            </span>
-          )}
+          {projectName && <span className={identityLabel}>{projectName}</span>}
         </div>
       )}
       <div className={header}>
@@ -75,18 +71,7 @@ export const PermissionCard = memo(function PermissionCard({
         </span>
         <span className={badge}>PERMISSION</span>
         {filePath && displayPath && (
-          <span
-            style={{
-              marginLeft: "auto",
-              display: "flex",
-              alignItems: "center",
-              gap: "3px",
-              fontSize: "10px",
-              fontWeight: 400,
-              overflow: "hidden",
-              minWidth: 0,
-            }}
-          >
+          <span className={filePathRow}>
             <Glyph
               size={10}
               color={
@@ -103,30 +88,12 @@ export const PermissionCard = memo(function PermissionCard({
                 ] as { icon: string } | undefined
               )?.icon ?? "\uf15b"}
             </Glyph>
-            <span
-              style={{
-                lineHeight: 1,
-                color: "var(--colors-text-muted)",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {displayPath}
-            </span>
+            <span className={filePathText}>{displayPath}</span>
           </span>
         )}
       </div>
 
-      {description && (
-        <span
-          style={{
-            fontSize: "10px",
-            color: "var(--colors-text-muted)",
-            lineHeight: 1.4,
-          }}
-        >
-          {description}
-        </span>
-      )}
+      {description && <span className={descriptionText}>{description}</span>}
 
       {summary && (
         <div className={summaryBox}>
@@ -143,7 +110,7 @@ export const PermissionCard = memo(function PermissionCard({
           variant="outline"
           size="sm"
           onClick={onDeny}
-          style={{ flex: 1 }}
+          className={actionButton}
         >
           Deny
         </Button>
@@ -152,7 +119,7 @@ export const PermissionCard = memo(function PermissionCard({
           size="sm"
           color="success"
           onClick={onAllow}
-          style={{ flex: 1 }}
+          className={actionButton}
         >
           Allow
         </Button>

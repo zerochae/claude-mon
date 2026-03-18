@@ -232,6 +232,58 @@ export const inputBar = css({
   flexShrink: 0,
 });
 
+export const loadingWrap = css({
+  display: "flex",
+  flex: 1,
+  minHeight: "100%",
+});
+
+export const hasMoreIndicator = css({
+  textAlign: "center",
+  padding: "6px",
+  fontSize: "10px",
+  color: "var(--colors-textMuted, #848992)",
+  opacity: 0.6,
+});
+
+export const pendingToolRow = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+  padding: "6px 12px",
+  fontSize: "11px",
+  color: "var(--colors-yellow)",
+  cursor: "pointer",
+  userSelect: "none",
+});
+
+export const pendingToolIcon = css({
+  animation: "zzz-float 2s ease-in-out infinite",
+});
+
+export const pendingToolArrow = css({
+  fontSize: "9px",
+  opacity: 0.5,
+});
+
+export const errorBar = css({
+  padding: "2px 8px",
+  color: "var(--colors-red, #E06C75)",
+  fontSize: "11px",
+});
+
+export const dividerDot = css({
+  opacity: 0.3,
+  margin: "0 3px",
+});
+
+export const gitDiffWrap = css({
+  marginLeft: "4px",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "4px",
+});
+
 export const chatInput = css({
   flex: 1,
   bg: "surfaceOverlay",

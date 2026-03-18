@@ -1,6 +1,6 @@
 import { css } from "@styled-system/css";
 
-const FRAMES = ["󰪞", "󰪟", "󰪠", "󰪢", "󰪣", "󰪤", "󰪥"];
+import { FRAMES } from "@/constants/loading";
 
 const wrapper = css({
   display: "flex",
@@ -8,6 +8,27 @@ const wrapper = css({
   justifyContent: "center",
   flex: 1,
   userSelect: "none",
+});
+
+const glyphOuter = css({
+  overflow: "hidden",
+  height: "1em",
+  lineHeight: "1em",
+  fontFamily: "SpaceMonoNerd",
+  fontSize: "24px",
+  color: "var(--colors-magenta, #c678dd)",
+});
+
+const glyphStrip = css({
+  animation: `glyph-strip 800ms steps(${FRAMES.length}) infinite`,
+  willChange: "transform",
+});
+
+const glyphFrame = css({
+  height: "1em",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 });
 
 export function Loading() {
@@ -19,32 +40,10 @@ export function Loading() {
           100% { transform: translateY(-${FRAMES.length}em); }
         }
       `}</style>
-      <div
-        style={{
-          overflow: "hidden",
-          height: "1em",
-          lineHeight: "1em",
-          fontFamily: "SpaceMonoNerd",
-          fontSize: "24px",
-          color: "var(--colors-magenta, #c678dd)",
-        }}
-      >
-        <div
-          style={{
-            animation: `glyph-strip 800ms steps(${FRAMES.length}) infinite`,
-            willChange: "transform",
-          }}
-        >
+      <div className={glyphOuter}>
+        <div className={glyphStrip}>
           {FRAMES.map((f, i) => (
-            <div
-              key={i}
-              style={{
-                height: "1em",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+            <div key={i} className={glyphFrame}>
               {f}
             </div>
           ))}

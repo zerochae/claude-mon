@@ -6,6 +6,7 @@ import { DiffBlock } from "@/components/Markdown.DiffBlock";
 import { ShikiBlock } from "@/components/Markdown.ShikiBlock";
 import { CALLOUT_ICONS_MAP } from "@/constants/callout";
 import { extensions } from "@/constants/glyph";
+import { LANG_RE } from "@/constants/markdown";
 import {
   aStyle,
   blockquoteRecipe,
@@ -40,8 +41,6 @@ import {
   ulStyle,
 } from "@/styles/Markdown.styles";
 import { parseCallout, preInner } from "@/utils/markdown.utils";
-
-const LANG_RE = /language-([\w:]+)/;
 
 interface MarkdownProps {
   content: string;
@@ -155,15 +154,7 @@ const components: Components = {
       </blockquote>
     );
   },
-  hr: () => (
-    <div
-      className={hrStyle}
-      style={{
-        background:
-          "linear-gradient(to right, transparent, var(--colors-text, #abb2bf), transparent)",
-      }}
-    />
-  ),
+  hr: () => <div className={hrStyle} />,
   table: ({ node: _, ...rest }) => (
     <div className={tableWrap}>
       <table className={tableStyle} {...rest} />

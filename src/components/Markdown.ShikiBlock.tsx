@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
-import { MONO, shikiWrapClass } from "@/styles/Markdown.styles";
+import {
+  shikiFallbackCode,
+  shikiFallbackPre,
+  shikiWrapClass,
+} from "@/styles/Markdown.styles";
 import { highlight } from "@/utils/shiki-highlighter";
 
 export function ShikiBlock({ code, lang }: { code: string; lang: string }) {
@@ -32,18 +36,8 @@ export function ShikiBlock({ code, lang }: { code: string; lang: string }) {
   }
 
   return (
-    <pre
-      style={{
-        margin: 0,
-        padding: 0,
-        background: "transparent",
-        fontSize: "0.8rem",
-        lineHeight: 1.5,
-      }}
-    >
-      <code style={{ fontFamily: MONO, color: "var(--colors-text, #abb2bf)" }}>
-        {code}
-      </code>
+    <pre className={shikiFallbackPre}>
+      <code className={shikiFallbackCode}>{code}</code>
     </pre>
   );
 }

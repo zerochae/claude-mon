@@ -154,3 +154,13 @@ export const usageMuted = css({
   color: "textMuted",
   fontSize: "9px",
 });
+
+export const usageBarSpread = css({
+  display: "flex",
+  justifyContent: "space-between",
+});
+
+export const extraUsageSpread = css({
+  display: "flex",
+  justifyContent: "space-between",
+});

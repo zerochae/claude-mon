@@ -26,8 +26,16 @@ import {
   chatInput,
   chatMiniRow,
   chatMiniWrap,
+  dividerDot,
+  errorBar,
+  gitDiffWrap,
+  hasMoreIndicator,
   inputBar,
+  loadingWrap,
   outerContainer,
+  pendingToolArrow,
+  pendingToolIcon,
+  pendingToolRow,
   scrollArea,
 } from "@/styles/Chat.styles";
 import { isSessionSleeping } from "@/utils/session.utils";
@@ -156,7 +164,7 @@ export const Chat = memo(function Chat({ session, onOpenDetail }: ChatProps) {
           {modelLabel && <InfoChip icon="model" value={modelLabel} />}
           {tokenPct !== null && (
             <>
-              <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
+              <span className={dividerDot}> </span>
               <InfoChip
                 icon="token"
                 value={`${tokenPct}%`}
@@ -171,21 +179,14 @@ export const Chat = memo(function Chat({ session, onOpenDetail }: ChatProps) {
               />
             </>
           )}
-          <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
+          <span className={dividerDot}> </span>
           <InfoChip icon="project" value={projectName} />
           {git?.branch && (
             <>
-              <span style={{ opacity: 0.3, margin: "0 3px" }}> </span>
+              <span className={dividerDot}> </span>
               <InfoChip icon="branch" value={git.branch} />
               {(git.changedFiles > 0 || git.added > 0 || git.removed > 0) && (
-                <span
-                  style={{
-                    marginLeft: "4px",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
+                <span className={gitDiffWrap}>
                   {git.added > 0 && (
                     <InfoChip icon="git_add" value={git.added} colorText />
                   )}
@@ -207,23 +208,13 @@ export const Chat = memo(function Chat({ session, onOpenDetail }: ChatProps) {
       </div>
       <div ref={scrollRef} className={scrollArea} onScroll={handleScroll}>
         {loading ? (
-          <div style={{ display: "flex", flex: 1, minHeight: "100%" }}>
+          <div className={loadingWrap}>
             <Loading />
           </div>
         ) : (
           <>
             {hasMore && (
-              <div
-                style={{
-                  textAlign: "center",
-                  padding: "6px",
-                  fontSize: "10px",
-                  color: "var(--colors-textMuted, #848992)",
-                  opacity: 0.6,
-                }}
-              >
-                ↑ scroll for more
-              </div>
+              <div className={hasMoreIndicator}>↑ scroll for more</div>
             )}
             {groups.map((group, gi) => {
               const isLastGroup = gi === groups.length - 1;
@@ -244,25 +235,14 @@ export const Chat = memo(function Chat({ session, onOpenDetail }: ChatProps) {
               <>
                 <div
                   onClick={togglePendingTool}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                    padding: "6px 12px",
-                    fontSize: "11px",
-                    color: "var(--colors-yellow)",
-                    cursor: "pointer",
-                    userSelect: "none",
-                    opacity: showPendingTool ? 0.6 : 1,
-                  }}
+                  className={pendingToolRow}
+                  style={{ opacity: showPendingTool ? 0.6 : 1 }}
                 >
-                  <span
-                    style={{ animation: "zzz-float 2s ease-in-out infinite" }}
-                  >
+                  <span className={pendingToolIcon}>
                     {ui.bubble_waiting_for_approval}
                   </span>
                   Requesting permission…
-                  <span style={{ fontSize: "9px", opacity: 0.5 }}>
+                  <span className={pendingToolArrow}>
                     {showPendingTool ? "▲" : "▼"}
                   </span>
                 </div>
@@ -277,17 +257,7 @@ export const Chat = memo(function Chat({ session, onOpenDetail }: ChatProps) {
         )}
       </div>
 
-      {error && (
-        <div
-          style={{
-            padding: "2px 8px",
-            color: "var(--colors-red, #E06C75)",
-            fontSize: "11px",
-          }}
-        >
-          {error}
-        </div>
-      )}
+      {error && <div className={errorBar}>{error}</div>}
       <div className={inputBar}>
         <input
           type="text"

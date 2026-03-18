@@ -16,10 +16,12 @@ import {
   clawdCenter,
   container,
   detailHeader,
+  extraUsageSpread,
   infoCard,
   infoRow,
   infoValue,
   usageBar,
+  usageBarSpread,
   usageFill,
   usageLabel,
   usageMuted,
@@ -36,6 +38,13 @@ interface DetailProps {
   onApprove: (sessionId: string, toolUseId: string) => void;
   onDeny: (sessionId: string, toolUseId: string) => void;
   onContentHeight?: (height: number) => void;
+}
+
+function extraUsageFillStyle(utilization: number) {
+  return {
+    width: `${Math.min(100, utilization)}%`,
+    background: "var(--colors-orange)",
+  };
 }
 
 function shortenHome(path: string): string {
@@ -61,7 +70,7 @@ function UsageBarRow({
   const resetStr = formatResetCountdown(resetIso);
   return (
     <div className={usageRow}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <div className={usageBarSpread}>
         <span className={usageLabel}>{label}</span>
         <span className={usageText}>{Math.round(clamped)}% used</span>
       </div>
@@ -260,7 +269,7 @@ export const Detail = memo(function Detail({
             )}
           {usage.extraUsage?.isEnabled && (
             <div className={usageRow}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div className={extraUsageSpread}>
                 <span className={usageLabel}>Extra Usage</span>
                 <span className={usageText}>
                   ${((usage.extraUsage.usedCredits ?? 0) / 100).toFixed(2)}
@@ -272,10 +281,7 @@ export const Detail = memo(function Detail({
                 <div className={usageBar}>
                   <div
                     className={usageFill}
-                    style={{
-                      width: `${Math.min(100, usage.extraUsage.utilization)}%`,
-                      background: "var(--colors-orange)",
-                    }}
+                    style={extraUsageFillStyle(usage.extraUsage.utilization)}
                   />
                 </div>
               )}

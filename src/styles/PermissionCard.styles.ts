@@ -49,3 +49,40 @@ export const actions = css({
   display: "flex",
   gap: "6px",
 });
+
+export const identityRow = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "6px",
+});
+
+export const identityLabel = css({
+  fontSize: "10px",
+  color: "var(--colors-text-muted)",
+  fontWeight: 500,
+});
+
+export const filePathRow = css({
+  marginLeft: "auto",
+  display: "flex",
+  alignItems: "center",
+  gap: "3px",
+  fontSize: "10px",
+  fontWeight: 400,
+  overflow: "hidden",
+  minWidth: 0,
+});
+
+export const filePathText = css({
+  lineHeight: 1,
+  color: "var(--colors-text-muted)",
+  whiteSpace: "nowrap",
+});
+
+export const descriptionText = css({
+  fontSize: "10px",
+  color: "var(--colors-text-muted)",
+  lineHeight: 1.4,
+});
+
+export const actionButton = css({ flex: 1 });

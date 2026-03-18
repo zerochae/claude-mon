@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const SPINNER_SYMBOLS = ["·", "✢", "✳", "∗", "✻", "✽"];
+import { SPINNER_SYMBOLS } from "@/constants/spinners";
 
 export function ProcessingSpinner({ className }: { className?: string }) {
   const [index, setIndex] = useState(0);

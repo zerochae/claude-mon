@@ -1,22 +1,14 @@
 import { css } from "@styled-system/css";
 import { useEffect, useRef } from "react";
 
+import { LEG_OFFSETS, VIEWBOX_H, VIEWBOX_W } from "@/constants/clawd";
+
 interface ClawdCanvasProps {
   color: string;
   phase: string;
   size?: number;
   onClick?: () => void;
 }
-
-const VIEWBOX_W = 66;
-const VIEWBOX_H = 52;
-
-const LEG_OFFSETS = [
-  [3, -3, 3, -3],
-  [0, 0, 0, 0],
-  [-3, 3, -3, 3],
-  [0, 0, 0, 0],
-];
 
 const canvasStyle = css({ imageRendering: "pixelated" });
 

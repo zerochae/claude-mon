@@ -1,3 +1,5 @@
+export const NERD = "'SpaceMonoNerd'";
+
 export const ui = {
   neovim: "",
   gitBranch: "",
