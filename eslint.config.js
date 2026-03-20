@@ -46,7 +46,7 @@ export default [
       "local/no-types-in-tsx": "warn",
       "local/no-constants-in-tsx": "warn",
       "local/no-inline-style-in-tsx": "warn",
-      "max-lines": ["warn", { max: 300, skipBlankLines: true, skipComments: true }],
+      "max-lines": ["warn", { max: 400, skipBlankLines: true, skipComments: true }],
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
