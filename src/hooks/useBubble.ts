@@ -15,11 +15,7 @@ interface UseBubbleParams {
   disableStale?: boolean;
 }
 
-export function useBubble({
-  variant,
-  phase,
-  lastActivity,
-}: UseBubbleParams) {
+export function useBubble({ variant, phase, lastActivity }: UseBubbleParams) {
   const { visible, fading, fadeOutMs } = useBubbleLifecycle({
     phase,
     lastActivity,

@@ -1,9 +1,9 @@
-pub mod constants;
 pub mod scanner;
 pub mod types;
 
-pub use constants::*;
 pub use types::*;
+
+use crate::constants::*;
 
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -62,7 +62,7 @@ impl SessionManager {
                 session_id: session_id.clone(),
                 cwd: event.cwd.clone().unwrap_or_default(),
                 project_name: extract_project_name(event.cwd.as_deref().unwrap_or("")),
-                phase: "idle".to_string(),
+                phase: PHASE_IDLE.to_string(),
                 tool_name: None,
                 tool_input: None,
                 tool_use_id: None,
@@ -99,51 +99,51 @@ impl SessionManager {
         let status = event.status.as_deref().unwrap_or("");
 
         match status {
-            "processing" => {
-                session.phase = "processing".to_string();
+            PHASE_PROCESSING => {
+                session.phase = PHASE_PROCESSING.to_string();
                 session.tool_name = event.tool.clone();
                 session.tool_input = event.tool_input.clone();
             }
-            "running_tool" => {
-                session.phase = "running_tool".to_string();
-                session.tool_name = event.tool.clone();
-                session.tool_input = event.tool_input.clone();
-                session.tool_use_id = tool_use_id_override.or_else(|| event.tool_use_id.clone());
-            }
-            "waiting_for_approval" => {
-                session.phase = "waiting_for_approval".to_string();
+            PHASE_RUNNING_TOOL => {
+                session.phase = PHASE_RUNNING_TOOL.to_string();
                 session.tool_name = event.tool.clone();
                 session.tool_input = event.tool_input.clone();
                 session.tool_use_id = tool_use_id_override.or_else(|| event.tool_use_id.clone());
             }
-            "waiting_for_input" => {
-                session.phase = "waiting_for_input".to_string();
+            PHASE_WAITING_FOR_APPROVAL => {
+                session.phase = PHASE_WAITING_FOR_APPROVAL.to_string();
+                session.tool_name = event.tool.clone();
+                session.tool_input = event.tool_input.clone();
+                session.tool_use_id = tool_use_id_override.or_else(|| event.tool_use_id.clone());
+            }
+            PHASE_WAITING_FOR_INPUT => {
+                session.phase = PHASE_WAITING_FOR_INPUT.to_string();
                 session.tool_name = None;
                 session.tool_input = None;
                 session.tool_use_id = None;
             }
-            "compacting" => {
-                session.phase = "compacting".to_string();
+            PHASE_COMPACTING => {
+                session.phase = PHASE_COMPACTING.to_string();
             }
-            "ended" => {
-                session.phase = "ended".to_string();
+            PHASE_ENDED => {
+                session.phase = PHASE_ENDED.to_string();
                 session.tool_name = None;
                 session.tool_input = None;
                 session.tool_use_id = None;
             }
-            "notification" => {
-                session.phase = "notification".to_string();
+            PHASE_NOTIFICATION => {
+                session.phase = PHASE_NOTIFICATION.to_string();
             }
-            "subagent_started" => {
+            EVENT_SUBAGENT_STARTED => {
                 session.subagent_count = session.subagent_count.saturating_add(1);
             }
-            "subagent_stopped" => {
+            EVENT_SUBAGENT_STOPPED => {
                 session.subagent_count = session.subagent_count.saturating_sub(1);
                 if session.subagent_count == 0 {
-                    session.phase = "waiting_for_input".to_string();
+                    session.phase = PHASE_WAITING_FOR_INPUT.to_string();
                 }
             }
-            "statusline" => {}
+            EVENT_STATUSLINE => {}
             _ => {}
         }
 
@@ -171,7 +171,7 @@ impl SessionManager {
     pub fn cleanup_stale_ended(&mut self, max_age_secs: u64) {
         let now = now_timestamp();
         self.sessions.retain(|_, s| {
-            s.phase != "ended" || now.saturating_sub(s.last_activity) < max_age_secs
+            s.phase != PHASE_ENDED || now.saturating_sub(s.last_activity) < max_age_secs
         });
     }
 }

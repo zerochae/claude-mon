@@ -81,7 +81,7 @@ pub fn scan_existing_processes(manager: &mut SessionManager) {
                 session_id: session_id.clone(),
                 cwd: proc.cwd.clone(),
                 project_name: extract_project_name(&proc.cwd),
-                phase: "waiting_for_input".to_string(),
+                phase: crate::constants::PHASE_WAITING_FOR_INPUT.to_string(),
                 tool_name: None,
                 tool_input: None,
                 tool_use_id: None,

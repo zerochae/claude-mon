@@ -1,8 +1,8 @@
-pub mod constants;
 pub mod types;
 
-pub use constants::*;
 pub use types::*;
+
+use crate::constants::*;
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -119,8 +119,8 @@ async fn handle_connection(
             if perms.remove(tool_use_id).is_some() {
                 let mut sm = session_manager.lock().await;
                 if let Some(s) = sm.get_session_mut(&session_id) {
-                    if s.phase == "waiting_for_approval" {
-                        s.phase = "processing".to_string();
+                    if s.phase == PHASE_WAITING_FOR_APPROVAL {
+                        s.phase = PHASE_PROCESSING.to_string();
                         s.tool_use_id = None;
                     }
                 }
@@ -130,7 +130,7 @@ async fn handle_connection(
         }
     }
 
-    if status == "waiting_for_approval" {
+    if status == PHASE_WAITING_FOR_APPROVAL {
         let tool_use_id = {
             let cache = tool_use_id_cache.lock().await;
             cache.get(&session_id).cloned().unwrap_or_else(|| {
@@ -176,8 +176,8 @@ async fn handle_connection(
                 {
                     let mut sm = session_manager.lock().await;
                     if let Some(s) = sm.get_session_mut(&session_id) {
-                        if s.phase == "waiting_for_approval" {
-                            s.phase = "processing".to_string();
+                        if s.phase == PHASE_WAITING_FOR_APPROVAL {
+                            s.phase = PHASE_PROCESSING.to_string();
                             s.tool_use_id = None;
                         }
                     }
@@ -196,7 +196,7 @@ async fn handle_connection(
     {
         let mut sm = session_manager.lock().await;
         if let Some(s) = sm.get_session(&session_id) {
-            if s.phase == "waiting_for_approval" {
+            if s.phase == PHASE_WAITING_FOR_APPROVAL {
                 if let Some(tid) = &s.tool_use_id {
                     let mut perms = pending_permissions.lock().await;
                     perms.remove(tid);

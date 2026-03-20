@@ -5,6 +5,7 @@ pub use types::*;
 use tauri::State;
 
 use crate::chat;
+use crate::errors::AppError;
 use crate::session::SessionState;
 use crate::socket_server;
 use crate::tmux::{find_tmux_bin, find_tmux_target};
@@ -88,20 +89,20 @@ pub async fn send_message(
         let sm = state.session_manager.lock().await;
         let session = sm
             .get_session(&session_id)
-            .ok_or_else(|| "Session not found".to_string())?;
+            .ok_or_else(|| -> String { AppError::SessionNotFound.into() })?;
 
-        if session.phase != "waiting_for_input" {
-            return Err("Session is not waiting for input".to_string());
+        if session.phase != crate::constants::PHASE_WAITING_FOR_INPUT {
+            return Err(AppError::SessionNotWaitingForInput.into());
         }
 
         let path = session
             .tty
             .as_ref()
-            .ok_or_else(|| "No TTY available for this session".to_string())?
+            .ok_or_else(|| -> String { AppError::NoTtyAvailable.into() })?
             .clone();
 
         if !path.starts_with("/dev/tty") && !path.starts_with("/dev/pts/") {
-            return Err(format!("Invalid TTY path: {}", path));
+            return Err(AppError::InvalidTtyPath(path).into());
         }
 
         (path, session.pid)
@@ -114,17 +115,17 @@ pub async fn send_message(
         std::process::Command::new(&tmux)
             .args(["send-keys", "-t", &target, "-l", &message])
             .output()
-            .map_err(|e| format!("Failed to send text via tmux: {}", e))?;
+            .map_err(|e| -> String { AppError::TmuxSendText(e.to_string()).into() })?;
 
         std::process::Command::new(&tmux)
             .args(["send-keys", "-t", &target, "Enter"])
             .output()
-            .map_err(|e| format!("Failed to send Enter via tmux: {}", e))?;
+            .map_err(|e| -> String { AppError::TmuxSendEnter(e.to_string()).into() })?;
 
         Ok(true)
     })
     .await
-    .map_err(|e| format!("Task join error: {}", e))?
+    .map_err(|e| -> String { AppError::JoinError(e.to_string()).into() })?
 }
 
 #[tauri::command]
@@ -189,5 +190,5 @@ pub async fn get_git_info(cwd: String) -> Result<GitInfo, String> {
         Ok(GitInfo { branch, added, removed, changed_files })
     })
     .await
-    .map_err(|e| format!("Join error: {}", e))?
+    .map_err(|e| -> String { AppError::JoinError(e.to_string()).into() })?
 }

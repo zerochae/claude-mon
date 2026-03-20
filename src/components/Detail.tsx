@@ -2,11 +2,12 @@ import { memo, useEffect, useRef, useState } from "react";
 
 import { Bubble } from "@/components/Bubble";
 import { Clawd } from "@/components/Clawd";
+import { UsageBarRow } from "@/components/Detail.UsageBar";
 import { InfoChip } from "@/components/InfoChip";
 import { PermissionCard } from "@/components/PermissionCard";
 import { SleepingZzz } from "@/components/SleepingZzz";
 import { COLOR_COUNT, getClawdColor } from "@/constants/colors";
-import { formatResetCountdown, useClaudeUsage } from "@/hooks/useClaudeUsage";
+import { useClaudeUsage } from "@/hooks/useClaudeUsage";
 import {
   getSessionStats,
   SessionState,
@@ -21,14 +22,17 @@ import {
   infoRow,
   infoValue,
   usageBar,
-  usageBarSpread,
   usageFill,
   usageLabel,
-  usageMuted,
   usageRow,
   usageSection,
   usageText,
 } from "@/styles/Detail.styles";
+import {
+  extraUsageFillStyle,
+  formatTokens,
+  shortenHome,
+} from "@/utils/detail.utils";
 import { isSessionSleeping } from "@/utils/session.utils";
 
 const statsCache = new Map<string, SessionStats>();
@@ -38,59 +42,6 @@ interface DetailProps {
   onApprove: (sessionId: string, toolUseId: string) => void;
   onDeny: (sessionId: string, toolUseId: string) => void;
   onContentHeight?: (height: number) => void;
-}
-
-function extraUsageFillStyle(utilization: number) {
-  return {
-    width: `${Math.min(100, utilization)}%`,
-    background: "var(--colors-orange)",
-  };
-}
-
-function shortenHome(path: string): string {
-  return path.replace(/^\/(?:Users|home)\/[^/]+/, "~");
-}
-
-function formatTokens(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
-  return String(n);
-}
-
-function UsageBarRow({
-  label,
-  pct,
-  resetIso,
-}: {
-  label: string;
-  pct: number;
-  resetIso: string | null;
-}) {
-  const clamped = Math.min(100, Math.max(0, pct));
-  const resetStr = formatResetCountdown(resetIso);
-  return (
-    <div className={usageRow}>
-      <div className={usageBarSpread}>
-        <span className={usageLabel}>{label}</span>
-        <span className={usageText}>{Math.round(clamped)}% used</span>
-      </div>
-      <div className={usageBar}>
-        <div
-          className={usageFill}
-          style={{
-            width: `${clamped}%`,
-            background:
-              clamped >= 80
-                ? "var(--colors-red)"
-                : clamped >= 50
-                  ? "var(--colors-yellow)"
-                  : "var(--colors-green)",
-          }}
-        />
-      </div>
-      {resetStr && <span className={usageMuted}>Resets in {resetStr}</span>}
-    </div>
-  );
 }
 
 export const Detail = memo(function Detail({
@@ -137,7 +88,12 @@ export const Detail = memo(function Detail({
     <div ref={containerRef} className={container}>
       <div className={detailHeader}>
         <div className={clawdCenter}>
-          <Clawd color={color} phase={session.phase} size={32} />
+          <Clawd
+            color={color}
+            phase={session.phase}
+            lastActivity={session.last_activity}
+            size={32}
+          />
           {isSessionSleeping(session) ? (
             <SleepingZzz size="sm" />
           ) : (

@@ -26,6 +26,7 @@ import {
   chatInput,
   chatMiniRow,
   chatMiniWrap,
+  chatSleepingWrap,
   dividerDot,
   errorBar,
   gitDiffWrap,
@@ -120,11 +121,14 @@ export const Chat = memo(function Chat({ session, onOpenDetail }: ChatProps) {
           <Clawd
             color={getClawdColor(colorIndex)}
             phase={phase}
+            lastActivity={lastActivity}
             size={24}
             onClick={onOpenDetail}
           />
           {isSessionSleeping(session) ? (
-            <SleepingZzz size="sm" />
+            <div className={chatSleepingWrap}>
+              <SleepingZzz size="sm" />
+            </div>
           ) : (
             <Bubble variant="chat" phase={phase} lastActivity={lastActivity} />
           )}

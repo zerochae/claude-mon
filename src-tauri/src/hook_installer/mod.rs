@@ -1,6 +1,4 @@
-mod constants;
-
-use constants::*;
+use crate::constants::*;
 use std::fs;
 use std::path::PathBuf;
 use serde_json::Value;

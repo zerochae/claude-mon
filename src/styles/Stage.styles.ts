@@ -97,3 +97,9 @@ export const miniClawdRow = css({
 export const miniClawdWrap = css({
   animation: "clawd-bounce 1.4s ease-in-out infinite",
 });
+
+export const sleepingRow = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "2px",
+});

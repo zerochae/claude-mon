@@ -192,6 +192,10 @@ export const chatMiniWrap = css({
   animation: "clawd-bounce 2s ease-in-out infinite",
 });
 
+export const chatSleepingWrap = css({
+  alignSelf: "center",
+});
+
 export const chatHeaderLabel = css({
   display: "flex",
   alignItems: "center",

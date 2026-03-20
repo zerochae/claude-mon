@@ -1,6 +1,5 @@
-mod constants;
-
-use constants::TMUX_CANDIDATES;
+use crate::constants::TMUX_CANDIDATES;
+use crate::errors::AppError;
 
 pub fn find_tmux_bin() -> Result<String, String> {
     for path in TMUX_CANDIDATES {
@@ -8,7 +7,7 @@ pub fn find_tmux_bin() -> Result<String, String> {
             return Ok(path.to_string());
         }
     }
-    Err("tmux not found".to_string())
+    Err(AppError::TmuxNotFound.into())
 }
 
 pub fn find_tmux_target(tty_path: &str, pid: Option<u32>) -> Result<String, String> {
@@ -16,10 +15,10 @@ pub fn find_tmux_target(tty_path: &str, pid: Option<u32>) -> Result<String, Stri
     let output = std::process::Command::new(&tmux)
         .args(["list-panes", "-a", "-F", "#{pane_tty} #{session_name}:#{window_index}.#{pane_index}"])
         .output()
-        .map_err(|e| format!("tmux not available: {}", e))?;
+        .map_err(|e| -> String { AppError::TmuxUnavailable(e.to_string()).into() })?;
 
     if !output.status.success() {
-        return Err("tmux is not running".to_string());
+        return Err(AppError::TmuxNotRunning.into());
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -48,7 +47,7 @@ pub fn find_tmux_target(tty_path: &str, pid: Option<u32>) -> Result<String, Stri
         }
     }
 
-    Err(format!("No tmux pane found for TTY {}", tty_path))
+    Err(AppError::TmuxPaneNotFound(tty_path.to_string()).into())
 }
 
 fn collect_ancestor_ttys(pid: u32) -> Vec<String> {

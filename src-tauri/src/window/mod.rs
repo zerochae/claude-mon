@@ -1,3 +1,4 @@
+use crate::errors::AppError;
 use tauri::window::{Effect, EffectState, EffectsBuilder};
 
 #[tauri::command]
@@ -24,7 +25,7 @@ pub fn set_vibrancy(window: tauri::Window, effect: String) -> Result<(), String>
         "fullscreen" => Effect::FullScreenUI,
         "titlebar" => Effect::Titlebar,
         "selection" => Effect::Selection,
-        _ => return Err(format!("unknown effect: {}", effect)),
+        _ => return Err(AppError::UnknownEffect(effect).into()),
     };
 
     window
@@ -44,7 +45,7 @@ pub fn set_accessory_mode(enabled: bool) -> Result<(), String> {
         use objc2::MainThreadMarker;
         use objc2_app_kit::NSApplication;
         use objc2_app_kit::NSApplicationActivationPolicy;
-        let mtm = MainThreadMarker::new().ok_or("not on main thread")?;
+        let mtm = MainThreadMarker::new().ok_or::<String>(AppError::NotMainThread.into())?;
         let app_ns = NSApplication::sharedApplication(mtm);
         let policy = if enabled {
             NSApplicationActivationPolicy::Accessory

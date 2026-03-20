@@ -3,6 +3,7 @@ import { memo } from "react";
 import { Bubble } from "@/components/Bubble";
 import { Clawd } from "@/components/Clawd";
 import { SessionList } from "@/components/SessionList";
+import { SleepingZzz } from "@/components/SleepingZzz";
 import { COLOR_COUNT, getClawdColor } from "@/constants/colors";
 import { useStage } from "@/hooks/useStage";
 import { SessionState } from "@/services/tauri";
@@ -17,9 +18,11 @@ import {
   miniClawdRow,
   miniClawdWrap,
   outerContainer,
+  sleepingRow,
   spriteWrapper,
   WANDER_INTERVAL,
 } from "@/styles/Stage.styles";
+import { isSessionSleeping } from "@/utils/session.utils";
 
 interface StageProps {
   sessions: SessionState[];
@@ -57,6 +60,7 @@ export const Stage = memo(function Stage({
             !Object.prototype.hasOwnProperty.call(positions, session.session_id)
           )
             return null;
+          const sleeping = isSessionSleeping(session);
           const isUrgent = session.phase === "waiting_for_approval";
           const isHovered = hoveredId === session.session_id;
 
@@ -92,23 +96,29 @@ export const Stage = memo(function Stage({
             >
               <div className={clawdRow}>
                 <div>
-                  <Bubble
-                    variant="stage"
-                    phase={session.phase}
-                    lastActivity={session.last_activity}
-                    dismissed={dismissedIds.has(session.session_id)}
-                  />
-                  <div
-                    className={spriteWrapper({
-                      facing: pos.facingRight ? "right" : "left",
-                      animation: animVariant,
-                    })}
-                  >
-                    <Clawd
-                      color={color}
+                  {!sleeping && (
+                    <Bubble
+                      variant="stage"
                       phase={session.phase}
-                      size={CLAWD_SIZE}
+                      lastActivity={session.last_activity}
+                      dismissed={dismissedIds.has(session.session_id)}
                     />
+                  )}
+                  <div className={sleepingRow}>
+                    <div
+                      className={spriteWrapper({
+                        facing: pos.facingRight ? "right" : "left",
+                        animation: sleeping ? "none" : animVariant,
+                      })}
+                    >
+                      <Clawd
+                        color={color}
+                        phase={session.phase}
+                        lastActivity={session.last_activity}
+                        size={CLAWD_SIZE}
+                      />
+                    </div>
+                    {sleeping && <SleepingZzz size="sm" />}
                   </div>
                 </div>
                 {session.subagent_count > 0 ? (

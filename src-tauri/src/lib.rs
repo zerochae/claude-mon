@@ -1,5 +1,7 @@
 mod chat;
+pub mod constants;
 mod commands;
+mod errors;
 mod hook_installer;
 mod session;
 mod settings;
@@ -8,6 +10,8 @@ mod tmux;
 mod tray;
 mod usage;
 mod window;
+
+pub use errors::AppError;
 
 use std::sync::Arc;
 use tokio::sync::Mutex;
@@ -95,5 +99,5 @@ pub fn run() {
             window::set_accessory_mode,
         ])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect(&AppError::AppStartup.to_string());
 }
