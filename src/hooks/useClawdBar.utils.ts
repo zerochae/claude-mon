@@ -1,4 +1,6 @@
-import { ACTIVE_PHASES } from "@/constants/phases";
+import type { Dispatch, MutableRefObject, RefObject, SetStateAction } from "react";
+
+import { ACTIVE_PHASES, type SessionPhase } from "@/constants/phases";
 import { SessionState } from "@/services/tauri";
 
 export const BASE_BAR_H = 48;
@@ -68,6 +70,17 @@ export function sessionPriority(
   if (homeIds.includes(s.session_id)) return 1;
   if (ACTIVE_PHASES.has(s.phase)) return 2;
   return 3;
+}
+
+export interface ClawdBarCtx {
+  containerRef: RefObject<HTMLDivElement | null>;
+  homeIdsRef: MutableRefObject<string[]>;
+  prevPhasesRef: MutableRefObject<Record<string, SessionPhase>>;
+  setPositions: Dispatch<SetStateAction<Record<string, ClawdPos1D>>>;
+  setRunQueue: Dispatch<SetStateAction<string[]>>;
+  setRunningId: Dispatch<SetStateAction<string | null>>;
+  setFadingIds: Dispatch<SetStateAction<Set<string>>>;
+  syncHomeIds: (ids: string[]) => void;
 }
 
 export function resolveOverlaps(
