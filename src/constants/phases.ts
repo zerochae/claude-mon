@@ -25,8 +25,6 @@ export const BAR_VISIBLE_PHASES = new Set<SessionPhase>([
 
 export const BAR_STALE_SEC = 60;
 
-export const STALE_THRESHOLD_SEC = 30;
-
 export const PHASE_LABELS: Record<SessionPhase, string> = {
   idle: "Idle",
   processing: "Processing...",
