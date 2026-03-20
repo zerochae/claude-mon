@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { ACTIVE_PHASES, type SessionPhase } from "@/constants/phases";
+import { type SessionPhase } from "@/constants/phases";
 import { SessionState } from "@/services/tauri";
 
 import {
@@ -13,7 +13,6 @@ import {
   freeMinX,
   getMoveParams,
   hasCollision,
-  HOME_RELEASE_MS,
   OVERFLOW_FADE_MS,
   PAD_L,
   RESOLVE_MS,
@@ -21,6 +20,8 @@ import {
   scaled,
   sessionPriority,
 } from "./useClawdBar.utils";
+import { useClawdBarRunning } from "./useClawdBarRunning";
+import { useClawdBarTransitions } from "./useClawdBarTransitions";
 
 export { CLAWD_BAR_RUN_MS, CLAWD_BAR_WANDER_MS } from "./useClawdBar.utils";
 
@@ -166,86 +167,19 @@ export function useClawdBar(sessions: SessionState[], barHeight: number) {
     return () => clearInterval(timer);
   }, [sessions, runningId, CRAB_W, HITBOX_W, HOME_SLOT_W, PAD_R]);
 
-  useEffect(() => {
-    const prev = prevPhasesRef.current;
-    const newTransitions: string[] = [];
-    const newlyEnded: string[] = [];
-    const leavingHome: string[] = [];
-
-    for (const s of sessions) {
-      const prevPhase = prev[s.session_id];
-      if (s.session_id in prev) {
-        if (ACTIVE_PHASES.has(prevPhase) && !ACTIVE_PHASES.has(s.phase)) {
-          newTransitions.push(s.session_id);
-        }
-        if (prevPhase !== "ended" && s.phase === "ended") {
-          newlyEnded.push(s.session_id);
-        }
-        if (!ACTIVE_PHASES.has(prevPhase) && ACTIVE_PHASES.has(s.phase)) {
-          if (homeIdsRef.current.includes(s.session_id)) {
-            leavingHome.push(s.session_id);
-          }
-        }
-      }
-      prev[s.session_id] = s.phase;
-    }
-
-    const ids = new Set(sessions.map((s) => s.session_id));
-    for (const id of Object.keys(prev)) {
-      if (!ids.has(id)) Reflect.deleteProperty(prev, id);
-    }
-
-    if (newTransitions.length > 0) {
-      queueMicrotask(() => setRunQueue((q) => [...q, ...newTransitions]));
-    }
-
-    if (newlyEnded.length > 0) {
-      const endedSet = new Set(newlyEnded);
-      syncHomeIds(homeIdsRef.current.filter((id) => !endedSet.has(id)));
-
-      const el = containerRef.current;
-      const w = el ? el.clientWidth : 300;
-      setPositions((prev) => {
-        const next = { ...prev };
-        for (const id of newlyEnded) {
-          if (id in next) {
-            next[id] = { x: w - PAD_R, facingRight: true };
-          }
-        }
-        return next;
-      });
-
-      queueMicrotask(() =>
-        setFadingIds((f) => {
-          const next = new Set(f);
-          for (const id of newlyEnded) next.add(id);
-          return next;
-        }),
-      );
-    }
-
-    if (leavingHome.length > 0) {
-      const leavingSet = new Set(leavingHome);
-      syncHomeIds(homeIdsRef.current.filter((id) => !leavingSet.has(id)));
-
-      setPositions((prev) => {
-        const next = { ...prev };
-        homeIdsRef.current.forEach((id, i) => {
-          next[id] = { x: PAD_L + i * HOME_SLOT_W, facingRight: false };
-        });
-        const el = containerRef.current;
-        const w = el ? el.clientWidth : 300;
-        const minX = freeMinX(homeIdsRef.current.length, HOME_SLOT_W);
-        for (const id of leavingHome) {
-          next[id] = {
-            x: minX + Math.random() * Math.max(0, w - minX - PAD_R - CRAB_W),
-            facingRight: Math.random() > 0.5,
-          };
-        }
-        return next;
-      });
-    }
-  }, [sessions, CRAB_W, HOME_SLOT_W, PAD_R]);
+  useClawdBarTransitions(
+    sessions,
+    prevPhasesRef,
+    homeIdsRef,
+    syncHomeIds,
+    setRunQueue,
+    setFadingIds,
+    setPositions,
+    containerRef,
+    CRAB_W,
+    HOME_SLOT_W,
+    PAD_R,
+  );
 
   useEffect(() => {
     if (fadingIds.size === 0) return;
@@ -264,84 +198,21 @@ export function useClawdBar(sessions: SessionState[], barHeight: number) {
     return () => clearTimeout(timer);
   }, [fadingIds]);
 
-  useEffect(() => {
-    if (runningId !== null || runQueue.length === 0) return;
-
-    const sessionIds = new Set(sessions.map((s) => s.session_id));
-    const validQueue = runQueue.filter((id) => sessionIds.has(id));
-
-    if (validQueue.length === 0) {
-      queueMicrotask(() => setRunQueue([]));
-      return;
-    }
-
-    const nextId = validQueue[0];
-    const targetX = PAD_L + homeIdsRef.current.length * HOME_SLOT_W;
-    queueMicrotask(() => {
-      setRunQueue(validQueue.slice(1));
-      setRunningId(nextId);
-      setPositions((prev) => ({
-        ...prev,
-        [nextId]: { x: targetX, facingRight: false },
-      }));
-    });
-  }, [runningId, runQueue, sessions, HOME_SLOT_W]);
-
-  useEffect(() => {
-    if (runningId === null) return;
-    const CLAWD_BAR_RUN_MS = 600;
-
-    const arrivingId = runningId;
-    const timer = setTimeout(() => {
-      syncHomeIds([...homeIdsRef.current, arrivingId]);
-
-      const minX = freeMinX(homeIdsRef.current.length, HOME_SLOT_W);
-      const el = containerRef.current;
-      const w = el ? el.clientWidth : 300;
-      setPositions((prev) => {
-        const next = { ...prev };
-        const homeSet = new Set(homeIdsRef.current);
-        for (const [id, pos] of Object.entries(next)) {
-          if (homeSet.has(id)) continue;
-          if (pos.x < minX) {
-            next[id] = {
-              x: minX + Math.random() * Math.max(0, w - minX - PAD_R - CRAB_W),
-              facingRight: pos.facingRight,
-            };
-          }
-        }
-        return next;
-      });
-
-      setRunningId(null);
-    }, CLAWD_BAR_RUN_MS);
-
-    return () => clearTimeout(timer);
-  }, [runningId, CRAB_W, HOME_SLOT_W, PAD_R]);
-
-  useEffect(() => {
-    if (homeCount === 0 || runningId !== null || runQueue.length > 0) return;
-
-    const timer = setTimeout(() => {
-      const releasing = [...homeIdsRef.current];
-      syncHomeIds([]);
-
-      const el = containerRef.current;
-      const w = el ? el.clientWidth : 300;
-      setPositions((prev) => {
-        const next = { ...prev };
-        for (const id of releasing) {
-          next[id] = {
-            x: PAD_L + Math.random() * Math.max(0, w - PAD_L - PAD_R - CRAB_W),
-            facingRight: Math.random() > 0.5,
-          };
-        }
-        return next;
-      });
-    }, HOME_RELEASE_MS);
-
-    return () => clearTimeout(timer);
-  }, [homeCount, runningId, runQueue.length, CRAB_W, PAD_R]);
+  useClawdBarRunning(
+    sessions,
+    runQueue,
+    setRunQueue,
+    runningId,
+    setRunningId,
+    homeIdsRef,
+    homeCount,
+    syncHomeIds,
+    setPositions,
+    containerRef,
+    CRAB_W,
+    HOME_SLOT_W,
+    PAD_R,
+  );
 
   useEffect(() => {
     const el = containerRef.current;
