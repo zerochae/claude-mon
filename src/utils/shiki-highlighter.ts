@@ -157,6 +157,13 @@ const ONEDARK_CSS_VARS = {
       ],
       settings: { foreground: C.red },
     },
+    {
+      scope: [
+        "support.type.property-name.json",
+        "support.type.property-name.json5",
+      ],
+      settings: { foreground: C.red },
+    },
     { scope: ["meta.embedded"], settings: { foreground: C.text } },
   ],
 };

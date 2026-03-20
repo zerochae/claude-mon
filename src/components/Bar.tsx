@@ -44,6 +44,7 @@ export const Bar = memo(function Bar({
     hoveredId,
     setHoveredId,
     hasSessions,
+    lastColorIndex,
   } = useBar(sessions, barHeight);
 
   const scale = barHeight / BASE_BAR_HEIGHT;
@@ -168,11 +169,7 @@ export const Bar = memo(function Bar({
         <div className={sleepingWrap}>
           <div>
             <Clawd
-              color={
-                getComputedStyle(document.documentElement)
-                  .getPropertyValue("--colors-primary")
-                  .trim() || "#d19a66"
-              }
+              color={getClawdColor(lastColorIndex)}
               phase="idle"
               size={clawdSize}
             />

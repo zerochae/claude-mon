@@ -49,6 +49,11 @@ pub fn run() {
 
             hook_installer::install_hooks(&app_handle);
 
+            {
+                let mut sm = sm.blocking_lock();
+                sm.scan_existing_processes();
+            }
+
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.set_shadow(false);
                 #[cfg(debug_assertions)]

@@ -130,8 +130,11 @@ export function watchDisplayChange(
 
   void check();
 
+  const pollInterval = setInterval(check, 2000);
+
   return () => {
     clearTimeout(debounceTimer);
+    clearInterval(pollInterval);
     for (const p of unlisteners) {
       p.then((fn) => fn()).catch(() => undefined);
     }

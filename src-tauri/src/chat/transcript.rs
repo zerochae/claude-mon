@@ -18,7 +18,7 @@ fn find_transcript_path(cwd: &str, session_id: &str) -> Option<PathBuf> {
     let projects_dir = home.join(".claude").join("projects");
     let filename = format!("{}.jsonl", session_id);
 
-    let encoded = cwd.replace('/', "-");
+    let encoded = cwd.replace('/', "-").replace('.', "-");
     let direct = projects_dir.join(&encoded).join(&filename);
     if direct.exists() {
         return Some(direct);
@@ -26,7 +26,7 @@ fn find_transcript_path(cwd: &str, session_id: &str) -> Option<PathBuf> {
 
     let mut search_cwd = cwd.to_string();
     while !search_cwd.is_empty() {
-        let encoded = search_cwd.replace('/', "-");
+        let encoded = search_cwd.replace('/', "-").replace('.', "-");
         let path = projects_dir.join(&encoded).join(&filename);
         if path.exists() {
             return Some(path);

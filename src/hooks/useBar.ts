@@ -8,6 +8,7 @@ export function useBar(sessions: SessionState[], barHeight: number) {
   const [activeSessions, setActiveSessions] = useState(() =>
     filterActive(sessions),
   );
+  const [lastColorIndex, setLastColorIndex] = useState(0);
 
   useEffect(() => {
     const sync = () => {
@@ -15,6 +16,9 @@ export function useBar(sessions: SessionState[], barHeight: number) {
       setActiveSessions((prev) =>
         activeKey(prev) === activeKey(next) ? prev : next,
       );
+      if (next.length > 0) {
+        setLastColorIndex(next[next.length - 1].color_index);
+      }
     };
     sync();
     const timer = setInterval(sync, 5000);
@@ -44,5 +48,6 @@ export function useBar(sessions: SessionState[], barHeight: number) {
     hoveredId,
     setHoveredId,
     hasSessions,
+    lastColorIndex,
   };
 }
