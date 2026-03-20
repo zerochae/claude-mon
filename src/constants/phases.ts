@@ -23,7 +23,7 @@ export const BAR_VISIBLE_PHASES = new Set<SessionPhase>([
   "waiting_for_input",
 ]);
 
-export const BAR_STALE_SEC = 600;
+export const BAR_STALE_SEC = 60;
 
 export const STALE_THRESHOLD_SEC = 30;
 

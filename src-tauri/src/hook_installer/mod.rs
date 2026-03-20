@@ -1,13 +1,10 @@
+mod constants;
+
+use constants::*;
 use std::fs;
 use std::path::PathBuf;
 use serde_json::Value;
 use tauri::Manager;
-
-
-const HOOK_SCRIPT_NAME: &str = "claude-mon-state.py";
-const HOOK_IDENTIFIER: &str = "claude-mon-state.py";
-const STATUSLINE_SCRIPT_NAME: &str = "claude-mon-statusline.py";
-const STATUSLINE_IDENTIFIER: &str = "claude-mon-statusline.py";
 
 pub fn install_hooks(app: &tauri::AppHandle) {
     let resource_path = match get_resource_path(app) {

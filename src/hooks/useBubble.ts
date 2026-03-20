@@ -1,18 +1,9 @@
 import { ACTIVE_PHASES, DONE_PHASES } from "@/constants/phases";
 import { useBubbleLifecycle } from "@/hooks/useBubbleLifecycle";
-import {
-  DONE_VISIBLE_SEC,
-  FADE_OUT_MS,
-  SB_DONE_PHASES,
-  STALE_THRESHOLD_SEC,
-} from "@/styles/Bubble.styles";
+import { FADE_OUT_MS } from "@/styles/Bubble.styles";
 
-function getBubbleDoneSec(): number {
-  const v = getComputedStyle(document.documentElement)
-    .getPropertyValue("--bubble-done-sec")
-    .trim();
-  return v ? Number(v) : 60;
-}
+const BUBBLE_DONE_PHASES = new Set([...DONE_PHASES, "waiting_for_input"]);
+const BUBBLE_DONE_VISIBLE_SEC = 30;
 
 type BubbleVariant = "bar" | "chat" | "stage";
 
@@ -28,40 +19,22 @@ export function useBubble({
   variant,
   phase,
   lastActivity,
-  dismissed,
-  disableStale,
 }: UseBubbleParams) {
-  const isStage = variant === "stage";
-  const donePhasesSet = isStage ? SB_DONE_PHASES : DONE_PHASES;
-
-  const { visible, fading, fadeOutMs, now } = useBubbleLifecycle({
+  const { visible, fading, fadeOutMs } = useBubbleLifecycle({
     phase,
     lastActivity,
-    donePhasesSet,
+    donePhasesSet: BUBBLE_DONE_PHASES,
     activePhasesSet: ACTIVE_PHASES,
-    doneVisibleSec: isStage ? DONE_VISIBLE_SEC : getBubbleDoneSec(),
+    doneVisibleSec: BUBBLE_DONE_VISIBLE_SEC,
     fadeOutMs: FADE_OUT_MS,
-    staleThresholdSec: isStage ? STALE_THRESHOLD_SEC : undefined,
-    disableStale: isStage
-      ? (disableStale ?? false) || (dismissed ?? false)
-      : true,
+    disableStale: true,
   });
 
-  const isActivePhase = ACTIVE_PHASES.has(
-    phase as "processing" | "running_tool" | "compacting",
-  );
-  const isStale =
-    isStage &&
-    !disableStale &&
-    isActivePhase &&
-    now - lastActivity > STALE_THRESHOLD_SEC;
-  const effectivePhase = isStage && dismissed && isStale ? "idle" : phase;
-
   return {
-    isStage,
+    isStage: variant === "stage",
     visible,
     fading,
     fadeOutMs,
-    effectivePhase,
+    effectivePhase: phase,
   };
 }

@@ -18,6 +18,7 @@ import {
   miniBarRow,
   miniBarWrap,
   sleepingWrap,
+  sleepingWrapExpanded,
 } from "@/styles/Bar.styles";
 
 interface BarProps {
@@ -45,6 +46,7 @@ export const Bar = memo(function Bar({
     setHoveredId,
     hasSessions,
     lastColorIndex,
+    sleepingSessions,
   } = useBar(sessions, barHeight);
 
   const scale = barHeight / BASE_BAR_HEIGHT;
@@ -63,7 +65,7 @@ export const Bar = memo(function Bar({
       }}
       onClick={onToggle}
     >
-      {hasSessions ? (
+      {hasSessions && (
         <div ref={containerRef} className={clawdList}>
           {activeSessions.map((s) => {
             const pos = positions[s.session_id] as
@@ -165,17 +167,44 @@ export const Bar = memo(function Bar({
             );
           })}
         </div>
+      )}
+      {sleepingSessions.length > 0 ? (
+        <div className={hasSessions ? sleepingWrap : sleepingWrapExpanded}>
+          {sleepingSessions.map((s, i) => (
+            <div
+              key={s.session_id}
+              className="no-drag"
+              style={{
+                display: "flex",
+                alignItems: "flex-end",
+                cursor: "pointer",
+                transform: i % 2 === 0 ? "scaleX(1)" : "scaleX(-1)",
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectSession?.(s);
+              }}
+            >
+              <Clawd
+                color={getClawdColor(s.color_index)}
+                phase="idle"
+                size={clawdSize}
+              />
+            </div>
+          ))}
+          <SleepingZzz />
+        </div>
       ) : (
-        <div className={sleepingWrap}>
-          <div>
+        !hasSessions && (
+          <div className={sleepingWrapExpanded}>
             <Clawd
               color={getClawdColor(lastColorIndex)}
               phase="idle"
               size={clawdSize}
             />
+            <SleepingZzz />
           </div>
-          <SleepingZzz />
-        </div>
+        )
       )}
     </div>
   );

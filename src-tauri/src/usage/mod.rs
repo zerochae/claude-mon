@@ -1,73 +1,8 @@
-use serde::{Deserialize, Serialize};
+pub mod types;
 
-#[derive(Debug, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase")]
-pub struct ClaudeUsage {
-    pub five_hour: Option<UsageWindow>,
-    pub seven_day: Option<UsageWindow>,
-    pub seven_day_sonnet: Option<UsageWindow>,
-    pub seven_day_opus: Option<UsageWindow>,
-    pub extra_usage: Option<ExtraUsage>,
-    pub subscription_type: Option<String>,
-    pub rate_limit_tier: Option<String>,
-}
+pub use types::*;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct UsageWindow {
-    pub utilization: Option<f64>,
-    pub resets_at: Option<String>,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct ExtraUsage {
-    pub is_enabled: Option<bool>,
-    pub monthly_limit: Option<f64>,
-    pub used_credits: Option<f64>,
-    pub utilization: Option<f64>,
-    pub currency: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-struct ApiResponse {
-    five_hour: Option<ApiWindow>,
-    seven_day: Option<ApiWindow>,
-    seven_day_sonnet: Option<ApiWindow>,
-    seven_day_opus: Option<ApiWindow>,
-    extra_usage: Option<ApiExtraUsage>,
-}
-
-#[derive(Debug, Deserialize)]
-struct ApiWindow {
-    utilization: Option<f64>,
-    resets_at: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-struct ApiExtraUsage {
-    is_enabled: Option<bool>,
-    monthly_limit: Option<f64>,
-    used_credits: Option<f64>,
-    utilization: Option<f64>,
-    currency: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-struct CredentialsFile {
-    #[serde(rename = "claudeAiOauth")]
-    claude_ai_oauth: Option<OAuthBlock>,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-struct OAuthBlock {
-    access_token: Option<String>,
-    subscription_type: Option<String>,
-    rate_limit_tier: Option<String>,
-}
-
-fn read_token_from_keychain() -> Result<(String, Option<String>, Option<String>), String> {
+pub fn read_token_from_keychain() -> Result<(String, Option<String>, Option<String>), String> {
     let username = std::env::var("USER").unwrap_or_else(|_| "".to_string());
 
     let accounts = if username.is_empty() {

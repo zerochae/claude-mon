@@ -1,11 +1,9 @@
+mod constants;
+
+use constants::TMUX_CANDIDATES;
+
 pub fn find_tmux_bin() -> Result<String, String> {
-    let candidates = [
-        "/opt/homebrew/bin/tmux",
-        "/usr/local/bin/tmux",
-        "/usr/bin/tmux",
-        "/bin/tmux",
-    ];
-    for path in candidates {
+    for path in TMUX_CANDIDATES {
         if std::path::Path::new(path).exists() {
             return Ok(path.to_string());
         }

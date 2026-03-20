@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 
 import { useClawdBar } from "@/hooks/useClawdBar";
 import { SessionState } from "@/services/tauri";
-import { activeKey, filterActive } from "@/utils/session.utils";
+import {
+  activeKey,
+  filterActive,
+  isSessionSleeping,
+} from "@/utils/session.utils";
 
 export function useBar(sessions: SessionState[], barHeight: number) {
   const [activeSessions, setActiveSessions] = useState(() =>
@@ -36,9 +40,11 @@ export function useBar(sessions: SessionState[], barHeight: number) {
 
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const hasSessions = activeSessions.length > 0;
+  const sleepingSessions = sessions.filter((s) => isSessionSleeping(s));
 
   return {
     activeSessions,
+    sleepingSessions,
     positions,
     runningId,
     fadingIds,

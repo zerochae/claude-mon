@@ -1,3 +1,7 @@
+pub mod types;
+
+pub use types::*;
+
 use tauri::State;
 
 use crate::chat;
@@ -142,15 +146,6 @@ pub async fn get_session_stats(
 #[tauri::command]
 pub async fn get_claude_usage() -> Result<usage::ClaudeUsage, String> {
     usage::fetch_usage().await
-}
-
-#[derive(serde::Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct GitInfo {
-    pub branch: Option<String>,
-    pub added: u32,
-    pub removed: u32,
-    pub changed_files: u32,
 }
 
 #[tauri::command]

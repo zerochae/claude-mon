@@ -46,6 +46,13 @@ export const sleepingWrap = css({
   display: "flex",
   alignItems: "center",
   gap: "4px",
+  justifyContent: "center",
+});
+
+export const sleepingWrapExpanded = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "4px",
   flex: 1,
   justifyContent: "center",
 });
